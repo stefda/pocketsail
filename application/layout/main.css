@@ -1,0 +1,62 @@
+
+body, html { width: 100%; height: 100%; background-color: #f0f1f2; margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Verdana, Arial, sans-serif; color: #333; }
+body { overflow-y: scroll; }
+h1 { font-size: 18px; margin: 0 0 7px; font-weight: normal; }
+
+a { color: #4c8efc; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.header { position: fixed; z-index: 9999; width: 100%; height: 50px; background-color: #f0f1f2; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4); }
+.auto { resize: none; outline: none; font-family: 'Helvetica Neue', Helvetica, Verdana, Arial, sans-serif; color: #333; font-size: 15px; padding: 5px; width: 450px; line-height: 1.4em; }
+
+#infoMenu { clear: right; width: 100%; margin-top: 10px; margin-right: -112px; background-color: #fff; border-radius: 3px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); }
+
+#infoMenu .wrapper { border-top: solid 1px #e0e1e2; }
+#infoMenu .wrapper.top { border-top: none; }
+#infoMenu a { display: block; height: 16px; padding: 7px 5px; color: #666; font-size: 15px; text-decoration: none; }
+#infoMenu a:hover { color: #666; }
+#infoMenu a.active { font-weight: bold; color: #777; }
+
+#infoMenu .sub { background-color: #f0f1f2; }
+#infoMenu .sub a { font-size: 13px; margin-left: 25px; }
+#infoMenu .sub a:hover { border-right: none; }
+
+#infoMenu .icon { display: block; float: left; margin-left: 5px; width: 12px; height: 18px; background-repeat: no-repeat; }
+#infoMenu .label { margin-left: 8px; }
+#infoMenu .icon.menu { background-image: url('/application/images/menu-icon.png'); }
+#infoMenu .icon.edit { background-image: url('/application/images/edit-icon.png'); }
+#infoMenu .icon.summary { background-image: url('/application/images/summary-icon.png'); }
+#infoMenu .icon.fullview { background-image: url('/application/images/fullview-icon.png'); }
+
+#infoMenu .digit-background { margin: 7px 8px 0 0; display: block; float: right; width: 28px; height: 16px; font-size: 12px; text-align: center; color: #fff; background-image: url('/application/images/count-background.png'); }
+
+/* Card */
+.card { width: 330px; height: 120px; margin: 4px 10px 4px; background-color: #fff; border-radius: 2px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); }
+.card .title { padding: 12px; cursor: pointer; }
+
+/* Info */
+#infoRight { display: none; position: fixed; z-index: 9; width: 100%; height: 100%; top: 65px; }
+#infoLeft { display: none; position: relative; z-index: 999; margin: 0 auto; padding: 65px 0 20px 0; width: 750px; }
+.info-block h1 { padding: 0 5px 0 5px; }
+.info-block.warning { background-image: url('/application/images/warning-bg.png'); }
+.info-block.warning .wrapper { padding: 8px 8px; }
+.info-block { width: 550px; margin-bottom: 10px; font-size: 15px; line-height: 1.4em; background-color: #fff; border-radius: 2px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.4); pointer-events: auto; }
+.info-block .inner-wrapper { padding: 15px 14px 17px 14px; }
+.info-block .content-wrapper { padding: 4px; border: solid 1px rgba(255, 255, 255, 0); }
+.info-block .details-list { border-collapse: collapse; margin-top: 6px; font-size: 13px; }
+.info-block .details-list td { padding: 0; }
+.info-block .details-list td.label { text-align: right; padding-right: 10px; color: #666; }
+.info-block .icon { float: left; height: 73px; }
+
+.info-block .icon.marina { width: 65px; height: 73px; background-image: url('/application/images/info-icons/marina-large.png'); }
+.info-block .icon.island { width: 65px; height: 73px; background-image: url('/application/images/info-icons/island-large.png'); }
+
+.info-block textarea {
+    outline: none; height: 20px; background-color: #fff; box-shadow: 0 0 2px rgba(0, 0, 0, 0.2) inset; border: solid 1px #d0d1d2; display: block; margin: 0; padding: 4px 4px 4px 4px; overflow: hidden; resize: none; font-family: 'Helvetica Neue', Helvetica, Verdana, Arial, sans-serif; color: #333; font-size: 15px; line-height: 21px;
+    -moz-box-sizing: border-box;
+    -moz-padding-end: 0px;
+    -moz-padding-start: 3px;
+    box-sizing: border-box;
+    width: 512px;
+    width: 100%;
+}
