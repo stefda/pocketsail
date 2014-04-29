@@ -7,7 +7,7 @@
         <script src="/application/js/jquery/jquery.js"></script>
         <script src="/application/js/jquery/jquery-ui.js"></script>
         <script src="/application/js/jquery/ajax.js"></script>
-        <script src="/application/js/search.js"></script>
+        <!--<script src="/application/js/search.js"></script>-->
         <script src="/application/js/controllers/API.js"></script>
         <script src="/application/js/controllers/Admin.js"></script>
 
@@ -109,8 +109,7 @@
                     zoomControlOptions: {
                         position: google.maps.ControlPosition.RIGHT_BOTTOM,
                         style: google.maps.ZoomControlStyle.SMALL
-                    },
-                    draggableCursor: 'crosshair'
+                    }
                 });
                 map.mapTypes.set('map_style', styledMap);
                 map.setMapTypeId('map_style');
@@ -217,15 +216,19 @@
         <div id="markerHoverInfo"></div>
         <div id="list" style="position: absolute;"></div>
 
+        <!--
         <div id="searchWrapper" style="position: absolute; top: 10px; left: 10px;">
             <input type="text" id="searchInput" style="width: 300px; font-size: 16px; padding: 3px 5px;" />
         </div>
+        -->
 
         <div id="features" style="position: absolute; top: 20px; right: 20px; background-color: #fff; padding: 20px;">
             <input type="checkbox" value="marina" />Marinas<br />
+            <input type="checkbox" value="harbour" />Harbours<br />
             <input type="checkbox" value="anchorage" />Anchorages<br />
             <input type="checkbox" value="restaurant" />Restaurants<br />
             <input type="checkbox" value="bar" />Bars<br />
+            <input type="checkbox" value="gasstation" />Gas stations<br />
             <input id="clearTypesButton" type="button" value="Clear Types" />
         </div>
 
