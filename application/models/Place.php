@@ -59,12 +59,12 @@ class Place {
 
     public static function add($class, $type, $name, Point $location, Polygon $boundary, $data, $userID) {
 
-        $class = mysql_real_escape_string($class);
-        $type = mysql_real_escape_string($type);
-        $name = mysql_real_escape_string($name);
+        $class = mysqli_escape_string($class);
+        $type = mysqli_escape_string($type);
+        $name = mysqli_escape_string($name);
         $locationWKT = $location->to_WKT();
         $boundaryWKT = $boundary->to_WKT();
-        $dataJSON = mysql_real_escape_string(json_encode($data));
+        $dataJSON = mysqli_escape_string(json_encode($data));
 
         $mysql = CL_MySQL::get_instance();
         $mysql->query("INSERT INTO `place` (`class`, `type`, `name`, `location`, `boundary`, `data`, `userID`)

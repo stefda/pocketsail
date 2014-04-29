@@ -7,6 +7,9 @@ class CL_MySQL {
 
     private static $instance = NULL;
     private $config;
+    /**
+     * @var mysqli
+     */
     private $connection;
 
     private function CL_MySQL() {
@@ -32,15 +35,18 @@ class CL_MySQL {
             $password = $this->config->get_item('database', 'password');
             $database = $this->config->get_item('database', 'database');
             //$this->connection = mysql_connect($server, $username, $password);
-            $this->connection = mysql_pconnect($server, $username, $password);
-            mysql_set_charset('utf8');
-            mysql_select_db($database);
+            //$this->connection = mysql_pconnect($server, $username, $password);
+            $this->connection = new mysqli($server, $username, $password, $database);
+            $this->connection->set_charset('utf8');
+            //mysql_set_charset('utf8');
+            //mysql_select_db($database);
         }
     }
 
     public function close() {
         if ($this->connection !== NULL) {
-            mysql_close($this->connection);
+//            mysql_close($this->connection);
+            $this->connection->close();
             $this->connection = NULL;
         }
     }
@@ -53,12 +59,14 @@ class CL_MySQL {
         if ($this->connection === NULL) {
             $this->connect();
         }
-        $result = mysql_query($q);
+        $result = $this->connection->query($q);
+        //$result = mysql_query($q);
+        //$result = $this->connection->query;
         if (!$result) {
             $trace = debug_backtrace();
             $file = $trace[0]['file'];
             $line = $trace[0]['line'];
-            throw new CL_Exception(mysql_error() . ", called in $file on line $line. $q");
+            throw new CL_Exception($this->connection->error . ", called in $file on line $line. $q");
         }
         return $result;
     }
@@ -83,7 +91,7 @@ class CL_MySQL {
         }
 //        echo "INS ERT INTO `$table` $keysSQL $valuesSQL";
 //        exit();
-        return $this->query("INSERT INTO `$table` $keysSQL $valuesSQL");
+        return $this->connection->query("INSERT INTO `$table` $keysSQL $valuesSQL");
     }
 
     public function update($table, $whereSQL, $data) {
@@ -98,13 +106,16 @@ class CL_MySQL {
                 $setSQL .= ',';
             }
         }
-        return $this->query("UPDATE `$table` $setSQL WHERE $whereSQL");
+        return $this->connection->query("UPDATE `$table` $setSQL WHERE $whereSQL");
     }
 
     private function to_sql($item) {
+        if ($this->connection === null) {
+            $this->connect();
+        }
         switch (gettype($item)) {
             case 'string': {
-                    $val = mysql_real_escape_string($item);
+                    $val = mysqli_escape_string($this->connection, $item);
                     return "'$val'";
                 }
             case 'double':
@@ -115,11 +126,11 @@ class CL_MySQL {
                     return "NULL";
                 }
             case 'array': {
-                    return "'" . mysql_real_escape_string(json_encode($item)) . "'";
+                    return "'" . mysqli_escape_string($this->connection, json_encode($item)) . "'";
                 }
             case 'object': {
                     if (get_class($item) === 'stdClass') {
-                        return "'" . mysql_real_escape_string(json_encode($item)) . "'";
+                        return "'" . mysqli_escape_string($this->connection, json_encode($item)) . "'";
                     }
                     if (!method_exists($item, 'toSQL')) {
                         $trace = debug_backtrace();
@@ -136,8 +147,9 @@ class CL_MySQL {
         return "`$key` = " . $this->to_sql($item);
     }
 
-    public function num_rows($r) {
-        return mysql_num_rows($r);
+    public function num_rows(mysqli_result $r) {
+        //return mysql_num_rows($r);
+        return $r->num_rows;
     }
 
     public function affected_rows() {
@@ -145,15 +157,18 @@ class CL_MySQL {
     }
 
     public function fetch_object($r) {
-        return mysql_fetch_object($r);
+        return $r->fetch_object();
+        //return mysql_fetch_object($r);
     }
 
-    public function fetch_array($r) {
-        return mysql_fetch_array($r);
+    public function fetch_array(mysqli_result $r) {
+        //return mysql_fetch_array($r);
+        return $r->fetch_array();
     }
 
     public function insert_id() {
-        return mysql_insert_id();
+        //return mysql_insert_id();
+        return $this->connection->insert_id;
     }
 
     public function begin() {

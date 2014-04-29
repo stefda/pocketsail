@@ -42,7 +42,7 @@ class MarkerModel extends CL_Model implements JsonSerializable {
     static function load_by_bbox_except(Polygon $bbox, $zoom, $sub) {
         $markers = [];
         $bboxWKT = $bbox->to_WKT();
-        $sub = mysql_real_escape_string($sub);
+        $sub = mysqli_escape_string($sub);
         $mysql = CL_MySQL::get_instance();
         $r = $mysql->query(""
                 . "SELECT *, AsBinary(`latLng`) AS `latLngWKB`"
@@ -57,7 +57,7 @@ class MarkerModel extends CL_Model implements JsonSerializable {
     static function load_by_sub(Polygon $bbox, $sub) {
         $markers = [];
         $bboxWKT = $bbox->to_WKT();
-        $sub = mysql_real_escape_string($sub);
+        $sub = mysqli_escape_string($sub);
         $mysql = CL_MySQL::get_instance();
         $r = $mysql->query(""
                 . "SELECT *, AsBinary(`latLng`) AS `latLngWKB` "

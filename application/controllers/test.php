@@ -26,6 +26,11 @@ class Test extends CL_Controller {
     }
     
     function test() {
+        $mysql = CL_MySQL::get_instance();
+        $r = $mysql->query("SELECT * FROM poi");
+        while ($o = $mysql->fetch_object($r)) {
+            print_r($o);
+        }
     }
 
     function labeller() {

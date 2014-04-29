@@ -40,12 +40,12 @@ class Area {
 
     public static function add($type, $subtype, Point $latlng, Polygon $bounds, $name, $info) {
         
-        $type = mysql_real_escape_string($type);
-        $subtype = mysql_real_escape_string($subtype);
+        $type = mysqli_escape_string($type);
+        $subtype = mysqli_escape_string($subtype);
         $latlngWKT = $latlng->to_wkt();
         $boundsWKT = $bounds->to_wkt();
-        $name = mysql_real_escape_string($name);
-        $infoJSON = mysql_real_escape_string(json_encode($info));
+        $name = mysqli_escape_string($name);
+        $infoJSON = mysqli_escape_string(json_encode($info));
 
         $mysql = CL_MySQL::get_instance();
         $mysql->query("INSERT INTO `area` (ID, type, subtype, latlng, bounds, name, info)
