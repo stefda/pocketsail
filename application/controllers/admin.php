@@ -30,10 +30,12 @@ class Admin extends CL_Controller {
      * @AjaxAsync=TRUE
      */
     function label() {
+        $pswCommand = $this->config->get_item('main', 'psw_labeling');
         $output = null;
         $return_var = null;
-        exec('java -jar C:/Users/David/Dev/PocketSailWorks/dist/PocketSailWorks.jar C:/Users/David/Dev/PocketSailWorks/data/', $output, $return_var);
-        return $return_var;
+        exec($pswCommand, $output, $return_var);
+//        print_r($output);
+        return $output;
     }
 
     /**
