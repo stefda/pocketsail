@@ -35,6 +35,10 @@
                 <div class="icon" style="background: none;"></div>
                 Peninsula
             </a>
+            <a href="" poiCat="geo" poiSub="channel">
+                <div class="icon" style="background: none;"></div>
+                Channel
+            </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="berthing" poiSub="marina">
                 <div class="icon" style="background-position-y: -3px;"></div>
