@@ -23,9 +23,17 @@
                 <div class="icon" style="background: none;"></div>
                 Island
             </a>
+            <a href="" poiCat="geo" poiSub="islet">
+                <div class="icon" style="background: none;"></div>
+                Islet
+            </a>
             <a href="" poiCat="geo" poiSub="archipelago">
                 <div class="icon" style="background: none;"></div>
                 Archipelago
+            </a>
+            <a href="" poiCat="geo" poiSub="peninsula">
+                <div class="icon" style="background: none;"></div>
+                Peninsula
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="berthing" poiSub="marina">
@@ -45,10 +53,10 @@
                 <div class="icon" style="background-position-y: -60px;"></div>
                 Anchorage
             </a>
-            <!--<a href="" poiCat="anchoring" poiSub="buoys">
+            <a href="" poiCat="anchoring" poiSub="buoys">
                 <div class="icon" style="background: none;"></div>
                 Mooring buyos
-            </a>-->
+            </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="goingout" poiSub="restaurant">
                 <div class="icon" style="background-position-y: -120px;"></div>
@@ -64,10 +72,10 @@
                 Gas station
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
-            <!--<a href="" poiCat="shopping" poiSub="supermarket">
+            <a href="" poiCat="shopping" poiSub="supermarket">
                 <div class="icon" style="background: none;"></div>
                 Supermarket
-            </a>-->
+            </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="admin" poiSub="town">
                 <div class="icon" style="background-position-y: -176px;"></div>

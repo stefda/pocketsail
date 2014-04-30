@@ -150,7 +150,7 @@
                 boundary = Polygon.fromGooglePath(polygon.getPath());
             }
 
-            if (sub !== 'country' && sub !== 'region' && (countryId === '' || nearbyId === '')) {
+            if (sub !== 'country' && sub !== 'region' && sub !== 'peninsula' && (countryId === '' || nearbyId === '')) {
                 alert('Please select country and nearby');
                 return false;
             }
