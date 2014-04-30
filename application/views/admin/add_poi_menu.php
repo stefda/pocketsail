@@ -48,6 +48,10 @@
                 <div class="icon" style="background-position-y: -213px;"></div>
                 Harbour
             </a>
+            <a href="" poiCat="berthing" poiSub="port">
+                <div class="icon" style="background-position-y: -213px;"></div>
+                Port
+            </a>
             <!--<a href="" poiCat="berthing" poiSub="yachtclub">
                 <div class="icon" style="background-position-y: -30px;"></div>
                 Yacht club
