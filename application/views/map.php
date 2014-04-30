@@ -226,6 +226,7 @@
             <input type="checkbox" value="marina" />Marinas<br />
             <input type="checkbox" value="harbour" />Harbours<br />
             <input type="checkbox" value="anchorage" />Anchorages<br />
+            <input type="checkbox" value="buoys" />Mooring buoys<br />
             <input type="checkbox" value="restaurant" />Restaurants<br />
             <input type="checkbox" value="bar" />Bars<br />
             <input type="checkbox" value="gasstation" />Gas stations<br />
