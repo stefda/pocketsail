@@ -154,7 +154,7 @@
                 alert('Please select country and nearby');
                 return false;
             }
-            if ((cat === 'admin' || cat === 'geo' || cat === 'berthing')
+            if ((cat === 'admin' || cat === 'geo' || sub === 'marina' || sub === 'harbour' || sub === 'port')
                     && boundary === null) {
                 alert('Please select boundary');
                 return false;
