@@ -61,9 +61,10 @@ class API extends CL_Controller {
         }
 
         if ($types !== NULL && count($types) > 0) {
-            $res->labels = array_merge($res->labels, LabelModel::load_static_by_types($zoom, $bbox, $priority, $poiId));
+            //$res->labels = array_merge($res->labels, LabelModel::load_static_by_types($zoom, $bbox, $priority, $poiId));
             $res->labels = array_merge($res->labels, LabelModel::load_dynamic($bbox, $types, $poiId));
-            $dynamicTypes = array_merge($types, $priority);
+            //$dynamicTypes = array_merge($types, $priority);
+            $dynamicTypes = $types;
             $res->lType = 'dynamic';
         }
 

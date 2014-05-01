@@ -13,8 +13,8 @@ class POIModel implements JsonSerializable {
         $mysql = CL_MySQL::get_instance();
         $mysql->insert('poi_new', [
             'userId' => 1,
-            'countryId' => 1,
-            'nearId' => 1,
+            'countryId' => $countryId,
+            'nearId' => $nearId,
             'name' => $name,
             'label' => $label,
             'cat' => $cat,

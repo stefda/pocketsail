@@ -40,13 +40,17 @@
                 Channel
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
+            <a href="" poiCat="berthing" poiSub="harbour">
+                <div class="icon" style="background: none;"></div>
+                Harbour
+            </a>
             <a href="" poiCat="berthing" poiSub="marina">
                 <div class="icon" style="background-position-y: -3px;"></div>
                 Marina
             </a>
-            <a href="" poiCat="berthing" poiSub="harbour">
+            <a href="" poiCat="berthing" poiSub="mooring">
                 <div class="icon" style="background-position-y: -213px;"></div>
-                Harbour
+                Shore mooring
             </a>
             <a href="" poiCat="berthing" poiSub="port">
                 <div class="icon" style="background-position-y: -213px;"></div>
