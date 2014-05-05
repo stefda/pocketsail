@@ -40,10 +40,6 @@
                 Channel
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
-            <a href="" poiCat="berthing" poiSub="harbour">
-                <div class="icon" style="background: none;"></div>
-                Harbour
-            </a>
             <a href="" poiCat="berthing" poiSub="marina">
                 <div class="icon" style="background-position-y: -3px;"></div>
                 Marina
@@ -89,6 +85,10 @@
                 Supermarket
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
+            <a href="" poiCat="admin" poiSub="harbour">
+                <div class="icon" style="background: none;"></div>
+                Harbour
+            </a>
             <a href="" poiCat="admin" poiSub="town">
                 <div class="icon" style="background-position-y: -176px;"></div>
                 Town
