@@ -17,7 +17,7 @@ Marker.prototype.onAdd = function() {
 
     this.div_ = document.createElement('div');
     this.div_.style.position = 'absolute';
-    this.div_.className = 'label';
+    this.div_.className = 'label ' + this.label.sub;
     this.getPanes().floatPane.appendChild(this.div_);
 
     if (this.label.hasText()) {

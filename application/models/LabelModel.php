@@ -114,7 +114,7 @@ class LabelModel implements JsonSerializable {
             $exceptIdStr = "AND `id` != $exceptId";
         }
 
-        $query = "SELECT *, `ldd`.`desc` FROM `label_dynamic` AS `ld` LEFT JOIN `label_dynamic_descriptor` AS `ldd` ON `ldd`.`sub` = `ld`.`sub`  WHERE $boundsStr $typesStr $exceptIdStr";
+        $query = "SELECT *, `ldd`.`desc` FROM `label_dynamic` AS `ld` LEFT JOIN `label_dynamic_descriptor` AS `ldd` ON `ldd`.`sub` = `ld`.`sub`  WHERE $boundsStr $typesStr $exceptIdStr ORDER BY `rank` DESC";
         $r = $mysql->query($query);
 
         while ($o = $mysql->fetch_object($r)) {

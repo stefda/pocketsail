@@ -45,33 +45,25 @@
                 Marina
             </a>
             <a href="" poiCat="berthing" poiSub="mooring">
-                <div class="icon" style="background-position-y: -213px;"></div>
+                <div class="icon" style="background-position-y: -30px;"></div>
                 Shore mooring
             </a>
-            <a href="" poiCat="berthing" poiSub="port">
-                <div class="icon" style="background-position-y: -213px;"></div>
-                Port
-            </a>
-            <!--<a href="" poiCat="berthing" poiSub="yachtclub">
-                <div class="icon" style="background-position-y: -30px;"></div>
-                Yacht club
-            </a>-->
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="anchoring" poiSub="anchorage">
-                <div class="icon" style="background-position-y: -60px;"></div>
+                <div class="icon" style="background-position-y: -121px;"></div>
                 Anchorage
             </a>
             <a href="" poiCat="anchoring" poiSub="buoys">
-                <div class="icon" style="background: none;"></div>
+                <div class="icon" style="background-position-y: -152px;"></div>
                 Mooring buyos
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="goingout" poiSub="restaurant">
-                <div class="icon" style="background-position-y: -120px;"></div>
+                <div class="icon" style="background-position-y: -210px;"></div>
                 Restaurant
             </a>
             <a href="" poiCat="goingout" poiSub="bar">
-                <div class="icon" style="background-position-y: -150px;"></div>
+                <div class="icon" style="background-position-y: -240px;"></div>
                 Bar
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
