@@ -89,6 +89,15 @@
                 Cashpoint (ATM)
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
+            <a href="" poiCat="health" poiSub="hospital">
+                <div class="icon" style="background: none;"></div>
+                Hospital or Surgery
+            </a>
+            <a href="" poiCat="health" poiSub="pharmacy">
+                <div class="icon" style="background: none;"></div>
+                Pharmacy
+            </a>
+            <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="admin" poiSub="harbour">
                 <div class="icon" style="background: none;"></div>
                 Harbour
