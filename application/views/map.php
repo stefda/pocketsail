@@ -233,6 +233,8 @@
             <input type="checkbox" value="gasstation" />Gas stations<br />
             <input type="checkbox" value="supermarket" />Supermarkets<br />
             <input type="checkbox" value="cashpoint" />Cashpoints (ATM)<br />
+            <input type="checkbox" value="hospital" />Hospital or Surgery<br />
+            <input type="checkbox" value="pharmacy" />Pharmacy<br />
             <input id="clearTypesButton" type="button" value="Clear Types" />
         </div>
 
