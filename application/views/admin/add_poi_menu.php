@@ -84,6 +84,10 @@
                 <div class="icon" style="background: none;"></div>
                 Supermarket
             </a>
+            <a href="" poiCat="shopping" poiSub="cashpoint">
+                <div class="icon" style="background: none;"></div>
+                Cashpoint (ATM)
+            </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="admin" poiSub="harbour">
                 <div class="icon" style="background: none;"></div>

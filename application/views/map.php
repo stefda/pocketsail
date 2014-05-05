@@ -231,6 +231,7 @@
             <input type="checkbox" value="restaurant" />Restaurants<br />
             <input type="checkbox" value="bar" />Bars<br />
             <input type="checkbox" value="gasstation" />Gas stations<br />
+            <input type="checkbox" value="supermarket" />Supermarkets<br />
             <input id="clearTypesButton" type="button" value="Clear Types" />
         </div>
 
