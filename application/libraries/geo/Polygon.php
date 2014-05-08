@@ -77,7 +77,7 @@ class Polygon implements JsonSerializable {
     }
 
     public function jsonSerialize() {
-        return $this->points;
+        return array_slice($this->points, 0, count($this->points) - 1);
     }
 
 }
