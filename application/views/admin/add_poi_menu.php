@@ -90,6 +90,23 @@
                 Pharmacy
             </a>
             <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
+            <a href="" poiCat="attraction" poiSub="beach">
+                <div class="icon" style="background: none;"></div>
+                Beach
+            </a>
+            <a href="" poiCat="attraction" poiSub="view">
+                <div class="icon" style="background: none;"></div>
+                View
+            </a>
+            <a href="" poiCat="attraction" poiSub="cave">
+                <div class="icon" style="background: none;"></div>
+                Cave
+            </a>
+            <a href="" poiCat="attraction" poiSub="ruins">
+                <div class="icon" style="background: none;"></div>
+                Ruins
+            </a>
+            <li style="border-top: solid 1px #999; margin: 3px 0;"></li>
             <a href="" poiCat="admin" poiSub="harbour">
                 <div class="icon" style="background: none;"></div>
                 Harbour

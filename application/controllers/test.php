@@ -24,13 +24,27 @@ class Test extends CL_Controller {
             echo $venues[$i]->name . "\n";
         }
     }
-    
-    function test() {
-        $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query("SELECT * FROM poi");
-        while ($o = $mysql->fetch_object($r)) {
-            print_r($o);
-        }
+
+    function search($term) {
+        
+        $catKeywords = [
+            "berthing" => "berthing",
+            "anchoring" => "anchoring",
+            "restaurants and bars" => "goingout"
+        ];
+
+        $subKeywords = [
+            "marina" => "marina",
+            "marinas" => "marina",
+            "anchoring" => "anchoring",
+            "anchorings" => "anchoring",
+            "restaurant" => "restaruant",
+            "restaurants" => "restaruant"
+        ];
+        
+        $this->load->library('Search');
+        $s = new Search($catKeywords, $subKeywords);
+        $s->do_search($term);
     }
 
     function labeller() {

@@ -15,7 +15,10 @@ body { height: 100%; margin: 0; padding: 0 }
 .label.dim .icon { -webkit-filter: grayscale(100%); }
 .label.dim .text { color: #666; }
 
-.label.cove .text { color: #006699; }
+.label.cove .text { color: #5676a2; }
+.label.bay .text { color: #5676a2; }
+
+/* 006699 */
 
 .icon { cursor: default; z-index: 96; background-image: url('/application/images/marker-icons.png'); }
 .icon.p { z-index: 95; opacity: 1; }
