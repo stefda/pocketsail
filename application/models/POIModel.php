@@ -176,7 +176,7 @@ class POIModel implements JsonSerializable {
         $latLngWKT = $latLng->to_WKT();
         $mysql = CL_MySQL::get_instance();
 //        $r = $mysql->query("SELECT * FROM `poi` WHERE `sub` IN ('island', 'archipelago', 'region') AND ST_Within(`latLng`, GeomFromText('$boundsWKT')) OR ST_Within(GeomFromText('$latLngWKT'), `boundary`) ORDER BY `name`");
-        $r = $mysql->query("SELECT * FROM `poi` WHERE `sub` IN ('island', 'archipelago', 'region', 'town', 'harbour') AND ST_Within(GeomFromText('$latLngWKT'), `boundary`) ORDER BY `name`");
+        $r = $mysql->query("SELECT * FROM `poi` WHERE `sub` IN ('island', 'archipelago', 'region', 'town', 'harbour', 'cove', 'bay') AND ST_Within(GeomFromText('$latLngWKT'), `boundary`) ORDER BY `name`");
         while ($o = $mysql->fetch_object($r)) {
             $pois[] = new POIModel($o);
         }
