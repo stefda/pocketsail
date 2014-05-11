@@ -15,6 +15,22 @@ class Test extends CL_Controller {
         $this->load->helper('ps');
     }
 
+    function mysql() {
+        $id = 147;
+        $mysql = new mysqli('localhost', 'root', '', 'pocketsail');
+        $stmt = $mysql->prepare("SELECT `id`, `name` FROM `poi` WHERE `id` > ?");
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        print_r($stmt->result_metadata()->fetch_fields());
+        $stmt->bind_result($id, $name);
+//        $stmt->bind_result($o);
+//        while ($stmt->fetch()) {
+//            //echo $id . " " . $name;
+//            print_r($o);
+//        }
+//        $mysql->close();
+    }
+
     function four() {
         $res = file_get_contents("https://api.foursquare.com/v2/venues/search?client_id=QZ1G1UWHOXTGA5C0BCMWMMC1WXB51Q10SBUI0QSBFPU2NVCU&client_secret=CEWX24LZ3LKNVN0EX01U13JI1IJZ2I2JDV0D2R4ZQS52YZPR&v=20130815&ll=43.871168,15.319766&query=restaurant");
         $data = json_decode($res);
@@ -24,23 +40,31 @@ class Test extends CL_Controller {
             echo $venues[$i]->name . "\n";
         }
     }
-    
+
     function test() {
         $this->load->view('search');
-//        $this->load->library('solr/SolrService');
-//        $solr = SolrService::get_instance();
-//        $res = $solr->query("fulltext:(marina sukosan)", 3);
-//        echo ($res->num_docs());
-//        $docs = $res->docs();
+    }
+
+    function fulltext() {
+        $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
+        $term = strtolower(trim($term));
+        $this->load->library('solr/SolrService');
+        $solr = SolrService::get_instance();
+        $res = $solr->query("fulltext:($term)", 10);
+        $this->assign('term', $term);
+        $this->assign('numFound', $res->num_found());
+        $this->assign('numDocs', $res->num_docs());
+        $this->assign('docs', $res->docs());
+        $this->load->view('fulltext');
     }
 
     function search() {
 
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
-        
+
         $this->load->library('solr/SolrService');
         $solr = SolrService::get_instance();
-        
+
         $keywords = [
             "berthing" => ["cat" => ["berthing"]],
             "anchoring" => ["cat" => ["anchoring"]],
@@ -71,7 +95,7 @@ class Test extends CL_Controller {
         $this->load->library('Search');
         $s = new Search($solr, $keywords);
         $items = $s->do_search($term);
-        
+
         echo json_encode($items);
     }
 
