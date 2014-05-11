@@ -24,27 +24,55 @@ class Test extends CL_Controller {
             echo $venues[$i]->name . "\n";
         }
     }
+    
+    function test() {
+        $this->load->view('search');
+//        $this->load->library('solr/SolrService');
+//        $solr = SolrService::get_instance();
+//        $res = $solr->query("fulltext:(marina sukosan)", 3);
+//        echo ($res->num_docs());
+//        $docs = $res->docs();
+    }
 
-    function search($term) {
+    function search() {
+
+        $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
         
-        $catKeywords = [
-            "berthing" => "berthing",
-            "anchoring" => "anchoring",
-            "restaurants and bars" => "goingout"
+        $this->load->library('solr/SolrService');
+        $solr = SolrService::get_instance();
+        
+        $keywords = [
+            "berthing" => ["cat" => ["berthing"]],
+            "anchoring" => ["cat" => ["anchoring"]],
+            "marina" => ["sub" => ["marina"]],
+            "marinas" => ["sub" => ["marina"]],
+            "anchoring" => ["cat" => ["anchoring"]],
+            "anchorage" => ["sub" => ["anchorage"]],
+            "anchorages" => ["sub" => ["anchorage"]],
+            "buoy" => ["sub" => ["buoys"]],
+            "buoys" => ["sub" => ["buoys"]],
+            "mooring buoy" => ["sub" => ["buoys"]],
+            "mooring buoys" => ["sub" => ["buoys"]],
+            "restaurant" => ["sub" => ["restaurant"]],
+            "restaurants" => ["sub" => ["restaurant"]],
+            "bar" => ["sub" => ["bar"]],
+            "bars" => ["sub" => ["bar"]],
+            "restaurants and bars" => ["sub" => ["restaurant", "bar"]],
+            "gas station" => ["sub" => ["gasstation"]],
+            "gas stations" => ["sub" => ["gasstation"]],
+            "shop" => ["sub" => ["supermarket"]],
+            "shops" => ["sub" => ["supermarket"]],
+            "supermarket" => ["sub" => ["supermarket"]],
+            "supermarkets" => ["sub" => ["supermarket"]],
+            "pharmacy" => ["sub" => ["pharmacy"]],
+            "pharmacies" => ["sub" => ["pharmacy"]],
         ];
 
-        $subKeywords = [
-            "marina" => "marina",
-            "marinas" => "marina",
-            "anchoring" => "anchoring",
-            "anchorings" => "anchoring",
-            "restaurant" => "restaruant",
-            "restaurants" => "restaruant"
-        ];
-        
         $this->load->library('Search');
-        $s = new Search($catKeywords, $subKeywords);
-        $s->do_search($term);
+        $s = new Search($solr, $keywords);
+        $items = $s->do_search($term);
+        
+        echo json_encode($items);
     }
 
     function labeller() {

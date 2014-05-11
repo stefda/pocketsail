@@ -17,11 +17,10 @@ class API extends CL_Controller {
 
     function search() {
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
-        // Load libraries and models
         $this->load->model("Search");
-        $this->load->model("POIIndexModel");
-        $pim = POIIndexModel::get_instance();
-        $s = new Search($pim);
+        $this->load->library('solr/SolrService');
+        $solr = SolrService::get_instance();
+        $s = new Search($solr);
         $res = $s->search($term);
         echo json_encode($res);
     }
