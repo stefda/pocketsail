@@ -4,31 +4,72 @@ class Test extends CL_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->load->library('Geo');
-        $this->load->library('geo/Point');
-        $this->load->library('geo/LatLng');
-        $this->load->library('geo/Polygon');
-        $this->load->library('geo/Bounds');
-        $this->load->model('POIModel');
-        $this->load->model('POIIndexModel');
-        $this->load->model('POICategoryModel');
-        $this->load->helper('ps');
+//        $this->load->library('Geo');
+//        $this->load->library('geo/Point');
+//        $this->load->library('geo/LatLng');
+//        $this->load->library('geo/Polygon');
+//        $this->load->library('geo/Bounds');
+//        $this->load->model('POIModel');
+//        $this->load->model('POIIndexModel');
+//        $this->load->model('POICategoryModel');
+//        $this->load->helper('ps');
+    }
+
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    function compute() {
+        $this->load->library('geo/*');
+        $boundsWKT = filter_input(INPUT_POST, "bounds", FILTER_SANITIZE_STRING);
+        $bounds = Bounds::fromWKT($boundsWKT);
+        $bounds->zoomOut(2);
+        return $bounds;
+    }
+
+    function index() {
+        
+        $this->load->library('geo/*');
+        
+//        $vb = ViewBounds::fromWKT("LINESTRING  (170 89.9234 ,   -185  -4.2324)");
+//        print_r($vb->toBounds());
+        
+//        $poly = Polygon::fromWKT("POLYGON ( (   -17.23 30,13 -33.23,23.34 34.11,12 45  ,  -17.23       30     ) (23 34)");
+//        echo $poly->toWKT();
+        
+//        print_r($bounds);
+        
+//        $point = Geo::mercator(new LatLng(0, 0));
+//        $latLng = Geo::mercatorInv($point);
+//        print_r($point);
+//        print_r($latLng);
+        
+//        $bounds = Bounds::fromWKT('BOUNDS(44 200, 30 -170)');
+//        $bounds->normalise();
+//        echo $bounds;
+//        
+        $this->load->view('testBounds');
     }
 
     function mysql() {
-        $id = 147;
-        $mysql = new mysqli('localhost', 'root', '', 'pocketsail');
-        $stmt = $mysql->prepare("SELECT `id`, `name` FROM `poi` WHERE `id` > ?");
-        $stmt->bind_param('i', $id);
+
+        $this->load->library('mysql/MySQLConnection');
+        $this->load->library('mysql/MySQLStatement');
+        $this->load->library('mysql/MySQLException');
+
+        $conn = MySQLConnection::get_instance();
+
+        $stmt = $conn->prepare_statement("INSERT INTO `mysql` (`id`, `name`, `value`) VALUES (?, ?, ?)");
+        $stmt->bind_param([1, 4, 5]);
+
         $stmt->execute();
-        print_r($stmt->result_metadata()->fetch_fields());
-        $stmt->bind_result($id, $name);
-//        $stmt->bind_result($o);
-//        while ($stmt->fetch()) {
-//            //echo $id . " " . $name;
-//            print_r($o);
-//        }
-//        $mysql->close();
+
+        while (($row = $stmt->fetch()) !== FALSE) {
+            print_r($row);
+        }
+
+        $conn->close();
     }
 
     function four() {

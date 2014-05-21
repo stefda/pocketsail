@@ -10,58 +10,36 @@ class LatLng implements JsonSerializable {
         $this->lng = $lng;
     }
 
-    public static function from_WKT($wkt) {
-        $res = NULL;
-        preg_match('/Point\((.*) (.*)\)/i', $wkt, $res);
-        if ($res === NULL || count($res) == 0) {
+    /**
+     * @param string $wkt A well formed WKT representation of a Point.
+     * @return LatLng|NULL Returns a LatLng or NULL if WKT parsing
+     * fails.
+     */
+    public static function fromWKT($wkt) {
+        $point = Point::fromWKT($wkt);
+        if ($point === NULL) {
             return NULL;
         }
-        $lat = $res[2];
-        $lng = $res[1];
-        return new LatLng($lat, $lng);
+        return new LatLng($point->y, $point->x);
     }
 
-    public function to_point() {
+    /**
+     * @return Point
+     */
+    public function toPoint() {
         return new Point($this->lng, $this->lat);
     }
 
-    public function to_WKT() {
-        return 'Point(' . $this->lng . ' ' . $this->lat . ')';
-    }
-
-    public static function deserialize($sLatLng) {
-        return new LatLng($sLatLng['lat'], $sLatLng['lng']);
-    }
-
-    public function serialize() {
-        return [
-            'lat' => $this->lat,
-            'lng' => $this->lng
-        ];
-    }
-
-    public static function wrap_lat($lat) {
-        return rad2deg(atan(sin(deg2rad($lat)) / abs(cos(deg2rad($lat)))));
-    }
-
-    public static function wrap_lng($lng) {
-        return rad2deg(atan2(sin(deg2rad($lng)), cos(deg2rad($lng))));
-    }
-
-    public function __toString() {
-        return '[' . $this->lat . ', ' . $this->lng . ']';
-    }
-    
-    public function toSQL() {
-        $wkt = $this->to_WKT();
-        return "GeomFromText('$wkt')";
+    public function toWKT() {
+        return $this->toPoint()->toWKT();
     }
 
     public function jsonSerialize() {
-        return [
-            'lat' => $this->lat,
-            'lng' => $this->lng
-        ];
+        return $this->toWKT();
+    }
+
+    public function __toString() {
+        return "LatLng [coords=($this->lat,$this->lng)]";
     }
 
 }

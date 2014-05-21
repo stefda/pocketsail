@@ -10,56 +10,54 @@ class Point implements JsonSerializable {
         $this->y = $y;
     }
 
-    public static function deserialize($sPoint) {
-        return new Point($sPoint['x'], $sPoint['y']);
-    }
-
-    /**
-     * @param binary $wkb
-     * @return Point
-     */
-    public static function from_WKB($wkb) {
-        // NULL if NULL given
-        if ($wkb === NULL) {
-            return NULL;
-        }
-        $pointInfo = unpack('Corder/Ltype/dx/dy', $wkb);
-        // NULL if wkb isn't a Point
-        if ($pointInfo['type'] != 1) {
-            return NULL;
-        }
-        return new Point($pointInfo['x'], $pointInfo['y']);
-    }
-
     /**
      * @param string $wkt
-     * @return Point
+     * @return Point|null
      */
-    public static function from_WKT($wkt) {
-        $res = NULL;
-        preg_match('/Point\((.*) (.*)\)/i', $wkt, $res);
-        // NULL if nothing matched
-        if ($res === NULL || count($res) == 0) {
+    public static function fromWKT($wkt) {
+
+        $matches = [];
+
+        // Do matching
+        preg_match("/POINT *\( *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) *\)/i", $wkt, $matches);
+
+        // Matches array remains empty if nothing is matched
+        if (count($matches) == 0) {
             return NULL;
         }
-        $x = $res[1];
-        $y = $res[2];
+
+        // Extract point coordinates from matches
+        $x = $matches[1];
+        $y = $matches[3];
+
         return new Point($x, $y);
     }
 
-    public function to_WKT() {
-        return 'Point(' . $this->x . ' ' . $this->y . ')';
+    /**
+     * @param Point $point
+     * @return boolean
+     */
+    public function equals(Point $point) {
+        return $this->x == $point->x && $this->y == $point->y;
     }
 
-    public function __toString() {
-        return $this->to_wkt();
+    /**
+     * @return LatLng
+     */
+    public function toLatLng() {
+        return new LatLng($this->y, $this->x);
+    }
+
+    public function toWKT() {
+        return "POINT($this->x $this->y)";
     }
 
     public function jsonSerialize() {
-        return [
-            'x' => $this->x,
-            'y' => $this->y
-        ];
+        return $this->toWKT();
+    }
+
+    public function __toString() {
+        return "Point [coords=($this->x,$this->y)]";
     }
 
 }

@@ -21,9 +21,21 @@ class CL_Loader {
         }
         return self::$instance;
     }
-
+    
     public function library($library) {
-
+        
+        // Enable including all libraries in a folder
+        if (substr($library, -1) === '*') {
+            $dirPath = APPPATH . 'libraries/' . rtrim($library, '*');
+            $dp = opendir($dirPath);
+            while ($file = readdir($dp)) {
+                if ($file !== '.' && $file !== '..') {
+                    require_once $dirPath . $file;
+                }
+            }
+            return;
+        }
+        
         if (!file_exists(APPPATH . 'libraries/' . $library . '.php')) {
             show_error("Requested library does not exist.", "Loader Error");
         }

@@ -4,6 +4,10 @@ if (!defined('SYSPATH')) {
     exit("No direct script access allowed!");
 }
 
+function br() {
+    echo "<br />";
+}
+
 function printJS($o) {
     if ($o === NULL) {
         return 'null';

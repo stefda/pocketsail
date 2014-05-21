@@ -1,6 +1,6 @@
 <?php
 
-class Polygon implements JsonSerializable {
+class LineString implements JsonSerializable {
 
     public $points;
 
@@ -9,8 +9,9 @@ class Polygon implements JsonSerializable {
     }
 
     /**
-     * @param string $wkt
-     * @return Polygon|null
+     * @param string $wkt A well formed WKT representation of a LineString.
+     * @return LineString|NULL Returns a LineString or NULL if WKT parsing
+     * fails.
      */
     public static function fromWKT($wkt) {
 
@@ -18,7 +19,7 @@ class Polygon implements JsonSerializable {
         $points = [];
 
         // Do initial matching
-        preg_match("/POLYGON *\( *\((.*)\).*\)/i", $wkt, $matches);
+        preg_match("/LINESTRING *\((.*)\)/i", $wkt, $matches);
 
         // Matches array remains empty if nothing is matched
         if (count($matches) == 0) {
@@ -29,11 +30,11 @@ class Polygon implements JsonSerializable {
         $sPoints = explode(",", trim($matches[1]));
 
         // If points are fewer than 2 the LineString is actually a point...
-        if (count($sPoints) < 3) {
+        if (count($sPoints) < 2) {
             return NULL;
         }
 
-        // Iterate over coordinates to instantiate Points of the Polygons
+        // Iterate over coordinates to instantiate Points of the LineString
         foreach ($sPoints AS $sPoint) {
             $matches = [];
             // Parse xy point coordinates
@@ -42,17 +43,12 @@ class Polygon implements JsonSerializable {
             if (count($matches) == 0) {
                 return NULL;
             }
-            // Instantiate next Polygon point from matched coordinates
+            // Instantiate next LineString point from matched coordinates
             $points[] = new Point($matches[1], $matches[3]);
         }
 
-        // Polygon's first and last coordinate must match
-        if (!$points[0]->equals($points[count($points) - 1])) {
-            return NULL;
-        }
-
-        // Finally, instantiate and return Polygon
-        return new Polygon($points);
+        // Uff, hard work that was!
+        return new LineString($points);
     }
 
     /**
@@ -67,22 +63,19 @@ class Polygon implements JsonSerializable {
     }
 
     /**
-     * @return int The number of coordinates in the Polygon.
+     * @return int The number of coordinates in the LineString.
      */
     public function size() {
         return count($this->points);
     }
 
-    /**
-     * @return string WKT representation of the Polygon.
-     */
     public function toWKT() {
-        $str = "POLYGON((";
+        $str = "LINESTRING(";
         for ($i = 0; $i < count($this->points); $i++) {
-            $str .= $this->points[$i]->x . " " . $this->points[$i]->y;
-            $str .= $i < count($this->points) - 1 ? "," : "";
+            $str .= $this->points[$i]->x . ' ' . $this->points[$i]->y;
+            $str .= $i != count($this->points) - 1 ? "," : "";
         }
-        $str .= "))";
+        $str .= ")";
         return $str;
     }
 
@@ -91,7 +84,7 @@ class Polygon implements JsonSerializable {
     }
 
     public function __toString() {
-        return "Polygon [size={$this->size()}]";
+        return "LineString [size={$this->size()}]";
     }
 
 }
