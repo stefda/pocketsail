@@ -19,40 +19,21 @@
 
             $(function() {
 
-//                console.log(Polygon.fromWKT("POLYGON(asd)"));
-
-                var vb = ViewBounds.fromWKT("LINESTRING(190 40,170 30)");
-                console.log(vb.toWKT());
-
-//                var latLng = LatLng.fromWKT("POINT   (  17.234345    42.23434   )");
-//                console.log(latLng.toWKT());
-
-//                var map = new google.maps.Map(document.getElementById('canvas'), {
-//                    zoom: 5,
-//                    center: new google.maps.LatLng(0, 0)
-//                });
-                
-//                var polyline = null;
+                var map = new google.maps.Map(document.getElementById('canvas'), {
+                    zoom: 5,
+                    center: new google.maps.LatLng(43.173224108787, 16.790027618408)
+                });
 //                
-//                google.maps.event.addListener(map, 'idle', function(e) {
-//                    var bounds = Bounds.fromGoogleBounds(this.getBounds());
-//                    var center = LatLng.fromGoogleLatLng(this.getCenter());
-//                    var zoom = this.getZoom();
-//                    var trueCenter = Geo.trueCenter(center);
-//                    var viewWidth = $('#canvas').width();
-//                    var viewBounds = bounds.toViewBounds(zoom, trueCenter, viewWidth);
-//                    console.log(viewBounds.toWKT());
-//                    Test.compute({
-//                        post: {
-//                            bounds: viewBounds.toWKT()
-//                        },
-//                        success: function(res) {
-//                            console.log(res);
-////                            var bounds = Bounds.fromWKT(res);
-////                            console.log(bounds);
-//                        }
-//                    });
-//                });
+                google.maps.event.addListener(map, 'idle', function(e) {
+                    var zoom = this.getZoom();
+                    var center = LatLng.fromGoogleLatLng(this.getCenter());
+                    var truCenter = Geo.trueCenter(center);
+                    var viewWidth = $('#canvas').width();
+                    var bounds = Bounds.fromGoogleBounds(this.getBounds());
+                    
+                    var viewBounds = bounds.toViewBounds(zoom, truCenter, viewWidth);
+                    console.log(viewBounds.toWKT());
+                });
             });
 
         </script>

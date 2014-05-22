@@ -29,26 +29,36 @@ class Test extends CL_Controller {
     }
 
     function index() {
-        
+
+        // Hvar 368
+
         $this->load->library('geo/*');
+
+        $mysql = CL_MySQL::get_instance();
+        $r = $mysql->query("SELECT AsText(`boundary`) AS `boundaryWKT` FROM `poi` WHERE `id` = 368");
+        $o = $mysql->fetch_object($r);
+
+        $polygon = Polygon::fromWKT($o->boundaryWKT);
+        $b = ViewBounds::fromPolygon($polygon);
+        //$vb = ViewBounds::fromWKT("LINESTRING(51.946277618407976 54.46372336601992,-18.36622238159202 29.334404305392273)");
+        //$vb = ViewBounds::fromWKT("LINESTRING(13.72346878051734 47.10082863657712,4.93440628051734 44.08446653264719)");
+        $vb = ViewBounds::fromWKT("LINESTRING(1184.9539375305176 86.72153616260377,-1065.0460624694824 -89.99998281885972)");
+
+        $zoom = 5;
+        $vb->setCenter($b->getCenter());
+        $vb->fitBounds($b, $zoom);
+        echo $vb->toWKT();
+        br();
+        echo $zoom;
         
-//        $vb = ViewBounds::fromWKT("LINESTRING  (170 89.9234 ,   -185  -4.2324)");
-//        print_r($vb->toBounds());
-        
-//        $poly = Polygon::fromWKT("POLYGON ( (   -17.23 30,13 -33.23,23.34 34.11,12 45  ,  -17.23       30     ) (23 34)");
-//        echo $poly->toWKT();
-        
-//        print_r($bounds);
-        
-//        $point = Geo::mercator(new LatLng(0, 0));
-//        $latLng = Geo::mercatorInv($point);
-//        print_r($point);
-//        print_r($latLng);
-        
-//        $bounds = Bounds::fromWKT('BOUNDS(44 200, 30 -170)');
-//        $bounds->normalise();
-//        echo $bounds;
-//        
+        //LINESTRING(17.33934402465798 43.36945711601001,16.24071121215798 42.97635853453763)
+        //LINESTRING(17.339344024658   43.36945711601,   16.240711212158   42.976358534538)
+        //LINESTRING(17.339344024658   43.36945711601,   16.240711212158   42.976358534538)
+        //LINESTRING(17.339344024658   43.36945711604,   16.240711212158   42.976358534567)
+        //LINESTRING(17.339344024658   43.36945711597,   16.240711212158   42.976358534494)
+    }
+
+    function bounds() {
         $this->load->view('testBounds');
     }
 

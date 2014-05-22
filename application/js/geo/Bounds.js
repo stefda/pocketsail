@@ -16,7 +16,7 @@ function Bounds(ne, sw) {
         var worldWidth = 256 * Math.pow(2, zoom);
         var e = trueCenter.lng + viewWidth / worldWidth * 180;
         var w = trueCenter.lng - viewWidth / worldWidth * 180;
-        return new Bounds(new LatLng(this.n, e), new LatLng(this.s, w));
+        return new ViewBounds(new LatLng(this.n, e), new LatLng(this.s, w));
     };
 
     /**
@@ -27,11 +27,6 @@ function Bounds(ne, sw) {
         bounds.extend(new google.maps.LatLng(this.n, this.e));
         bounds.extend(new google.maps.LatLng(this.s, this.w));
         return bounds;
-    };
-
-    this.toWKT = function() {
-        return "BOUNDS(" + this.n + " " + this.e
-                + "," + this.s + " " + this.w + ")";
     };
 }
 

@@ -2,7 +2,7 @@
 
 /**
  * Normal bounds constrained by the [90,180,-90,-180] bounding box. The coor-
- * dinates are normalised to fit in the constraints inside of the construcotr.
+ * dinates are normalised in the constructor to fit these constraints.
  */
 class Bounds {
 
@@ -34,20 +34,20 @@ class Bounds {
             $w = Geo::wrapLng($w);
         }
 
-        // Assign Bounds attributes
+        // Assign bounds' attributes
         $this->n = $n;
         $this->e = $e;
         $this->s = $s;
         $this->w = $w;
     }
-    
+
     /**
      * @return LatLng The north-east corner of the bounds
      */
     public function getNorthEast() {
         return new LatLng($this->n, $this->e);
     }
-    
+
     /**
      * @return LatLng The south-west corner of the bounds
      */
