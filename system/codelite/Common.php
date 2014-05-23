@@ -4,6 +4,18 @@ if (!defined('SYSPATH')) {
     exit("No direct script access allowed!");
 }
 
+function require_library($library) {
+    if (!file_exists(APPPATH . 'libraries/' . $library . '.php')) {
+        show_error("Requested library does not exist.", "Loader Error");
+    }
+    require_once APPPATH . 'libraries/' . $library . '.php';
+}
+
+function pl($str) {
+    echo $str;
+    br();
+}
+
 function br() {
     echo "<br />";
 }

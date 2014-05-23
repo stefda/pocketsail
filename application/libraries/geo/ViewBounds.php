@@ -2,16 +2,16 @@
 
 class ViewBounds extends Bounds implements JsonSerializable {
 
-    public $n;
-    public $e;
     public $s;
     public $w;
+    public $n;
+    public $e;
 
-    public function __construct($ne, $sw) {
-        $this->n = $ne->lat;
-        $this->e = $ne->lng;
-        $this->s = $sw->lat;
-        $this->w = $sw->lng;
+    private function __construct($sw, $ne) {
+        $this->s = $sw->lat();
+        $this->w = $sw->lng();
+        $this->n = $ne->lat();
+        $this->e = $ne->lng();
     }
 
     /**
@@ -20,46 +20,55 @@ class ViewBounds extends Bounds implements JsonSerializable {
      */
     public static function fromWKT($wkt) {
 
-        // Start with using the wkt string to create a LineString
-        $ls = LineString::fromWKT($wkt);
+        $matches = [];
 
-        // Return NULL if the LineString is NULL or doesn't containt exacly two
-        // points
-        if ($ls === NULL || $ls->size() !== 2) {
+        // Do matching
+        preg_match("/BOUNDS *\( *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) *, *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) *\)/i", $wkt, $matches);
+
+        // Matches array remains empty if nothing is matched
+        if (count($matches) == 0) {
             return NULL;
         }
 
-        // Assign the two points to bounds' corners
-        $ne = $ls->getPointAt(0)->toLatLng();
-        $sw = $ls->getPointAt(1)->toLatLng();
+        // Extract point coordinates from matches
+        $w = $matches[1];
+        $s = $matches[3];
+        $e = $matches[5];
+        $n = $matches[7];
 
-        // Return NULL if the point are wrongly coordinated
-        if ($ne->lat < $sw->lat || $ne->lng < $sw->lng) {
-            return NULL;
-        }
+        // Initialise bounds' corners
+        $sw = new LatLng($s, $w);
+        $ne = new LatLng($n, $e);
 
-        // Finally, return correctly initialised Bounds
-        return new ViewBounds($ne, $sw);
+        return new ViewBounds($sw, $ne);
     }
-    
+
+    /**
+     * Expects a polygon that is "unwrapped", i.e. if the polygon should cross
+     * the antimeridian, its longitude coordinates are appropriately extended
+     * to a coordinate system stretching from -360° west to 360° east.
+     * 
+     * @param Polygon $polygon
+     * @return ViewBounds
+     */
     public static function fromPolygon(Polygon $polygon) {
-        
+
         $points = $polygon->points;
-        
+
         // Initialise extremes with first point's coordinates
-        $n = $points[0]->y;
-        $e = $points[0]->x;
-        $s = $points[0]->y;
-        $w = $points[0]->x;
-        
+        $n = $points[0]->y();
+        $e = $points[0]->x();
+        $s = $points[0]->y();
+        $w = $points[0]->x();
+
         // Extend the bounds correspondingly
         foreach ($points AS $point) {
-            $n = max($n, $point->y);
-            $e = max($e, $point->x);
-            $s = min($s, $point->y);
-            $w = min($w, $point->x);
+            $n = max($n, $point->y());
+            $e = max($e, $point->x());
+            $s = min($s, $point->y());
+            $w = min($w, $point->x());
         }
-        
+
         // Instantiate ViewBounds accordingly, then return
         return new ViewBounds(new LatLng($n, $e), new LatLng($s, $w));
     }
@@ -84,33 +93,19 @@ class ViewBounds extends Bounds implements JsonSerializable {
      * @param LatLng $center
      */
     public function setCenter(LatLng $center) {
-        // Compute north-south and east-west differences
+
+        $y = Geo::mercatorLat($center->lat());
         $yN = Geo::mercatorLat($this->n);
         $yS = Geo::mercatorLat($this->s);
+
         $yDiff = $yN - $yS;
-        
-        $y = Geo::mercatorLat($center->lat);
+        $lngDiff = $this->e - $this->w;
+
         $this->n = Geo::mercatorLatInv($y + $yDiff / 2);
         $this->s = Geo::mercatorLatInv($y - $yDiff / 2);
-        
-//        $latDiff = $this->n - $this->s;
-        $lngDiff = $this->e - $this->w;
-        // Compute new extremities
-//        $this->n = $center->lat + $latDiff / 2;
-        $this->e = $center->lng + $lngDiff / 2;
-//        $this->s = $center->lat - $latDiff / 2;
-        $this->w = $center->lng - $lngDiff / 2;
+        $this->e = $center->lng() + $lngDiff / 2;
+        $this->w = $center->lng() - $lngDiff / 2;
     }
-//    public function setCenter(LatLng $center) {
-//        // Compute north-south and east-west differences
-//        $latDiff = $this->n - $this->s;
-//        $lngDiff = $this->e - $this->w;
-//        // Compute new extremities
-//        $this->n = $center->lat + $latDiff / 2;
-//        $this->e = $center->lng + $lngDiff / 2;
-//        $this->s = $center->lat - $latDiff / 2;
-//        $this->w = $center->lng - $lngDiff / 2;
-//    }
 
     /**
      * Changes bounds' zoom by the given $zoomDiff value. Positive values zoom
@@ -153,32 +148,32 @@ class ViewBounds extends Bounds implements JsonSerializable {
     public function zoomOut($zoomDiff = 1) {
         $this->changeZoom(-$zoomDiff);
     }
-    
+
     /**
      * @param ViewBounds $bounds
      */
     public function fitBounds(ViewBounds $bounds, &$zoom = NULL) {
-        
+
         // Project this bounds' extreme latitudes onto square
         $aN = Geo::mercatorLat($this->n);
         $aS = Geo::mercatorLat($this->s);
         $aLatDiff = $aN - $aS;
         // Project given bounds' extreme latitudes onto square
-        $bN = Geo::mercatorLng($bounds->n);
-        $bS = Geo::mercatorLng($bounds->s);
+        $bN = Geo::mercatorLng($bounds->n());
+        $bS = Geo::mercatorLng($bounds->s());
         $bLatDiff = $bN - $bS;
         // Compute meridian zoom difference
         $latZoomDiff = floor((log($aLatDiff) - log($bLatDiff)) / log(2));
-        
+
         $aLngDiff = $this->e - $this->w;
-        $bLngDiff = $bounds->e - $bounds->w;
+        $bLngDiff = $bounds->e() - $bounds->w();
         // Compute parallel zoom difference
         $lngZoomDiff = floor((log($aLngDiff) - log($bLngDiff)) / log(2));
-        
+
         // Change zoom using smaller computed zoom difference
         $zoomDiff = min($latZoomDiff, $lngZoomDiff);
         $this->changeZoom($zoomDiff);
-        
+
         // Update zoom if given
         if ($zoom !== NULL) {
             $zoom += $zoomDiff;
@@ -193,7 +188,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
     }
 
     public function toWKT() {
-        return "LINESTRING($this->e $this->n,$this->w $this->s)";
+        return "BOUNDS($this->w $this->s,$this->e $this->n)";
     }
 
     public function jsonSerialize() {
@@ -201,7 +196,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
     }
 
     public function __toString() {
-        return "ViewBounds [ne=($this->n,$this->e),sw=($this->s,$this->w)]";
+        return "ViewBounds [sw=($this->s,$this->w),ne=($this->n,$this->e)]";
     }
 
 }

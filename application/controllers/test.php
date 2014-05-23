@@ -30,32 +30,24 @@ class Test extends CL_Controller {
 
     function index() {
 
-        // Hvar 368
-
         $this->load->library('geo/*');
-
-        $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query("SELECT AsText(`boundary`) AS `boundaryWKT` FROM `poi` WHERE `id` = 368");
-        $o = $mysql->fetch_object($r);
-
-        $polygon = Polygon::fromWKT($o->boundaryWKT);
-        $b = ViewBounds::fromPolygon($polygon);
-        //$vb = ViewBounds::fromWKT("LINESTRING(51.946277618407976 54.46372336601992,-18.36622238159202 29.334404305392273)");
-        //$vb = ViewBounds::fromWKT("LINESTRING(13.72346878051734 47.10082863657712,4.93440628051734 44.08446653264719)");
-        $vb = ViewBounds::fromWKT("LINESTRING(1184.9539375305176 86.72153616260377,-1065.0460624694824 -89.99998281885972)");
-
-        $zoom = 5;
-        $vb->setCenter($b->getCenter());
-        $vb->fitBounds($b, $zoom);
-        echo $vb->toWKT();
-        br();
-        echo $zoom;
         
-        //LINESTRING(17.33934402465798 43.36945711601001,16.24071121215798 42.97635853453763)
-        //LINESTRING(17.339344024658   43.36945711601,   16.240711212158   42.976358534538)
-        //LINESTRING(17.339344024658   43.36945711601,   16.240711212158   42.976358534538)
-        //LINESTRING(17.339344024658   43.36945711604,   16.240711212158   42.976358534567)
-        //LINESTRING(17.339344024658   43.36945711597,   16.240711212158   42.976358534494)
+        $vb = ViewBounds::fromWKT("BOUNDS(13 30,17 40)");
+        echo $vb->toWKT();
+        
+        //echo Geo::mercator(new LatLng(+89.999, 180));
+        
+//        $poly = Polygon::fromWKT("POLYGON((17 40,17 30,13 30,13 40,17 40))");
+//        echo $poly;
+        
+//        $p = new Point(111, 222);
+//        pl($p);
+//
+//        $latLng = new LatLng(40, 17);
+//        pl($latLng);
+//        pl($latLng->toPoint());
+//        pl($latLng->toWKT());
+//        pl($latLng->toPoint()->toWKT());
     }
 
     function bounds() {

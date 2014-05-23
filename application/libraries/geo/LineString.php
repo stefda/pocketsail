@@ -2,16 +2,15 @@
 
 class LineString implements JsonSerializable {
 
-    public $points;
+    private $points;
 
     public function __construct($points = []) {
         $this->points = $points;
     }
 
     /**
-     * @param string $wkt A well formed WKT representation of a LineString.
-     * @return LineString|NULL Returns a LineString or NULL if WKT parsing
-     * fails.
+     * @param string $wkt
+     * @return LineString|NULL
      */
     public static function fromWKT($wkt) {
 
@@ -29,11 +28,6 @@ class LineString implements JsonSerializable {
         // Explode by comma matched coordinates trimmed off of spaces
         $sPoints = explode(",", trim($matches[1]));
 
-        // If points are fewer than 2 the LineString is actually a point...
-        if (count($sPoints) < 2) {
-            return NULL;
-        }
-
         // Iterate over coordinates to instantiate Points of the LineString
         foreach ($sPoints AS $sPoint) {
             $matches = [];
@@ -49,6 +43,10 @@ class LineString implements JsonSerializable {
 
         // Uff, hard work that was!
         return new LineString($points);
+    }
+    
+    public function points() {
+        return $this->points;
     }
 
     /**
@@ -69,10 +67,13 @@ class LineString implements JsonSerializable {
         return count($this->points);
     }
 
+    /**
+     * @return string
+     */
     public function toWKT() {
         $str = "LINESTRING(";
         for ($i = 0; $i < count($this->points); $i++) {
-            $str .= $this->points[$i]->x . ' ' . $this->points[$i]->y;
+            $str .= $this->points[$i]->x() . ' ' . $this->points[$i]->y();
             $str .= $i != count($this->points) - 1 ? "," : "";
         }
         $str .= ")";

@@ -21,9 +21,14 @@
 
                 var map = new google.maps.Map(document.getElementById('canvas'), {
                     zoom: 5,
-                    center: new google.maps.LatLng(43.173224108787, 16.790027618408)
+                    center: new google.maps.LatLng(43.173224108787, 16.790027618408),
+                    draggableCursor: 'crosshair'
                 });
-//                
+                
+                google.maps.event.addListener(map, 'click', function(e) {
+                    console.log(e.latLng.lat());
+                });
+
                 google.maps.event.addListener(map, 'idle', function(e) {
                     var zoom = this.getZoom();
                     var center = LatLng.fromGoogleLatLng(this.getCenter());

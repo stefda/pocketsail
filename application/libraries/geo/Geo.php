@@ -14,8 +14,8 @@ class Geo {
 
         $halfPI = M_PI / 2;
 
-        $lat = $latLng->lat;
-        $lng = $latLng->lng;
+        $lat = $latLng->lat();
+        $lng = $latLng->lng();
 
         $lat = $lat > 90 ? 90 : ($lat < -90 ? -90 : $lat);
         $lng = $lng > 180 ? 180 : ($lng < -180 ? -180 : $lng);

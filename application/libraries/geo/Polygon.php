@@ -2,7 +2,7 @@
 
 class Polygon implements JsonSerializable {
 
-    public $points;
+    private $points;
 
     public function __construct($points = []) {
         $this->points = $points;
@@ -28,12 +28,7 @@ class Polygon implements JsonSerializable {
         // Explode by comma matched coordinates trimmed off of spaces
         $sPoints = explode(",", trim($matches[1]));
 
-        // If points are fewer than 2 the LineString is actually a point...
-        if (count($sPoints) < 3) {
-            return NULL;
-        }
-
-        // Iterate over coordinates to instantiate Points of the Polygons
+        // Iterate over coordinates to instantiate points of the polygons
         foreach ($sPoints AS $sPoint) {
             $matches = [];
             // Parse xy point coordinates
@@ -42,17 +37,24 @@ class Polygon implements JsonSerializable {
             if (count($matches) == 0) {
                 return NULL;
             }
-            // Instantiate next Polygon point from matched coordinates
+            // Instantiate next polygon's point from matched coordinates
             $points[] = new Point($matches[1], $matches[3]);
         }
 
-        // Polygon's first and last coordinate must match
+        // Polygon's first and last coordinates must match
         if (!$points[0]->equals($points[count($points) - 1])) {
             return NULL;
         }
 
-        // Finally, instantiate and return Polygon
+        // Finally, instantiate and return new, shiny polygon
         return new Polygon($points);
+    }
+    
+    /**
+     * @return array[Point]
+     */
+    public function points() {
+        return $this->points;
     }
 
     /**
@@ -67,19 +69,19 @@ class Polygon implements JsonSerializable {
     }
 
     /**
-     * @return int The number of coordinates in the Polygon.
+     * @return int
      */
     public function size() {
         return count($this->points);
     }
 
     /**
-     * @return string WKT representation of the Polygon.
+     * @return string
      */
     public function toWKT() {
         $str = "POLYGON((";
         for ($i = 0; $i < count($this->points); $i++) {
-            $str .= $this->points[$i]->x . " " . $this->points[$i]->y;
+            $str .= $this->points[$i]->x() . " " . $this->points[$i]->y();
             $str .= $i < count($this->points) - 1 ? "," : "";
         }
         $str .= "))";

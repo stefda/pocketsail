@@ -1,19 +1,16 @@
 <?php
 
-class LatLng implements JsonSerializable {
+require_library('geo/Point');
 
-    public $lat;
-    public $lng;
+class LatLng extends Point implements JsonSerializable {
 
     public function __construct($lat, $lng) {
-        $this->lat = $lat;
-        $this->lng = $lng;
+        parent::__construct($lng, $lat);
     }
 
     /**
-     * @param string $wkt A well formed WKT representation of a Point.
-     * @return LatLng|NULL Returns a LatLng or NULL if WKT parsing
-     * fails.
+     * @param string $wkt
+     * @return LatLng|NULL
      */
     public static function fromWKT($wkt) {
         $point = Point::fromWKT($wkt);
@@ -23,23 +20,23 @@ class LatLng implements JsonSerializable {
         return new LatLng($point->y, $point->x);
     }
 
+    public function lat() {
+        return $this->y;
+    }
+
+    public function lng() {
+        return $this->x;
+    }
+
     /**
      * @return Point
      */
     public function toPoint() {
-        return new Point($this->lng, $this->lat);
-    }
-
-    public function toWKT() {
-        return $this->toPoint()->toWKT();
-    }
-
-    public function jsonSerialize() {
-        return $this->toWKT();
+        return new Point($this->x, $this->y);
     }
 
     public function __toString() {
-        return "LatLng [coords=($this->lat,$this->lng)]";
+        return "LatLng [coords=($this->y,$this->x)]";
     }
 
 }

@@ -2,8 +2,8 @@
 
 class Point implements JsonSerializable {
 
-    public $x;
-    public $y;
+    protected $x;
+    protected $y;
 
     public function __construct($x, $y) {
         $this->x = $x;
@@ -32,22 +32,32 @@ class Point implements JsonSerializable {
 
         return new Point($x, $y);
     }
+    
+    /**
+     * @return double
+     */
+    public function x() {
+        return $this->x;
+    }
+    
+    /**
+     * @return double
+     */
+    public function y() {
+        return $this->y;
+    }
 
     /**
      * @param Point $point
      * @return boolean
      */
     public function equals(Point $point) {
-        return $this->x == $point->x && $this->y == $point->y;
+        return $this->x() == $point->x() && $this->y() == $point->y();
     }
 
     /**
-     * @return LatLng
+     * @return string
      */
-    public function toLatLng() {
-        return new LatLng($this->y, $this->x);
-    }
-
     public function toWKT() {
         return "POINT($this->x $this->y)";
     }

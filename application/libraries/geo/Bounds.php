@@ -6,21 +6,21 @@
  */
 class Bounds {
 
-    public $n;
-    public $e;
-    public $s;
-    public $w;
+    protected $s;
+    protected $w;
+    protected $n;
+    protected $e;
 
-    public function __construct(LatLng $ne, LatLng $sw) {
+    private function __construct(LatLng $sw, LatLng $ne) {
 
-        $n = $ne->lat;
-        $e = $ne->lng;
         $s = $sw->lat;
         $w = $sw->lng;
+        $n = $ne->lat;
+        $e = $ne->lng;
 
         // Wrap latitudes around the globe
-        $n = Geo::wrapLat($n);
         $s = Geo::wrapLat($s);
+        $n = Geo::wrapLat($n);
 
         // Compute difference in longitude extremities
         $lngDiff = $e - $w;
@@ -35,17 +35,26 @@ class Bounds {
         }
 
         // Assign bounds' attributes
-        $this->n = $n;
-        $this->e = $e;
         $this->s = $s;
         $this->w = $w;
+        $this->n = $n;
+        $this->e = $e;
     }
 
-    /**
-     * @return LatLng The north-east corner of the bounds
-     */
-    public function getNorthEast() {
-        return new LatLng($this->n, $this->e);
+    public function s() {
+        return $this->s;
+    }
+
+    public function w() {
+        return $this->w;
+    }
+
+    public function n() {
+        return $this->n;
+    }
+
+    public function e() {
+        return $this->e;
     }
 
     /**
@@ -53,6 +62,13 @@ class Bounds {
      */
     public function getSouthWest() {
         return new LatLng($this->s, $this->w);
+    }
+
+    /**
+     * @return LatLng The north-east corner of the bounds
+     */
+    public function getNorthEast() {
+        return new LatLng($this->n, $this->e);
     }
 
     public function __toString() {
