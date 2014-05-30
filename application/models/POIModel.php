@@ -103,7 +103,7 @@ class POIModel implements JsonSerializable {
                 ->leftJoin('poi_type')->alias('poiType')->on('id', 'sub')
                 ->where('id', 'poi', EQ, $id)
                 ->exec();
-
+        
         if ($r->numRows() == 0) {
             return NULL;
         }

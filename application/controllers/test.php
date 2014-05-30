@@ -49,11 +49,9 @@ class Test extends CL_Controller {
 
         $this->load->library('geo/*');
         $this->load->model('POIModel');
+        $this->load->model('LabelModel');
         
-        $pois = POIModel::loadNearby(new LatLng(43.865319, 15.310810));
-//        $pois = POIModel::loadCountries(new LatLng(43.865319, 15.310810));
-        
-        print_r($pois);
+        print_r(LabelModel::load(34));
         
         //echo POIModel::add(1, 1, 1, 'David', 'Vino', 'berthing', 'marina', new LatLng(44, 16), new Polygon(), []);
         //POIModel::update(454, 100, 100, 'David', 'David', 'mercat', 'tacrem', new LatLng(44, 44), new Polygon(), []);

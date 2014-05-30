@@ -133,6 +133,9 @@ class CL_MySQLiSelectQuery {
     public function und() {
         $args = func_get_args();
         if (count($args) === 1) {
+            if ($args[0] === '' || $args[0] === NULL) {
+                return $this;
+            }
             $this->condsBuffer[] = "AND $args[0]";
         }
         if (count($args) === 3) {
@@ -151,6 +154,9 @@ class CL_MySQLiSelectQuery {
     public function oder() {
         $args = func_get_args();
         if (count($args) === 1) {
+            if ($args[0] === '' || $args[0] === NULL) {
+                return $this;
+            }
             $this->condsBuffer[] = "OR $args[0]";
         }
         if (count($args) === 3) {
@@ -190,6 +196,9 @@ class CL_MySQLiSelectQuery {
         return $value;
     }
 
+    /**
+     * @return CL_MySQLiResult
+     */
     public function exec() {
         return $this->mysql->query($this);
     }

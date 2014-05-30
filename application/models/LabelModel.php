@@ -23,17 +23,32 @@ class LabelModel implements JsonSerializable {
     }
 
     /**
+     * @param object $o
+     * @param string $type
+     * @return \LabelModel|null
+     */
+    public static function fromObject($o, $type) {
+        if ($o === NULL) {
+            return NULL;
+        }
+        return new LabelModel($o, $type);
+    }
+
+    /**
      * @param int $id
      * @return \LabelModel|null
      */
     public static function load($id) {
-        $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query("SELECT * FROM `label_dynamic` WHERE `id` = $id");
-        if ($mysql->num_rows($r) === 0) {
-            return NULL;
-        }
-        $o = $mysql->fetch_object($r);
-        return new LabelModel($o, 'selected');
+
+        $r = db()->select()
+                ->all('ld')
+                ->col('desc', 'ldd')
+                ->from('label_dynamic')->alias('ld')
+                ->leftJoin('label_dynamic_descriptor')->alias('ldd')->on('sub')
+                ->where('id', EQ, $id)
+                ->exec();
+
+        return LabelModel::fromObject($r->fetchObject(), 'selected');
     }
 
     /**
@@ -46,7 +61,6 @@ class LabelModel implements JsonSerializable {
      */
     public static function loadStaticByBounds(Bounds $bounds, $zoom, $exceptId = NULL, $exceptTypes = NULL, $rawDesc = FALSE) {
 
-        $labels = [];
         $boundsClause = self::buildBoundsClause($bounds);
         $exceptIdClause = self::buildExceptIdClause($exceptId);
         $exceptTypesClause = self::buildExceptTypesClause($exceptTypes);
