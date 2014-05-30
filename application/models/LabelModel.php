@@ -65,24 +65,36 @@ class LabelModel implements JsonSerializable {
         $exceptIdClause = self::buildExceptIdClause($exceptId);
         $exceptTypesClause = self::buildExceptTypesClause($exceptTypes);
 
+        $mysql = db();
+
         // Initialise default query string
-        $q = "SELECT * FROM `label_static` AS `ls` WHERE $boundsClause $exceptIdClause $exceptTypesClause ORDER BY `order`";
+        $query = select($mysql)
+                ->all()
+                ->from('label_static')->alias('ls')
+                ->where($boundsClause)
+                ->und($exceptIdClause)
+                ->und($exceptTypesClause)
+                ->orderBy('order');
 
         // Change query string if raw descriptor is required
         if ($rawDesc) {
-            $q = "SELECT * FROM `label_static` AS `ls` "
-                    . "LEFT JOIN `label_static_descriptor` AS `lsd` ON `lsd`.`sub` = `ls`.`sub` "
-                    . "WHERE `lsd`.`zoom` = $zoom AND `ls`.`zoom` = $zoom AND $boundsClause $exceptIdClause $exceptTypesClause "
-                    . "ORDER BY `order`";
+            $query = select($mysql)
+                    ->all()
+                    ->from('label_static')->alias('ls')
+                    ->leftJoin('label_static_descriptor')->alias('lsd')->on('sub')
+                    ->where('zoom', 'lsd', EQ, $zoom)
+                    ->und('zoom', 'ls', EQ, $zoom)
+                    ->und($boundsClause)
+                    ->und($exceptIdClause)
+                    ->und($exceptTypesClause)
+                    ->orderBy('order');
         }
 
-        $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query($q);
+        $res = $query->exec();
 
-        while ($o = $mysql->fetch_object($r)) {
+        while ($o = $res->fetchObject()) {
             $labels[] = new LabelModel($o, 'static');
         }
-
         return $labels;
     }
 
@@ -132,7 +144,7 @@ class LabelModel implements JsonSerializable {
         if ($id === NULL) {
             return "";
         } else {
-            return "AND `id` != $id";
+            return "`id` != $id";
         }
     }
 
@@ -140,7 +152,7 @@ class LabelModel implements JsonSerializable {
         if ($types === NULL) {
             return "";
         } else {
-            return "AND `ls`.`sub` NOT IN ('" . implode("','", $types) . "')";
+            return "`ls`.`sub` NOT IN ('" . implode("','", $types) . "')";
         }
     }
 

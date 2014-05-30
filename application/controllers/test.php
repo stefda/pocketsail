@@ -51,7 +51,11 @@ class Test extends CL_Controller {
         $this->load->model('POIModel');
         $this->load->model('LabelModel');
         
-        print_r(LabelModel::load(34));
+        $bounds = ViewBounds::fromWKT('Bounds(13 43, 17 46)')->toBounds();
+        
+        print_r(LabelModel::loadStaticByBounds($bounds, 10, 5, ['marina', 'gasstation'], TRUE));
+        
+        //print_r(LabelModel::load(34));
         
         //echo POIModel::add(1, 1, 1, 'David', 'Vino', 'berthing', 'marina', new LatLng(44, 16), new Polygon(), []);
         //POIModel::update(454, 100, 100, 'David', 'David', 'mercat', 'tacrem', new LatLng(44, 44), new Polygon(), []);
