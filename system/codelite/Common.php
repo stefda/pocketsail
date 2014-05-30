@@ -4,6 +4,10 @@ if (!defined('SYSPATH')) {
     exit("No direct script access allowed!");
 }
 
+function db() {
+    return CL_MySQLi::get_instance();
+}
+
 function require_library($library) {
     if (!file_exists(APPPATH . 'libraries/' . $library . '.php')) {
         show_error("Requested library does not exist.", "Loader Error");

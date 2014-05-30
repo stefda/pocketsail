@@ -11,12 +11,12 @@ class Bounds {
     protected $n;
     protected $e;
 
-    private function __construct(LatLng $sw, LatLng $ne) {
+    protected function __construct(LatLng $sw, LatLng $ne) {
 
-        $s = $sw->lat;
-        $w = $sw->lng;
-        $n = $ne->lat;
-        $e = $ne->lng;
+        $s = $sw->lat();
+        $w = $sw->lng();
+        $n = $ne->lat();
+        $e = $ne->lng();
 
         // Wrap latitudes around the globe
         $s = Geo::wrapLat($s);

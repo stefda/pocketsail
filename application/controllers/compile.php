@@ -93,11 +93,11 @@ class Compile extends CL_Controller {
 
         foreach ($ctrls as $ctrl) {
 
-            $fp = fopen($fldrs[0][1] . '/' . $ctrl['name'] . '.js', 'w');
+            $fp = fopen($fldrs[0][1] . '/' . $ctrl['name'] . 'Broker.js', 'w');
             $ctrlName = $ctrl['name'];
             $methods = $ctrl['methods'];
 
-            $code = $ctrlName . " = {\n";
+            $code = "var {$ctrlName}Broker = function () {\n};\n\n";
 
             for ($i = 0; $i < count($methods); $i++) {
 
@@ -116,7 +116,7 @@ class Compile extends CL_Controller {
                 $paramsString = $paramsString == '' ? '' : "'+$paramsString+'/";
                 $async = $methods[$i]['async'] == 'TRUE' ? 'true' : 'false';
 
-                $code .= "'$methodName'" . ": function(" . implode(', ', $paramsExt) . ") {\n";
+                $code .= "{$ctrlName}Broker.$methodName = function(" . implode(', ', $paramsExt) . ") {\n";
 
                 $code .= "var o = {};";
                 //$code .= "o.url = '/" . $appPath . "$lcCrtlName/$methodName/$paramsString?ajax&route';\n";
@@ -128,16 +128,13 @@ class Compile extends CL_Controller {
                 $code .= "if (options !== undefined && options.success !== undefined) {o.success = options.success;}\n";
                 $code .= "if (options !== undefined && options.post !== undefined) {o.data = options.post;}\n";
                 $code .= "return ajax(o);\n";
-                $code .= "}";
-                $code .= count($methods) == $i + 1 ? "\n" : ",\n";
+                $code .= "};\n\n";
             }
 
-
-            $code .= "}";
             fwrite($fp, $code);
             fclose($fp);
 
-            echo '<span style="font-family: courier">Writing</span><i> ' . $ctrl['name'] . '.js</i><br />';
+            echo '<span style="font-family: courier">Writing</span><i> ' . $ctrl['name'] . 'Broker.js</i><br />';
         }
 
         echo '<br />Done';

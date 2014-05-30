@@ -1,7 +1,5 @@
 <?php
 
-CL_Loader::get_instance()->library('geo/Bounds');
-
 class LabelModel implements JsonSerializable {
 
     public $id;
@@ -10,11 +8,9 @@ class LabelModel implements JsonSerializable {
     public $sub;
     public $lat;
     public $lng;
-    public $sel; // selected
-    public $dim; // dimmed
-    public $acc; // accented
+    public $type;
 
-    public function __construct($o, $options = []) {
+    public function __construct($o, $type) {
 
         $this->id = $o->id;
         $this->text = $o->text;
@@ -23,140 +19,126 @@ class LabelModel implements JsonSerializable {
         $this->lat = $o->lat;
         $this->lng = $o->lng;
         $this->desc = $o->desc;
-
-        // Options
-        $this->sel = key_exists('sel', $options) ? $options['sel'] : FALSE;
-        $this->dim = key_exists('dim', $options) ? $options['dim'] : FALSE;
-        $this->acc = key_exists('acc', $options) ? $options['acc'] : FALSE;
+        $this->type = $type;
     }
 
-    public static function load_label($id) {
+    /**
+     * @param int $id
+     * @return \LabelModel|null
+     */
+    public static function load($id) {
         $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query("SELECT `ld`.*, `ldd`.`desc` FROM `label_dynamic` AS `ld` LEFT JOIN `label_dynamic_descriptor` AS `ldd` ON `ldd`.`sub` = `ld`.`sub` WHERE `id` = $id");
-        if ($mysql->num_rows($r) == 0) {
-            return null;
+        $r = $mysql->query("SELECT * FROM `label_dynamic` WHERE `id` = $id");
+        if ($mysql->num_rows($r) === 0) {
+            return NULL;
         }
         $o = $mysql->fetch_object($r);
-        //$o->text = $o->name;
-        return new LabelModel($o, ['sel' => TRUE]);
+        return new LabelModel($o, 'selected');
     }
 
-    public static function load_static($zoom, $bbox, $exceptTypes = null, $exceptId = null, $desc = 'static') {
+    /**
+     * @param Bounds $bounds
+     * @param int $zoom
+     * @param int $exceptId
+     * @param string[] $exceptTypes
+     * @param boolean $rawDesc
+     * @return \LabelModel
+     */
+    public static function loadStaticByBounds(Bounds $bounds, $zoom, $exceptId = NULL, $exceptTypes = NULL, $rawDesc = FALSE) {
 
         $labels = [];
+        $boundsClause = self::buildBoundsClause($bounds);
+        $exceptIdClause = self::buildExceptIdClause($exceptId);
+        $exceptTypesClause = self::buildExceptTypesClause($exceptTypes);
+
+        // Initialise default query string
+        $q = "SELECT * FROM `label_static` AS `ls` WHERE $boundsClause $exceptIdClause $exceptTypesClause ORDER BY `order`";
+
+        // Change query string if raw descriptor is required
+        if ($rawDesc) {
+            $q = "SELECT * FROM `label_static` AS `ls` "
+                    . "LEFT JOIN `label_static_descriptor` AS `lsd` ON `lsd`.`sub` = `ls`.`sub` "
+                    . "WHERE `lsd`.`zoom` = $zoom AND `ls`.`zoom` = $zoom AND $boundsClause $exceptIdClause $exceptTypesClause "
+                    . "ORDER BY `order`";
+        }
+
         $mysql = CL_MySQL::get_instance();
-
-        // Prepare query variables
-        $boundsStr = self::build_query_bounds($bbox);
-        $exceptTypesStr = '';
-        $exceptIdStr = '';
-
-        // Load all except given id
-        if ($exceptId != null) {
-            $exceptIdStr = "AND `id` != $exceptId";
-        }
-
-        // Load all except given types
-        if ($exceptTypes != null && count($exceptTypes) > 0) {
-            $exceptTypesStr = "AND `ls`.`sub` NOT IN ('" . implode("','", $exceptTypes) . "')";
-        }
-
-        $query = "SELECT `ls`.* FROM `label_static` AS `ls` WHERE `zoom` = $zoom AND $boundsStr $exceptIdStr $exceptTypesStr ORDER BY `order`";
-        // If descriptors should be dynamic
-        if ($desc === 'dynamic' || $desc === 'poi') {
-            $query = "SELECT `ls`.`id`, `ls`.`text`, `ls`.`cat`, `ls`.`sub`, `ls`.`lat`, `ls`.`lng`, `lsd`.`desc` FROM `label_static` AS `ls` LEFT JOIN `label_static_descriptor` AS `lsd` ON `lsd`.`sub` = `ls`.`sub` WHERE `lsd`.`zoom` = $zoom AND `ls`.`zoom` = $zoom AND $boundsStr $exceptIdStr $exceptTypesStr ORDER BY `order`";
-        }
-        $r = $mysql->query($query);
+        $r = $mysql->query($q);
 
         while ($o = $mysql->fetch_object($r)) {
-            $labels[] = new LabelModel($o, ['dim' => $desc === 'dynamic']);
+            $labels[] = new LabelModel($o, 'static');
         }
+
         return $labels;
     }
 
-    public static function load_static_by_types($zoom, $bbox, $types, $exceptId = null) {
-
-        if (count($types) == 0) {
-            return [];
-        }
+    /**
+     * @param Bounds $bounds
+     * @param string[] $types
+     * @param int $exceptId
+     * @return \LabelModel
+     */
+    public static function loadDynamicByBounds(Bounds $bounds, $types, $exceptId = NULL) {
 
         $labels = [];
-        $mysql = CL_MySQL::get_instance();
-        // Prepare query variables
-        $boundsStr = self::build_query_bounds($bbox);
-        $typesStr = " AND `ls`.`sub` IN ('" . implode("','", $types) . "')";
-        $exceptIdStr = '';
-        // Load all except given id
-        if ($exceptId != null) {
-            $exceptIdStr = "AND `id` != $exceptId";
-        }
+        $boundsClause = self::buildBoundsClause($bounds);
+        $typesClause = "AND `ld`.`sub` IN ('" . implode("','", $types) . "')";
+        $exceptIdClause = self::buildExceptIdClause($exceptId);
 
-        $query = "SELECT `ls`.`id`, `ls`.`text`, `ls`.`cat`, `ls`.`sub`, `ls`.`lat`, `ls`.`lng`, `lsd`.`desc` FROM `label_static` AS `ls` LEFT JOIN `label_static_descriptor` AS `lsd` ON `lsd`.`sub` = `ls`.`sub` WHERE `lsd`.`zoom` = $zoom AND `ls`.`zoom` = $zoom AND $boundsStr $typesStr $exceptIdStr ORDER BY `order`";
-        $r = $mysql->query($query);
+        $q = "SELECT * FROM `label_dynamic` AS `ld` "
+                . "LEFT JOIN `label_dynamic_descriptor` AS `ldd` ON `ldd`.`sub` = `ld`.`sub` "
+                . "WHERE $boundsClause $typesClause $exceptIdClause "
+                . "ORDER BY `rank`";
+
+        $mysql = CL_MySQL::get_instance();
+        $r = $mysql->query($q);
 
         while ($o = $mysql->fetch_object($r)) {
-            $labels[] = new LabelModel($o, ['dim' => TRUE]);
+            $labels[] = new LabelModel($o, 'dynamic');
         }
+
         return $labels;
     }
 
-    public static function load_dynamic($bbox, $types, $exceptId = null) {
+    private static function buildBoundsClause(Bounds $bounds) {
 
-        $labels = [];
-        $mysql = CL_MySQL::get_instance();
-        // Prepare query variables
-        $boundsStr = self::build_query_bounds($bbox);
-        $typesStr = " AND `ld`.`sub` IN ('" . implode("','", $types) . "')";
-        $exceptIdStr = '';
+        $s = $bounds->s();
+        $w = $bounds->w();
+        $n = $bounds->n();
+        $e = $bounds->e();
 
-        // Load all except given id
-        if ($exceptId != null) {
-            $exceptIdStr = "AND `id` != $exceptId";
-        }
-
-        $query = "SELECT *, `ldd`.`desc` FROM `label_dynamic` AS `ld` LEFT JOIN `label_dynamic_descriptor` AS `ldd` ON `ldd`.`sub` = `ld`.`sub`  WHERE $boundsStr $typesStr $exceptIdStr ORDER BY `rank` DESC";
-        $r = $mysql->query($query);
-
-        while ($o = $mysql->fetch_object($r)) {
-            $labels[] = new LabelModel($o, ['acc' => TRUE]);
-        }
-        return $labels;
-    }
-
-    public static function get_mcz($zoom, $bounds, $types) {
-
-        $sql = CL_MySQL::get_instance();
-        $sqlTypes = "`sub` IN ('" . implode("','", $types) . "')";
-
-        for ($newZoom = $zoom; $newZoom >= 0; $newZoom--) {
-            $sqlBounds = self::build_query_bounds($bounds);
-            $r = $sql->query("SELECT * FROM `label_dynamic` WHERE $sqlBounds AND $sqlTypes");
-            if ($sql->num_rows($r) > 0) {
-                break;
-            }
-            $bounds->zoom_out();
-        }
-        return $newZoom;
-    }
-
-    private static function build_query_bounds($bbox) {
-        $boundsStr = '';
-        if ($bbox->e > $bbox->w) {
-            $boundsStr = "`lat` < $bbox->n AND `lat` > $bbox->s AND `lng` < $bbox->e AND `lng` > $bbox->w";
+        if ($w > $e) {
+            return "(`lat` < $n AND `lat` > $s AND (`lng` < $e OR `lng` > $w))";
         } else {
-            $boundsStr = "`lat` < $bbox->n AND `lat` > $bbox->s AND (`lng` < $bbox->e OR `lng` > $bbox->w)";
+            return "(`lat` < $n AND `lat` > $s AND `lng` < $e AND `lng` > $w)";
         }
-        return $boundsStr;
+    }
+
+    private static function buildExceptIdClause($id) {
+        if ($id === NULL) {
+            return "";
+        } else {
+            return "AND `id` != $id";
+        }
+    }
+
+    private static function buildExceptTypesClause($types) {
+        if ($types === NULL) {
+            return "";
+        } else {
+            return "AND `ls`.`sub` NOT IN ('" . implode("','", $types) . "')";
+        }
     }
 
     public function jsonSerialize() {
         return [
             'id' => $this->id,
-            'name' => $this->text,
+            'text' => $this->text,
             'cat' => $this->cat,
             'sub' => $this->sub,
-            'latLng' => (new LatLng($this->lat, $this->lng))->serialize(),
-            'desc' => $this->desc
+            'lat' => $this->lat,
+            'lng' => $this->lng,
+            'type' => $this->type
         ];
     }
 

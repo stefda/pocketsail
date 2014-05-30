@@ -4,8 +4,6 @@ function Geo() {
 }
 
 /**
- * Wraps latitudes greater than 90° or smaller than -90° around the globe.
- * 
  * @param {double} lat
  * @returns {double}
  */
@@ -15,8 +13,6 @@ Geo.wrapLat = function(lat) {
 };
 
 /**
- * Wraps longitudes greater than 180° or smaller than -180° around the globe.
- * 
  * @param {double} lng
  * @returns {double}
  */

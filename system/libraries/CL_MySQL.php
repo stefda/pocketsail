@@ -7,6 +7,7 @@ class CL_MySQL {
 
     private static $instance = NULL;
     private $config;
+
     /**
      * @var mysqli
      */
@@ -89,8 +90,6 @@ class CL_MySQL {
                 $valuesSQL .= ')';
             }
         }
-//        echo "INS ERT INTO `$table` $keysSQL $valuesSQL";
-//        exit();
         return $this->connection->query("INSERT INTO `$table` $keysSQL $valuesSQL");
     }
 

@@ -7,7 +7,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
     public $n;
     public $e;
 
-    private function __construct($sw, $ne) {
+    protected function __construct($sw, $ne) {
         $this->s = $sw->lat();
         $this->w = $sw->lng();
         $this->n = $ne->lat();
@@ -53,7 +53,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
      */
     public static function fromPolygon(Polygon $polygon) {
 
-        $points = $polygon->points;
+        $points = $polygon->points();
 
         // Initialise extremes with first point's coordinates
         $n = $points[0]->y();
@@ -70,7 +70,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
         }
 
         // Instantiate ViewBounds accordingly, then return
-        return new ViewBounds(new LatLng($n, $e), new LatLng($s, $w));
+        return new ViewBounds(new LatLng($s, $w), new LatLng($n, $e));
     }
 
     /**
@@ -78,14 +78,14 @@ class ViewBounds extends Bounds implements JsonSerializable {
      */
     public function getCenter() {
 
-        // Compute north-south and east-west differences
-        $nsDiff = $this->n - $this->s;
-        $ewDiff = $this->e > $this->w ?
-                $this->e - $this->w : 360 - ($this->w - $this->e);
+        $yN = Geo::mercatorLat($this->n);
+        $yS = Geo::mercatorLat($this->s);
+        $yDiff = $yN - $yS;
+        $lat = Geo::mercatorLatInv($yN - $yDiff / 2);
 
-        // Compute centre's coordinates, wrap around the globe and return
-        $lat = Geo::wrapLat($this->n - $nsDiff / 2);
-        $lng = Geo::wrapLng($this->e - $ewDiff / 2);
+        $ewDiff = $this->e - $this->w;
+        $lng = $this->e - $ewDiff / 2;
+
         return new LatLng($lat, $lng);
     }
 
@@ -119,8 +119,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
         $zoomFact = 1 - 1 / pow(2, $zoomDiff);
 
         // Compute latitude difference between east-west extremities
-        $lngDiff = $this->e > $this->w ?
-                $this->e - $this->w : 360 - ($this->w - $this->e);
+        $lngDiff = $this->e - $this->w;
         // Compute new east-west extremities
         $this->e -= $lngDiff / 2 * $zoomFact;
         $this->w += $lngDiff / 2 * $zoomFact;
@@ -154,23 +153,24 @@ class ViewBounds extends Bounds implements JsonSerializable {
      */
     public function fitBounds(ViewBounds $bounds, &$zoom = NULL) {
 
-        // Project this bounds' extreme latitudes onto square
+        // Project this bounds' north and south latitudes using mercator
         $aN = Geo::mercatorLat($this->n);
         $aS = Geo::mercatorLat($this->s);
         $aLatDiff = $aN - $aS;
-        // Project given bounds' extreme latitudes onto square
-        $bN = Geo::mercatorLng($bounds->n());
-        $bS = Geo::mercatorLng($bounds->s());
+        // Do the same with given bounds
+        $bN = Geo::mercatorLat($bounds->n());
+        $bS = Geo::mercatorLat($bounds->s());
         $bLatDiff = $bN - $bS;
         // Compute meridian zoom difference
         $latZoomDiff = floor((log($aLatDiff) - log($bLatDiff)) / log(2));
 
+        // Compute parallel differences for this and given bounds
         $aLngDiff = $this->e - $this->w;
         $bLngDiff = $bounds->e() - $bounds->w();
         // Compute parallel zoom difference
         $lngZoomDiff = floor((log($aLngDiff) - log($bLngDiff)) / log(2));
 
-        // Change zoom using smaller computed zoom difference
+        // Change zoom using smaller of the two computed zoom differences
         $zoomDiff = min($latZoomDiff, $lngZoomDiff);
         $this->changeZoom($zoomDiff);
 
@@ -184,7 +184,7 @@ class ViewBounds extends Bounds implements JsonSerializable {
      * @return Bounds
      */
     public function toBounds() {
-        return new Bounds(new LatLng($this->n, $this->e), new LatLng($this->s, $this->w));
+        return new Bounds(new LatLng($this->s, $this->w), new LatLng($this->n, $this->e));
     }
 
     public function toWKT() {

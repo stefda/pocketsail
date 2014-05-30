@@ -12,8 +12,8 @@ class MySQLStatement {
     public function bind_param($params) {
         $types = '';
         $vars = [];
-        foreach ($params AS $param) {
-            switch (gettype($param)) {
+        for ($i = 0; $i < count($params); $i++) {
+            switch (gettype($params[$i])) {
                 case 'integer':
                 case 'boolean':
                     $types .= 'i';
@@ -24,12 +24,13 @@ class MySQLStatement {
                 case 'double':
                     $types .= 'd';
                     break;
+                case 'NULL':
+                    $types .= 'b';
+                    break;
             }
-            $vars[] = &$param;
+            $vars[] = &$params[$i];
         }
         array_unshift($vars, $types);
-        print_r($vars);
-        exit();
         return call_user_func_array([$this->stmt, 'bind_param'], $vars);
     }
 
@@ -57,6 +58,10 @@ class MySQLStatement {
             return FALSE;
         }
         return $this->row;
+    }
+    
+    public function close() {
+        $this->stmt->close();
     }
 
 }

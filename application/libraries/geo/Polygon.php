@@ -49,7 +49,7 @@ class Polygon implements JsonSerializable {
         // Finally, instantiate and return new, shiny polygon
         return new Polygon($points);
     }
-    
+
     /**
      * @return array[Point]
      */
@@ -79,6 +79,9 @@ class Polygon implements JsonSerializable {
      * @return string
      */
     public function toWKT() {
+        if (count($this->points) === 0) {
+            return "NULL";
+        }
         $str = "POLYGON((";
         for ($i = 0; $i < count($this->points); $i++) {
             $str .= $this->points[$i]->x() . " " . $this->points[$i]->y();
