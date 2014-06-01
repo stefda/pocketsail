@@ -1,8 +1,8 @@
 
-function Label(id, name, cat, sub, latLng, desc, shapes, bShape) {
+function Label(id, text, cat, sub, latLng, desc, shapes, bShape) {
 
     this.id = id;
-    this.name = name;
+    this.text = text;
     this.cat = cat;
     this.sub = sub;
     this.latLng = latLng;
@@ -100,27 +100,27 @@ function Label(id, name, cat, sub, latLng, desc, shapes, bShape) {
     };
 }
 
-Label.deserialize = function(sLabel, zoom, lType) {
+Label.deserialize = function(label, zoom) {
 
-    var id = sLabel.id;
-    var name = sLabel.name;
-    var cat = sLabel.cat;
-    var sub = sLabel.sub;
-    var latLng = LatLng.deserialize(sLabel.latLng);
-    var desc = LabelDescriptor.fromString(sLabel.desc);
+    var id = label.id;
+    var text = label.text;
+    var cat = label.cat;
+    var sub = label.sub;
+    var latLng = LatLng.fromWKT(label.latLng);
+    var desc = LabelDescriptor.fromString(label.desc);
 
-    if (lType === 'static') {
+    if (label.type === 'static') {
         var shapes = LabelShape.buildShapes(desc);
-        return new Label(id, name, cat, sub, latLng, desc, shapes, null);
+        return new Label(id, text, cat, sub, latLng, desc, shapes, null);
     }
 
     var pos = Projector.mercator(latLng, zoom);
-    var shapes = LabelShape.buildShapes(desc, name, pos);
+    var shapes = LabelShape.buildShapes(desc, text, pos);
     var bShape = LabelShape.buildBShape(shapes);
     var planeWidth = Math.pow(2, zoom) * 256;
     for (var i = 0; i < shapes.length; i++) {
         shapes[i].wrapAroundPlane(planeWidth);
     }
     bShape.wrapAroundPlane(planeWidth);
-    return new Label(id, name, cat, sub, latLng, desc, shapes, bShape);
+    return new Label(id, text, cat, sub, latLng, desc, shapes, bShape);
 };

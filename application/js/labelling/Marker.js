@@ -1,14 +1,14 @@
 function Marker(o) {
 
-    this.mapManager = o.mapManager;
+    this.map = o.map;
     this.label = o.label;
     this.id = this.label.id;
-    this.name = o.label.name;
+    this.text = o.label.text;
     this.latLng = this.label.latLng.toGoogleLatLng();
     this.desc = o.label.getDescriptor();
 
     this.div_ = null;
-    this.setMap(this.mapManager.map);
+    this.setMap(this.map.googleMap);
 }
 
 Marker.prototype = new google.maps.OverlayView();
@@ -84,7 +84,7 @@ Marker.prototype.buildText = function() {
     var spc = this.desc.getSpacing();
 
     text.className = 'text';
-    text.innerHTML = this.name;
+    text.innerHTML = this.text;
     text.style.position = 'absolute';
     text.style.fontSize = th + 'px';
     text.style.lineHeight = th + 'px';

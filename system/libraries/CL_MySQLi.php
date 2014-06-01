@@ -15,10 +15,12 @@ function update($mysql) {
 
 // Constants
 define('EQ', '=');
+define('NE', '!=');
 define('GT', '>');
 define('LT', '<');
 define('IS', 'IS');
 define('IN', 'IN');
+define('NOT_IN', 'NOT IN');
 define('GEOM_FROM_TEXT', 'GeomFromText');
 define('AS_TEXT', 'AsText');
 

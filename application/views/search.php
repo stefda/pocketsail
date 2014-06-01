@@ -1,8 +1,11 @@
 <html>
     <head>
         <script src="/application/js/jquery/jquery.js"></script>
+        <script src="/application/js/jquery/ajax.js"></script>
         <script src="/application/js/jquery/jquery-ui.js"></script>
+        <script src="/application/js/controllers/APIBroker.js"></script>
         <link type="text/css" rel="stylesheet" href="/application/js/jquery/ui/custom-theme/jquery-ui.css" />
+
         <style>
             .ui-autocomplete.ui-menu { padding: 0; font-family: Arial; font-size: 14px; opacity: 1; }
             .ui-autocomplete.ui-menu .ui-menu-item a { padding: 5px 7px; line-height: 1.2em; }
@@ -24,35 +27,54 @@
             $(function() {
 
                 $('#searchInput').autocomplete({
-                    source: "/test/search",
+                    source: "/api/suggest",
                     appendTo: '#suggestList',
+                    position: {my: "left top-1px"},
+                    // Define action on user select
                     select: function(event, ui) {
-                        console.log(ui);
+
+                        var poiBrief = ui.item.poi;
+                        var types = ui.item.types;
+
+                        var poiId = poiBrief === null ? 0 : poiBrief.id;
+                        var types = types === null ? [] : types;
+
+                        // Do call Map.loadData
+                        console.log(poiId, types);
+
+                        APIBroker.loadData({
+                            post: {
+                                vBounds: 'Bounds(13 35, 17 37)',
+                                zoom: 10,
+                                poiId: poiId,
+                                types: types,
+                                flags: ['panToPoi', 'zoomToTypes', 'poiInfo', 'poiCard']
+                            },
+                            success: function(res) {
+                                console.log(res);
+                            }
+                        })
                     },
+                    // When suggest menu opens
                     open: function(event, ui) {
                         $("#suggestList ul").append('<li class="ui-menu-item" role="presentation"><a href="/test/fulltext?term=' + $(this).val() + '" class="fulltextButton"><div>See more results &raquo;</div></a></li>');
-                    },
-                    focus: function(event, ui) {
-                    },
-                    position: {
-                        my: "left top-1px"
                     }
                 }).data("ui-autocomplete")._renderItem = renderItem;
+
                 function renderItem(ul, item) {
 
                     var types = item.types;
                     var label = item.label;
                     var poi = item.poi;
                     var place = '';
+
                     if (poi !== null) {
-                        place = (poi.near !== null ? poi.near + ', ' : '') + (poi.country !== null ? poi.country : '');
-                        //poi.name.toLowerCase().indexOf(poi.sub) === -1 ? poi.subName.toLowerCase() + ' near ' : ''
+                        place = (poi.nearName !== null ? poi.nearName + ', ' : '') + (poi.countryName !== null ? poi.countryName : '');
                     }
 
                     if (types !== null) {
                         if (poi !== null) {
                             return $('<li>')
-                                    //.append('<a><div class="sub">' + poi.subName + '</div><span class="label">' + label + '</span><span class="place"> ' + place + '</span></a>')
                                     .append('<a><div class="sub">' + poi.subName + '</div><div class="label">' + label + '</div><div class="place">' + place + '</div></a>')
                                     .appendTo(ul);
                         }

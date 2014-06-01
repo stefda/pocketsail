@@ -12,6 +12,7 @@ class CL_MySQLiSelectQuery {
     private $lastCommand;
     private $lastJoinAlias;
     private $order;
+    private $group;
     private $useTableName;
 
     public function __construct(CL_MySQLi $mysql) {
@@ -24,6 +25,7 @@ class CL_MySQLiSelectQuery {
         $this->condsBuffer = [];
         $this->lastCommand = NULL;
         $this->order = "";
+        $this->group = "";
         $this->lastJoinAlias = NULL;
     }
 
@@ -176,6 +178,11 @@ class CL_MySQLiSelectQuery {
         $this->order = $col;
         return $this;
     }
+    
+    public function groupBy($col) {
+        $this->group = $col;
+        return $this;
+    }
 
     public function prepareValue($value) {
         switch (gettype($value)) {
@@ -187,6 +194,9 @@ class CL_MySQLiSelectQuery {
                 $value = 'NULL';
                 break;
             case 'array':
+                if (count($value) === 0) {
+                    return "('')";
+                }
                 array_walk($value, function(&$item) {
                     $item = $this->prepareValue($item);
                 });
@@ -214,6 +224,9 @@ class CL_MySQLiSelectQuery {
         $query .= " WHERE " . implode(" ", $this->condsBuffer);
         if ($this->order !== "") {
             $query .= " ORDER BY `$this->order`";
+        }
+        if ($this->group !== "") {
+            $query .= " GROUP BY `$this->group`";
         }
         return $query;
     }

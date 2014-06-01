@@ -103,7 +103,7 @@ class POIModel implements JsonSerializable {
                 ->leftJoin('poi_type')->alias('poiType')->on('id', 'sub')
                 ->where('id', 'poi', EQ, $id)
                 ->exec();
-        
+
         if ($r->numRows() == 0) {
             return NULL;
         }
@@ -217,7 +217,14 @@ class POIModel implements JsonSerializable {
         return $this->o->sub;
     }
 
-    public function latlng() {
+    public function subName() {
+        return $this->o->subName;
+    }
+
+    /**
+     * @return LatLng
+     */
+    public function latLng() {
         return LatLng::fromWKT($this->o->latLngWKT);
     }
 
@@ -228,31 +235,43 @@ class POIModel implements JsonSerializable {
         return NULL;
     }
 
+    public function timestamp() {
+        return $this->o->timestamp;
+    }
+
     public function features() {
         return json_decode($this->o->features);
     }
 
     public function info() {
-        $info = new stdClass();
-        $info->id = $this->o->id;
-        $info->nearId = $this->o->nearId;
-        $info->countryId = $this->o->countryId;
-        $info->name = $this->o->name;
-        $info->label = $this->o->label;
-        $info->nearName = $this->o->nearName;
-        $info->countryName = $this->o->countryName;
-        $info->cat = $this->o->cat;
-        $info->sub = $this->o->sub;
-        $info->subName = $this->o->subName;
-        $info->latLng = $this->latlng();
-        $info->border = $this->border();
-        $info->features = $this->features();
-        $info->timestamp = $this->o->timestamp;
-        return $info;
+        return new POIInfo($this);
     }
 
     public function jsonSerialize() {
         return $this->info();
+    }
+
+}
+
+class POIInfo implements JsonSerializable {
+
+    private $poi;
+
+    public function __construct(POIModel $poi) {
+        $this->poi = $poi;
+    }
+
+    public function jsonSerialize() {
+        return [
+            'id' => $this->poi->id(),
+            'name' => $this->poi->name(),
+            'label' => $this->poi->label(),
+            'nearName' => $this->poi->nearName(),
+            'countryName' => $this->poi->countryName(),
+            'subName' => $this->poi->subName(),
+            'latLng' => $this->poi->latLng(),
+            'timestamp' => $this->poi->timestamp()
+        ];
     }
 
 }

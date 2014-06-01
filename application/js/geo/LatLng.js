@@ -5,6 +5,14 @@ var LatLng = function(lat, lng) {
     this.lng = lng;
 
     /**
+     * @param {LatLng} latLng
+     * @returns {Boolean}
+     */
+    this.equals = function(latLng) {
+        return this.lat === latLng.lat && this.lng === latLng.lng;
+    };
+
+    /**
      * @returns {google.maps.LatLng}
      */
     this.toGoogleLatLng = function() {
