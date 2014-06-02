@@ -72,7 +72,7 @@ function Map(canvas, center, zoom) {
     };
 
     this.loadData = function() {
-        MapBroker.loadData({
+        APIBroker.loadData({
             post: {
                 vBounds: ViewBounds.fromMap(this.googleMap).toWKT(),
                 zoom: this.getZoom(),
@@ -94,7 +94,7 @@ function Map(canvas, center, zoom) {
             var center = LatLng.fromWKT(res.center);
             var zoom = res.zoom;
             this.ignoreIdle = true;
-            this.resize(center, zoom);
+            this.panTo(center, zoom);
         }
 
         var labels = res.labels;
@@ -138,7 +138,7 @@ function Map(canvas, center, zoom) {
      * @param {LatLng} center
      * @param {Number} zoom
      */
-    this.pan = function(center, zoom) {
+    this.panTo = function(center, zoom) {
         this.setCenter(center);
         this.setZoom(zoom);
     };
@@ -151,7 +151,13 @@ function Map(canvas, center, zoom) {
         // Create new map
         this.googleMap = new google.maps.Map(document.getElementById(canvas), {
             zoom: zoom,
-            center: center.toGoogleLatLng()
+            center: center.toGoogleLatLng(),
+            panControl: false,
+            streetViewControl: false,
+            zoomControlOptions: {
+                position: google.maps.ControlPosition.RIGHT_BOTTOM,
+                style: google.maps.ZoomControlStyle.SMALL
+            }
         });
 
         // Set map to custom style

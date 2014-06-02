@@ -19,10 +19,14 @@ class API extends CL_Controller {
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
 
         $keywords = [
-            'berthing' => ["berthing"],
-            'anchoring' => ["anchoring"],
+            'berthing' => ["marina", "mooring"],
+            'anchoring' => ["anchorage", "buoys"],
             'marina' => ["marina"],
             'marinas' => ["marina"],
+            'anchorage' => ["anchorage"],
+            'anchorages' => ["anchorage"],
+            'mooring buoys' => ["buoys"],
+            'buoys' => ["buoys"],
             'restaurant' => ["restaurant"],
             'restaurants' => ["restaurant"],
             'bar' => ["bar"],
@@ -30,6 +34,11 @@ class API extends CL_Controller {
             'restaurants and bars' => ["restaurant", "bar"],
             'gas station' => ["gasstation"],
             'gas stations' => ["gasstation"],
+            'supermarket' => ["supermarket"],
+            'supermarkets' => ["supermarket"],
+            'cashpoint' => ["cashpoint"],
+            'cashpoints' => ["cashpoint"],
+            'shopping' => ["supermarket", "cashpoint"]
         ];
 
         $solr = SolrService::get_instance();
@@ -80,10 +89,12 @@ class API extends CL_Controller {
             'flags' => []
         ];
 
-        if ($poiId !== 0 && (in_array('poiInfo', $flags) || in_array('poiCard', $flags) || in_array('panToPoi', $flags))) {
+        if ($poiId !== 0) {
 
             $poi = POIModel::load($poiId);
+            $res['labels'][] = LabelModel::loadDynamic($poiId);
             $res['poi'] = [];
+            addFlag($res, "doLabelling");
 
             // Load poi info
             if (in_array('poiInfo', $flags)) {
@@ -93,7 +104,7 @@ class API extends CL_Controller {
             // Load poi card
             if (in_array('poiCard', $flags)) {
                 $res['poi']['card'] = "<div>Card</div>";
-                $res['flags'][] = "showCard";
+                addFlag($res, "showCard");
             }
 
             // Pan to poi and fit border or adjust zoom accordingly
@@ -105,9 +116,9 @@ class API extends CL_Controller {
                     $zoom = 14;
                 } else {
                     $borderBounds = ViewBounds::fromPolygon($border);
-                    $vBounds->fitBounds($borderBounds);
+                    $vBounds->fitBounds($borderBounds, $zoom);
                 }
-                $res['flags'][] = "panToCenter";
+                addFlag($res, "panToCenter");
             }
         }
 
@@ -122,16 +133,16 @@ class API extends CL_Controller {
                     in_array('panToCenter', $res['flags']) ? null : $res['flags'][] = 'panToCenter';
                 }
             }
-            $res['labels'] = LabelModel::loadDynamicByBounds($bounds, $types, $poiId);
-            $res['flags'][] = "doLabelling";
+            $res['labels'] = array_merge($res['labels'], LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
+            addFlag($res, "doLabelling");
         }
 
-        if ($types !== NULL && count($types) > 0) {
+        if ($poiId !== 0 || $types !== NULL && count($types) > 0) {
             $bounds = $vBounds->toBounds();
-            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticDynamicByBounds($bounds, $zoom, 0, $types));
+            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticDynamicByBounds($bounds, $zoom, $poiId, $types));
         } else {
             $bounds = $vBounds->toBounds();
-            $res['labels'] = LabelModel::loadStaticByBounds($bounds, $zoom, $poiId);
+            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticByBounds($bounds, $zoom, $poiId));
         }
 
         $res['center'] = $vBounds->getCenter()->toWKT();
@@ -140,4 +151,8 @@ class API extends CL_Controller {
         return $res;
     }
 
+}
+
+function addFlag(&$res, $flag) {
+    in_array($flag, $res['flags']) ? null : $res['flags'][] = $flag;
 }

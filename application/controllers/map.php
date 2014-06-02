@@ -75,10 +75,7 @@ class Map extends CL_Controller {
                     $zoom = 14;
                 } else {
                     $borderBounds = ViewBounds::fromPolygon($border);
-                    print_r($borderBounds);
-                    //$vBounds->fitBounds($borderBounds, $zoom);
-                    $vBounds->fitBounds($borderBounds);
-                    print_r($vBounds);
+                    $vBounds->fitBounds($borderBounds, $zoom);
                 }
                 $res['flags'][] = "panToCenter";
             }

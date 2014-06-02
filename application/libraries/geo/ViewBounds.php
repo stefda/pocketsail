@@ -153,6 +153,9 @@ class ViewBounds extends Bounds implements JsonSerializable {
      */
     public function fitBounds(ViewBounds $bounds, &$zoom = NULL) {
 
+        // Set centre to given bounds centre
+        $this->setCenter($bounds->getCenter());
+
         // Project this bounds' north and south latitudes using mercator
         $aN = Geo::mercatorLat($this->n);
         $aS = Geo::mercatorLat($this->s);

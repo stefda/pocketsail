@@ -20,8 +20,9 @@ class Search {
         if (($res = $this->check_full_type($term)) !== FALSE) {
             $poiBrief = NULL;
             $types = $res["types"];
+            $value = $res["keyword"]; // May be unnecessary
             $label = $res["keyword"];
-            $items[] = new SearchResult($poiBrief, $types, $label);
+            $items[] = new SearchResult($poiBrief, $types, $value, $label);
         }
 
         // Do partial type search
@@ -32,8 +33,9 @@ class Search {
                 foreach ($docs AS $doc) {
                     $poiBrief = new POIBrief($doc);
                     $types = $res['types'];
+                    $value = $res["keyword"] . " near " . $doc->name . " " . $doc->subName;
                     $label = $res["keyword"] . " near " . $doc->name;
-                    $items[] = new SearchResult($poiBrief, $types, $label);
+                    $items[] = new SearchResult($poiBrief, $types, $value, $label);
                 }
             }
         }
@@ -45,10 +47,14 @@ class Search {
             foreach ($docs AS $doc) {
                 $poiBrief = new POIBrief($doc);
                 $types = NULL;
+                $value = $doc->name . " " . $doc->subName;
                 $label = $doc->name;
-                $items[] = new SearchResult($poiBrief, $types, $label);
+                $items[] = new SearchResult($poiBrief, $types, $value, $label);
             }
         }
+
+        // Append fulltext-search item
+        $items[] = new SearchResult(NULL, [], $term, $term, TRUE);
 
         return $items;
     }
@@ -105,19 +111,25 @@ class SearchResult implements JsonSerializable {
 
     private $poi;
     private $types;
+    private $value;
     private $label;
+    private $fulltext;
 
-    public function __construct($poi, $types, $label) {
+    public function __construct($poi, $types, $value, $label, $fulltext = FALSE) {
         $this->poi = $poi;
         $this->types = $types;
+        $this->value = $value;
         $this->label = $label;
+        $this->fulltext = $fulltext;
     }
 
     public function jsonSerialize() {
         return [
             'poi' => $this->poi,
             'types' => $this->types,
-            'label' => $this->label
+            'value' => $this->value,
+            'label' => $this->label,
+            'fulltext' => $this->fulltext
         ];
     }
 
