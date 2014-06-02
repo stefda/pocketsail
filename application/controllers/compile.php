@@ -17,13 +17,13 @@ class Compile extends CL_Controller {
         if (key_exists('app', $_GET)) {
             $fldrs[0] = array(
                 APPPATH . '/apps/' . $_GET['app'] . '/controllers',
-                APPPATH . '/apps/' . $_GET['app'] . '/js/controllers'
+                APPPATH . '/apps/' . $_GET['app'] . '/js/brokers'
             );
             $appPath = 'app/' . $_GET['app'] . '/';
         } else {
             $fldrs[0] = array(
                 APPPATH . 'controllers',
-                APPPATH . 'js/controllers'
+                APPPATH . 'js/brokers'
             );
         }
 

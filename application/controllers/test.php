@@ -8,9 +8,12 @@ class Test extends CL_Controller {
 
     function index() {
         $this->load->library('geo/*');
-        $this->load->model('LabelModel');
-        $bounds = ViewBounds::fromWKT('Bounds(-180 30,180 60)')->toBounds();
-        var_dump(LabelModel::typesWithinBounds($bounds, ['marina', 'gasstation', 'island']));
+        $this->load->model('POIModel');
+        $poi = POIModel::load(1);
+        $attrs = $poi->attributes();
+        $this->assign('poi', $poi);
+        $this->assign('attrs', $attrs);
+        $this->load->view('berthing');
     }
 
     function main() {

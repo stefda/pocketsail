@@ -18,10 +18,10 @@ class POIModel implements JsonSerializable {
      * @param string $sub
      * @param LatLng $latLng
      * @param Polygon $border
-     * @param string[] $features
+     * @param string[] $attrs
      * @return int
      */
-    public static function add($userId, $nearId, $countryId, $name, $label, $cat, $sub, LatLng $latLng, Polygon $border, $features) {
+    public static function add($userId, $nearId, $countryId, $name, $label, $cat, $sub, LatLng $latLng, Polygon $border, $attrs) {
 
         $mysql = CL_MySQLi::get_instance();
         $query = insert($mysql)
@@ -35,7 +35,7 @@ class POIModel implements JsonSerializable {
                 ->value('sub', $sub)
                 ->value('latLng', $latLng->toWKT())->op(GEOM_FROM_TEXT)
                 ->value('border', $border->toWKT())->op(GEOM_FROM_TEXT)
-                ->value('features', json_encode($features))
+                ->value('attributes', json_encode($attrs))
                 ->value('status', 'confirmed');
 
         $mysql->query($query);
@@ -52,9 +52,9 @@ class POIModel implements JsonSerializable {
      * @param string $sub
      * @param LatLng $latLng
      * @param Polygon $border
-     * @param string[] $features
+     * @param string[] $attrs
      */
-    public static function update($id, $nearId, $countryId, $name, $label, $cat, $sub, LatLng $latLng, Polygon $border, $features) {
+    public static function update($id, $nearId, $countryId, $name, $label, $cat, $sub, LatLng $latLng, Polygon $border, $attrs) {
         db()->update()
                 ->table('poi')
                 ->set('nearId', $nearId)
@@ -65,7 +65,7 @@ class POIModel implements JsonSerializable {
                 ->set('sub', $sub)
                 ->set('latLng', $latLng->toWKT())->op(GEOM_FROM_TEXT)
                 ->set('border', $border->toWKT())->op(GEOM_FROM_TEXT)
-                ->set('features', json_encode($features))
+                ->set('attributes', json_encode($attrs))
                 ->where('id', EQ, $id)
                 ->exec();
     }
@@ -239,8 +239,8 @@ class POIModel implements JsonSerializable {
         return $this->o->timestamp;
     }
 
-    public function features() {
-        return json_decode($this->o->features);
+    public function attributes() {
+        return json_decode($this->o->attributes);
     }
 
     public function info() {

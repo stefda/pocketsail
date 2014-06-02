@@ -59,6 +59,11 @@ class API extends CL_Controller {
         $this->load->model('POIModel');
         $this->load->model('LabelModel');
 
+        // Helper function to set flags
+        function addFlag(&$res, $flag) {
+            in_array($flag, $res['flags']) ? null : $res['flags'][] = $flag;
+        }
+
         // Required params
         $vBoundsWKT = filter_input(INPUT_POST, 'vBounds', FILTER_SANITIZE_STRING);
         $zoom = filter_input(INPUT_POST, 'zoom', FILTER_VALIDATE_INT);
@@ -151,8 +156,17 @@ class API extends CL_Controller {
         return $res;
     }
 
-}
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    public function addPoi() {
 
-function addFlag(&$res, $flag) {
-    in_array($flag, $res['flags']) ? null : $res['flags'][] = $flag;
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+
+        print_r($attrs);
+    }
+
 }
