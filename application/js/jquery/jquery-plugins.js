@@ -17,13 +17,13 @@ $.fn.multiButton = function(o) {
     $(this).each(function() {
 
         var select = $(this);
+        var multiple = select.prop('multiple');
         var options = select.find('option');
-        var mb = $('<ul class="ps-ui-multibutton"></ul>');
+        var list = $('<ul class="ps-ui-multibutton"></ul>');
 
         select.css('visibility', 'hidden');
-        //select.css('display', 'none');
         select.css('position', 'absolute');
-        select.after(mb);
+        select.after(list);
 
         options.each(function() {
             var option = $(this);
@@ -31,13 +31,29 @@ $.fn.multiButton = function(o) {
             var label = option.text();
             if (label !== '') {
                 var item = $('<a class="ps-ui-multibutton-item' + (option.is(':selected') ? ' ps-ui-selected' : '') + '" selectValue="' + value + '" href="">' + label + '</a>');
-                mb.append(item);
+                list.append(item);
                 item.click(function(e) {
-                    $(this).focus();
-                    var value = $(this).attr('selectValue');
-                    select.val(value);
-                    mb.find('.ps-ui-selected').removeClass('ps-ui-selected');
-                    mb.find('[selectValue=' + value + ']').addClass('ps-ui-selected');
+
+                    var button = $(this);
+                    var value = button.attr('selectValue');
+                    var option = select.find('option[value=' + value + ']');
+
+                    if (multiple) {
+                        if (option.prop('selected')) {
+                            option.prop('selected', false);
+                            button.removeClass('ps-ui-selected');
+                        } else {
+                            option.prop('selected', true);
+                            button.addClass('ps-ui-selected');
+                        }
+                    } else {
+                        var selectedButton = list.find('.ps-ui-selected');
+                        if (!selectedButton.is(button)) {
+                            button.addClass('ps-ui-selected');
+                            selectedButton.removeClass('ps-ui-selected');
+                            select.val(value);
+                        }
+                    }
                     select.change();
                     e.preventDefault();
                 });
@@ -157,7 +173,7 @@ jQuery.fn.select = function() {
                 });
             });
             var pos = $(this).position();
-            wrap.css('top', pos.top - offset - 2);
+            wrap.css('top', pos.top - offset - 1);
             wrap.css('left', pos.left - 9);
             $('html').one('click', function() {
                 wrap.hide();

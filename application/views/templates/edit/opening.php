@@ -7,37 +7,55 @@
 <div class="par">
 
     <h1>
-        Opening Times
+        Open
     </h1>
 
-    <select id="opening" class="attr" name="attr[opening][value]">
-        <option value="na">?</option>
-        <option value="everyday">Every day</option>
-        <option value="somedays">Some days</option>
-    </select>
+    <div class="hasDetail">
 
-    <div id="openingEverydayForm" style="display: none;">
-
-        <select id="everyday" class="attr" name="attr[opening][everyday][value]">
-            <option value="na">?</option>
-            <option value="24h">24h</option>
-            <option value="attimes"></option>
+        <select id="opening" class="attr" name="attrs[opening][value]">
+            <option value="na">Don't know</option>
+            <option value="everyday">Every day</option>
+            <option value="somedays">Some days</option>
         </select>
 
-        <input class="attr everydayTimes" name="attr[opening][everyday][from]" placeholder="From" />
-        - <input class="attr everydayTimes" name="attr[opening][everyday][to]" placeholder="To" />
+        <a class="detailsButton" href="">details</a>
+
+    </div>
+    
+    <div class="details" name="attrs[opening][details]" style="padding-top: 8px; display: none;">
+        <textarea class="attr detailsText" placeholder="Provide any details..."></textarea>
+    </div>
+
+    <div id="openingEverydayForm" style="display: none; margin-top: 10px; border-top: solid 1px #d0d1d2; padding-bottom: 5px;">
+        <div style="border-top: solid 1px #fff; padding-top: 10px;"></div>
+
+        <h2>Specify times</h2>
+
+        <select id="everyday" class="attr" name="attrs[opening][everyday][value]">
+            <option value="na">Not sure</option>
+            <option value="24h">24h</option>
+            <option value="attimes">Fixed times</option>
+        </select>
+
+        <span id="everydayAttimes" style="display: none; margin-left: 10px;">
+            <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][from]" placeholder="From" />
+            - <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][to]" placeholder="To" />
+        </span>
 
     </div>
 
-    <div id="openingSomedaysForm" style="display: none;">
+    <div id="openingSomedaysForm" style="display: none; margin-top: 10px; border-top: solid 1px #d0d1d2; padding-bottom: 5px;">
+        <div style="border-top: solid 1px #fff; padding-top: 10px;"></div>
 
         <table class="openingTimes">
             <? foreach (['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] AS $day): ?>
                 <tr>
-                    <td style="text-align: right; padding: 0 3px;"><?= ucfirst($day) ?></td>
-                    <td><select class="attr somedays" name="attr[opening][somedays][<?= $day ?>][value]"><option value="na">?</option><option value="closed">Closed</option><option value="24h">24h</option><option value="attimes"></option></select></td>
-                    <td style="padding-left: 5px;"><input class="attr somedaysTimes" name="attr[opening][somedays][<?= $day ?>][from]" placeholder="From" /></td>
-                    <td style="padding: 0 3px 0 2px;">- <input class="attr somedaysTimes" name="attr[opening][somedays][<?= $day ?>][to]" placeholder="To" /></td>
+                    <td style="text-align: right; padding: 0 10px;"><?= ucfirst($day) ?></td>
+                    <td><select class="attr somedays" name="attrs[opening][somedays][<?= $day ?>][value]"><option value="na">Not sure</option><option value="closed">Closed</option><option value="24h">24h</option><option value="attimes">Fixed times</option></select></td>
+                    <td style="padding-left: 10px; display: none;">
+                        <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" />
+                        - <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" />
+                    </td>
                 </tr>
             <? endforeach; ?>
         </table>
@@ -65,7 +83,9 @@
         $('#everyday').multiButton({
             select: function(e, ui) {
                 if (ui.item.value !== 'attimes') {
-                    $(this).siblings('.everydayTimes').val('');
+                    $('#everydayAttimes').hide();
+                } else {
+                    $('#everydayAttimes').show();
                 }
             }
         });
@@ -73,7 +93,9 @@
         $('.somedays').multiButton({
             select: function(e, ui) {
                 if (ui.item.value !== 'attimes') {
-                    $(this).closest('tr').find('.somedaysTimes').val('');
+                    $(this).closest('td').next().hide();
+                } else {
+                    $(this).closest('td').next().show();
                 }
             }
         });
@@ -89,21 +111,21 @@
         });
 
         validator.add(function() {
-            function n(name) {
-                name = name.replace(/\]/g, '\\]');
-                name = name.replace(/\[/g, '\\[');
-                var selector = "[name=" + name + "]";
-                return $(selector);
-            }
-            var days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-            for (var i = 0; i < days.length; i++) {
-                var day = days[i];
-                if (n('attr[opening][somedays][' + day + '][value]').val() === 'attimes'
-                        && (n('attr[opening][somedays][' + day + '][from]').val() === '' || n('attr[opening][somedays][' + day + '][to]').val() === '')) {
-                    //console.log('error');
-                    return false;
-                }
-            }
+//            function n(name) {
+//                name = name.replace(/\]/g, '\\]');
+//                name = name.replace(/\[/g, '\\[');
+//                var selector = "[name=" + name + "]";
+//                return $(selector);
+//            }
+//            var days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+//            for (var i = 0; i < days.length; i++) {
+//                var day = days[i];
+//                if (n('attrs[opening][somedays][' + day + '][value]').val() === 'attimes'
+//                        && (n('attrs[opening][somedays][' + day + '][from]').val() === '' || n('attrs[opening][somedays][' + day + '][to]').val() === '')) {
+//                    //console.log('error');
+//                    return false;
+//                }
+//            }
             return true;
         });
     });

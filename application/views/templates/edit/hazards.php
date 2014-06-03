@@ -5,6 +5,6 @@
         Hazards
     </h1>
     
-    <textarea class="attr text" name="attrs[hazards]"><?= @$attrs->hazards ?></textarea>
+    <textarea class="attr text" name="attrs[hazards][details]"><?= @$attrs->hazards ?></textarea>
     
 </div>

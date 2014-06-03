@@ -43,7 +43,7 @@
 
             $(function() {
 
-                $('#test').select();
+                $('#multi').multiButton();
 
                 $('a,input,textarea').focus(function() {
                     $(this).addClass('ps-ui-focus');
@@ -53,7 +53,27 @@
                     $(this).removeClass('ps-ui-focus');
                 });
 
-                $('.text,.detailsText,.smallText').autosize();
+                $('.text,.detailsText,.smallDetailsText,.smallText').autosize();
+
+                $('.detailsButton').click(function(e) {
+                    var elem = $(this).closest('.hasDetail');
+                    if ($(this).hasClass('visible')) {
+                        $(this).removeClass('visible');
+                        elem.next().hide();
+                    } else {
+                        $(this).addClass('visible');
+                        elem.next().show();
+                    }
+                    e.preventDefault();
+                });
+
+                $('.hasDetail').hover(function() {
+                    $(this).find('.detailsButton').css('visibility', 'visible');
+                }, function() {
+                    if (!$(this).next().is(':visible')) {
+                        $(this).find('.detailsButton').css('visibility', 'hidden');
+                    }
+                });
 
                 $('#saveButton').click(function() {
                     console.log(validator.validate());
@@ -78,16 +98,21 @@
         </script>
 
         <style>
-            html, body { font-family: Arial; }
+            html, body { font-family: Arial; background-color: #fff; }
+            body { overflow-y: scroll; }
             a, input, textarea, select { outline: none; font-family: Arial; display: inline-block; margin: 0; }
             input { border: solid 1px #aaa; padding: 5px 7px; font-size: 14px; }
-            h1 { font-size: 14px; margin-bottom: 4px; font-size: 14px; font-weight: bold; color: #555; }
+            h1 { font-size: 14px; margin: 0 0 4px 0; font-size: 14px; font-weight: bold; color: #555; }
             h2 { font-size: 12px; font-weight: normal; display: inline; margin-right: 8px; }
-            .par { margin-bottom: 20px; }
+            .par { margin-bottom: 20px; padding: 8px 12px; background-color: #f7f8f9; width: 615px; border-radius: 3px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
+            textarea { font-size: 13px; border: solid 1px #d0d1d2; }
             .text { width: 600px; height: 36px; resize: none; padding: 5px 7px; line-height: 1.4em; }
             .smallText { width: 300px; height: 18px; resize: none; padding: 5px 7px; line-height: 1.4em; }
             .detailsText { width: 600px; height: 18px; resize: none; padding: 5px 7px; line-height: 1.4em; }
-
+            .smallDetailsText { width: 493px; margin-left: 104px; height: 18px; resize: none; padding: 5px 7px; line-height: 1.4em; }
+            .inputSmall { font-size: 12px; padding: 2px 3px; border: solid 1px #a0a1a2; }
+            a.detailsButton { margin-left: 10px; padding-right: 20px; color: #a0a1a2; font-size: 12px; text-decoration: none; background-image: url('/application/layout/images/details-arrow-right.png'); background-repeat: no-repeat; background-position: 40px 5px; visibility: hidden; }
+            a.detailsButton.visible { background-image: url('/application/layout/images/details-arrow-bottom.png'); background-repeat: no-repeat; background-position: 40px 6px; }
         </style>
 
         <link type="text/css" rel="stylesheet" href="/application/layout/ui.css" />
@@ -101,7 +126,7 @@
                 <h1>
                     Name
                 </h1>
-                <input type="text" name="name" value="<?= $poi->name() ?>" />
+                <input type="text" name="name" value="<?= '' ?>" />
             </div>
 
             <? include_view('templates/edit/berthing'); ?>

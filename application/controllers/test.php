@@ -7,12 +7,12 @@ class Test extends CL_Controller {
     }
 
     function index() {
-        $this->load->library('geo/*');
-        $this->load->model('POIModel');
-        $poi = POIModel::load(13);
-        $attrs = $poi->attributes();
-        $this->assign('poi', $poi);
-        $this->assign('attrs', $attrs);
+//        $this->load->library('geo/*');
+//        $this->load->model('POIModel');
+//        $poi = POIModel::load(12);
+//        $attrs = $poi->attributes();
+        $this->assign('poi', new stdClass());
+        $this->assign('attrs', new stdClass());
         $this->load->view('templates/edit');
     }
     

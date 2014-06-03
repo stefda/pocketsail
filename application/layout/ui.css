@@ -15,8 +15,8 @@ ul.ps-ui-multibutton {
     display: inline-block;
     margin: 0 0 0 1px;
     padding: 0;
-    box-shadow: 0 2px 1px #eee;
-    font-size: 11px;
+    box-shadow: 0 1px 1px #eee;
+    font-size: 12px;
     font-family: Arial;
 }
 
@@ -24,7 +24,7 @@ a.ps-ui-multibutton-item {
     position: relative;
     display: inline-block;
     background-color: #fff;
-    border: solid 1px #bbb;
+    border: solid 1px #d9d9d9;
     padding: 2px 4px;
     margin: 0;
     margin-left: -1px;
@@ -35,7 +35,7 @@ a.ps-ui-multibutton-item {
 
 a.ps-ui-multibutton-item.ps-ui-selected {
     z-index: 99;
-    border-color: #aaa;
+    border-color: #b0b1b2;
     background-color: #f7f8f9;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2) inset;
 }
@@ -50,8 +50,9 @@ a.ps-ui-multibutton-item.ps-ui-focus {
  */
 a.ps-ui-select {
     vertical-align: bottom;
-    line-height: 17px;
-    height: 17px;
+    text-align: left;
+    line-height: 19px;
+    height: 19px;
     display: inline-block;
     font-size: 12px;
     text-decoration: none;
@@ -64,7 +65,7 @@ a.ps-ui-select {
     /*border-radius: 2px;*/
     background-image: url('/application/layout/images/select-arrows.png');
     background-repeat: no-repeat;
-    background-position: top 3px right 4px;
+    background-position: top 4px right 4px;
 }
 
 a.ps-ui-select:hover { border-color: #c0c1c2; background-color: #f0f1f2; }
@@ -73,6 +74,7 @@ a.ps-ui-select:visited { color: #333; }
 a.ps-ui-select.hover { border-color: #c0c1c2; background-color: #f0f1f2; }
 
 ul.ps-ui-select-list {
+    text-align: left;
     position: absolute;
     z-index: 9999;
     list-style: none;
