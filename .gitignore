@@ -2,3 +2,4 @@
 /system/logs/
 /application/config/
 /application/js/controllers/
+/application/js/brokers/
