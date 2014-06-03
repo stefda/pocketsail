@@ -9,11 +9,24 @@ class Test extends CL_Controller {
     function index() {
         $this->load->library('geo/*');
         $this->load->model('POIModel');
-        $poi = POIModel::load(1);
+        $poi = POIModel::load(13);
         $attrs = $poi->attributes();
         $this->assign('poi', $poi);
         $this->assign('attrs', $attrs);
-        $this->load->view('berthing');
+        $this->load->view('templates/edit');
+    }
+    
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    function post() {
+        print_r($_POST);
+    }
+    
+    function select() {
+        $this->load->view('select');
     }
 
     function main() {

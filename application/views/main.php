@@ -8,7 +8,7 @@
         <script src="/application/js/jquery/jquery-ui.js"></script>
         <script src="/application/js/jquery/ajax.js"></script>
 
-        <script src="/application/js/controllers/APIBroker.js"></script>
+        <script src="/application/js/brokers/APIBroker.js"></script>
 
         <script src="/application/js/geo/Geo.js"></script>
         <script src="/application/js/geo/Point.js"></script>

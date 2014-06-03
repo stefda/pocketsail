@@ -13,7 +13,7 @@ class Polygon implements JsonSerializable {
      * @return Polygon|null
      */
     public static function fromWKT($wkt) {
-
+        
         $matches = [];
         $points = [];
 
@@ -23,6 +23,7 @@ class Polygon implements JsonSerializable {
         // Matches array remains empty if nothing is matched
         if (count($matches) == 0) {
             return NULL;
+//            return new Polygon();
         }
 
         // Explode by comma matched coordinates trimmed off of spaces
@@ -36,6 +37,7 @@ class Polygon implements JsonSerializable {
             // Return null if matching fails
             if (count($matches) == 0) {
                 return NULL;
+//                return new Polygon();
             }
             // Instantiate next polygon's point from matched coordinates
             $points[] = new Point($matches[1], $matches[3]);
@@ -44,6 +46,7 @@ class Polygon implements JsonSerializable {
         // Polygon's first and last coordinates must match
         if (!$points[0]->equals($points[count($points) - 1])) {
             return NULL;
+//            return new Polygon();
         }
 
         // Finally, instantiate and return new, shiny polygon

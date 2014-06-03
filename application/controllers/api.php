@@ -163,10 +163,24 @@ class API extends CL_Controller {
      */
     public function addPoi() {
 
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+        
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
         $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
-        print_r($attrs);
+        $poi = POIModel::load($id);
+        $label = $poi->label();
+        $cat = $poi->cat();
+        $sub = $poi->sub();
+        $latLng = LatLng::fromWKT($latLngWKT);
+        $border = $poi->border();
+        $countryId = $poi->countryId();
+        $nearId = $poi->nearId();
+
+        POIModel::update($id, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs);
     }
 
 }

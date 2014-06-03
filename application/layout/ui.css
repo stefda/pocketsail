@@ -1,0 +1,98 @@
+
+/**
+ * General styles
+ */
+.ps-ui-focus {
+    border-color: #5676a2;
+}
+
+/**
+ * MultiButton styles
+ */
+ul.ps-ui-multibutton {
+    list-style: none;
+    list-style-type: none;
+    display: inline-block;
+    margin: 0 0 0 1px;
+    padding: 0;
+    box-shadow: 0 2px 1px #eee;
+    font-size: 11px;
+    font-family: Arial;
+}
+
+a.ps-ui-multibutton-item {
+    position: relative;
+    display: inline-block;
+    background-color: #fff;
+    border: solid 1px #bbb;
+    padding: 2px 4px;
+    margin: 0;
+    margin-left: -1px;
+    cursor: pointer;
+    text-decoration: none;
+    color: #333;
+}
+
+a.ps-ui-multibutton-item.ps-ui-selected {
+    z-index: 99;
+    border-color: #aaa;
+    background-color: #f7f8f9;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2) inset;
+}
+
+a.ps-ui-multibutton-item.ps-ui-focus {
+    z-index: 99;
+    border-color: #666;
+}
+
+/**
+ * Select styles
+ */
+a.ps-ui-select {
+    vertical-align: bottom;
+    line-height: 17px;
+    height: 17px;
+    display: inline-block;
+    font-size: 12px;
+    text-decoration: none;
+    color: #333;
+    padding: 0 17px 0 4px;
+    cursor: pointer;
+    box-shadow: 0 1px 1px #eee;
+    background-color: #f7f8f9;
+    border: solid 1px #d9d9d9;
+    /*border-radius: 2px;*/
+    background-image: url('/application/layout/images/select-arrows.png');
+    background-repeat: no-repeat;
+    background-position: top 3px right 4px;
+}
+
+a.ps-ui-select:hover { border-color: #c0c1c2; background-color: #f0f1f2; }
+a.ps-ui-select:active { color: #333; }
+a.ps-ui-select:visited { color: #333; }
+a.ps-ui-select.hover { border-color: #c0c1c2; background-color: #f0f1f2; }
+
+ul.ps-ui-select-list {
+    position: absolute;
+    z-index: 9999;
+    list-style: none;
+    list-style-type: none;
+    padding: 3px 0;
+    margin: 0;
+    background-color: #fff;
+    border: solid 1px #e0e1e2;
+    /*border-radius: 2px;*/
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.ps-ui-select-list a {
+    text-decoration: none;
+    color: #333;
+    font-size: 12px;
+    cursor: pointer;
+    display: list-item;
+    padding: 3px 23px 3px 13px;
+}
+
+.ps-ui-select-list a.hover { background-color: #f0f1f2; }
+.ps-ui-select-list a.selected { background-color: #f0f1f2; }

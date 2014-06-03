@@ -54,7 +54,7 @@ class POIModel implements JsonSerializable {
      * @param Polygon $border
      * @param string[] $attrs
      */
-    public static function update($id, $nearId, $countryId, $name, $label, $cat, $sub, LatLng $latLng, Polygon $border, $attrs) {
+    public static function update($id, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
         db()->update()
                 ->table('poi')
                 ->set('nearId', $nearId)
@@ -63,8 +63,8 @@ class POIModel implements JsonSerializable {
                 ->set('label', $label)
                 ->set('cat', $cat)
                 ->set('sub', $sub)
-                ->set('latLng', $latLng->toWKT())->op(GEOM_FROM_TEXT)
-                ->set('border', $border->toWKT())->op(GEOM_FROM_TEXT)
+                ->set('latLng', $latLng === NULL ? 'NULL' : $latLng->toWKT())->op(GEOM_FROM_TEXT)
+                ->set('border', $border === NULL ? 'NULL' : $border->toWKT())->op(GEOM_FROM_TEXT)
                 ->set('attributes', json_encode($attrs))
                 ->where('id', EQ, $id)
                 ->exec();
@@ -229,10 +229,7 @@ class POIModel implements JsonSerializable {
     }
 
     public function border() {
-        if ($this->o->borderWKT !== NULL) {
-            return Polygon::fromWKT($this->o->borderWKT);
-        }
-        return NULL;
+        return Polygon::fromWKT($this->o->borderWKT);
     }
 
     public function timestamp() {
