@@ -7,24 +7,39 @@ class Test extends CL_Controller {
     }
 
     function index() {
-//        $this->load->library('geo/*');
-//        $this->load->model('POIModel');
-//        $poi = POIModel::load(12);
-//        $attrs = $poi->attributes();
-        $this->assign('poi', new stdClass());
-        $this->assign('attrs', new stdClass());
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+        $poi = POIModel::load(8);
+        $attrs = $poi->attributes();
+        $this->assign('poi', $poi);
+        $this->assign('attrs', $attrs);
         $this->load->view('templates/edit');
     }
-    
+
     /**
      * @AjaxCallable=TRUE
      * @AjaxMethod=POST
      * @AjaxAsync=TRUE
      */
     function post() {
-        print_r($_POST);
+        
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
+        $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
+        $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
+        $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        
+        $latLng = LatLng::fromWKT($latLngWKT);
+        $border = Polygon::fromWKT($borderWKT);
+
+        POIModel::update($id, 1, 1, $name, $name, $cat, $sub, $latLng, $border, $attrs);
     }
-    
+
     function select() {
         $this->load->view('select');
     }

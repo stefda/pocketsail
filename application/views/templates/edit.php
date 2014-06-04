@@ -47,6 +47,11 @@
             }
 
             var validator = new Validator();
+            var id = <?= $poi->id() ?>;
+            var cat = '<?= $poi->cat() ?>';
+            var sub = '<?= $poi->sub() ?>';
+            var latLng = LatLng.fromWKT('<?= $poi->latLng() === null ? 'NULL' : $poi->latLng()->toWKT() ?>');
+            var border = Polygon.fromWKT('<?= $poi->border() === null ? 'NULL' : $poi->border()->toWKT() ?>');
 
             $(function() {
 
@@ -80,21 +85,34 @@
                     e.preventDefault();
                 });
 
+                $('.tpl-details textarea').keyup(function() {
+                    if ($(this).val() === '') {
+                        $(this).removeClass('tpl-details-include');
+                    } else {
+                        $(this).addClass('tpl-details-include');
+                    }
+                });
+
                 $('#saveButton').click(function() {
-                    console.log(validator.validate());
-                    var attrs = $('.attr:visible').serialize();
-                    TestBroker.post({
-                        post: attrs,
-//                        post: $.param({
-//                            id: id,
-//                            latLng: latLng.toWKT(),
-//                            border: border === null ? null : border.toWKT(),
-//                            name: name
-//                        }) + '&' + attrs,
-                        success: function(res) {
-                            console.log(res);
-                        }
-                    });
+                    if (validator.validate()) {
+                        var name = $('[name=name]').val();
+                        var attrs = $('.attr.tpl-details-include').add('.attr:visible').serialize()
+                        TestBroker.post({
+                            post: $.param({
+                                id: id,
+                                name: name,
+                                cat: cat,
+                                sub: sub,
+                                latLng: latLng.toWKT(),
+                                border: border === null ? null : border.toWKT()
+                            }) + '&' + attrs,
+                            success: function(res) {
+                                console.log(res);
+                            }
+                        });
+                    } else {
+                        alert('Error');
+                    }
                 });
             });
 
@@ -112,7 +130,7 @@
 
             .tpl-section { width: 600px; margin-bottom: 20px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
             .tpl-section-wrapper { padding: 10px 12px; }
-            .tpl-subsection { display: none; margin-top: 10px; padding-top: 10px; border-top: solid 1px #e0e1e2; padding-bottom: 5px; }
+            .tpl-subsection { margin-top: 10px; padding-top: 10px; border-top: solid 1px #e0e1e2; padding-bottom: 5px; }
 
             .tpl-details-large { width: 100%; height: 48px; resize: none; }
             .tpl-details-small { width: 100%; height: 24px; resize: none; }
@@ -125,9 +143,10 @@
             .tpl-text-small { font-size: 12px; padding: 2px 3px; }
             .tpl-note { font-size: 11px; color: #a0a1a2; }
 
-            .tpl-details-button { cursor: pointer; margin-left: 10px; padding-right: 20px; color: #a0a1a2; font-size: 12px; text-decoration: none; background-image: url('/application/layout/images/details-arrow-right.png'); background-repeat: no-repeat; background-position: 40px 5px; visibility: hidden; }
-            .tpl-details-button.tpl-stay-visible { background-image: url('/application/layout/images/details-arrow-bottom.png'); background-repeat: no-repeat; background-position: 40px 6px; visibility: visible; }
-            .tpl-has-details-button:hover .tpl-details-button { visibility: visible; }
+            .tpl-details-button { display: none; cursor: pointer; margin-left: 10px; padding-right: 20px; color: #a0a1a2; font-size: 12px; text-decoration: none; background-image: url('/application/layout/images/details-arrow-right.png'); background-repeat: no-repeat; background-position: 40px 5px; }
+            .tpl-details-button.tpl-stay-visible { display: inline; background-image: url('/application/layout/images/details-arrow-bottom.png'); background-repeat: no-repeat; background-position: 40px 6px; }
+            .tpl-details-button.tpl-visible { display: inline; }
+            .tpl-has-details-button:hover .tpl-details-button { display: inline; }
             .tpl-details { display: none; margin-top: 8px; }
             tr.tpl-details td { padding: 4px 0 8px; }
 
@@ -145,7 +164,7 @@
                 <div class="tpl-section-wrapper">
 
                     <h1>Name</h1>
-                    <input type="text" name="name" value="<?= '' ?>" style="width: 300px;" />
+                    <input type="text" name="name" value="<?= $poi->name() ?>" style="width: 300px;" />
 
                 </div>
             </div>

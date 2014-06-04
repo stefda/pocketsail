@@ -35,8 +35,10 @@ a.ps-ui-multibutton-item {
 
 a.ps-ui-multibutton-item.ps-ui-selected {
     z-index: 99;
+    /* border-color: #b0b1b2; */
     border-color: #b0b1b2;
-    background-color: #f7f8f9;
+    color: #000;
+    background-color: #e0e1e2;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2) inset;
 }
 

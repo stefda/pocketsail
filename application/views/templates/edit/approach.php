@@ -11,17 +11,17 @@
             <h2>Approach drying</h2>
 
             <select class="tpl-select-button attr" name="attrs[approach][drying][value]">
-                <option value="na" <?= @$attrs->approach->drying->value === 'na' ? 'selected' : '' ?>>Don't know</option>
-                <option value="no" <?= @$attrs->approach->drying->value === 'no' ? 'selected' : '' ?>>No</option>
-                <option value="yes" <?= @$attrs->approach->drying->value === 'yes' ? 'selected' : '' ?>>Yes</option>
+                <option value="na"<?= @$attrs->approach->drying->value === 'na' ? ' selected' : '' ?>>Don't know</option>
+                <option value="no"<?= @$attrs->approach->drying->value === 'no' ? ' selected' : '' ?>>No</option>
+                <option value="yes"<?= @$attrs->approach->drying->value === 'yes' ? ' selected' : '' ?>>Yes</option>
             </select>
 
-            <span class="tpl-details-button">details</span>
+            <span class="tpl-details-button<?= @$attrs->appraoch->drying->details !== '' ?  ' tpl-visible' : '' ?>">details</span>
 
         </div>
 
         <div class="tpl-details">
-            <textarea class="tpl-details-large attr" name="attrs[approach][drying][details]" placeholder="Please provide details..."><?= @$attrs->approach->drying->details ?></textarea>
+            <textarea class="tpl-details-small attr" name="attrs[approach][drying][details]" placeholder="Please provide details..."><?= @$attrs->approach->drying->details ?></textarea>
         </div>
 
     </div>

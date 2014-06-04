@@ -20,19 +20,28 @@
 
             <span id="seasonal" style="margin-left: 10px;<?= @$attrs->season->value === 'seasonal' ? '' : ' display: none;' ?>">
                 <select class="attr seasonMonths" name="attrs[season][from]">
-                    <option value="">From</option><option value="jan">January</option><option value="feb">February</option><option value="mar">March</option><option value="apr">April</option><option value="may">May</option><option value="jun">June</option><option value="jul">July</option><option value="aug">August</option><option value="sep">September</option><option value="oct">October</option><option value="nov">November</option><option value="dec">December</option>
+                    <option value="">From</option>
+                    <? foreach (['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] AS $month): ?>
+                        <option value="<?= $month ?>"<?= @$attrs->season->to === $month ? ' selected' : '' ?>><?= date('F', strtotime($month)) ?></option>
+                    <? endforeach; ?>
                 </select>
                 - <select class="attr seasonMonths" name="attrs[season][to]">
-                    <option value="">To</option><option value="jan">January</option><option value="feb">February</option><option value="mar">March</option><option value="apr">April</option><option value="may">May</option><option value="jun">June</option><option value="jul">July</option><option value="aug">August</option><option value="sep">September</option><option value="oct">October</option><option value="nov">November</option><option value="dec">December</option>
+                    <option value="">To</option>
+                    <? foreach (['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'] AS $month): ?>
+                        <option value="<?= $month ?>"<?= @$attrs->season->from === $month ? ' selected' : '' ?>><?= date('F', strtotime($month)) ?></option>
+                    <? endforeach; ?>
                 </select>
             </span>
 
-            <span class="tpl-details-button">details</span>
+            <!-- DETAILS BUTTON -->
+            <span class="tpl-details-button<?= @$attrs->season->details === null ? '' : ' tpl-visible' ?>">
+                details
+            </span>
 
         </div>
 
-        <div class="tpl-details" name="attrs[season][details]">
-            <textarea class="tpl-details-small attr" placeholder="Provide any details..."></textarea>
+        <div class="tpl-details">
+            <textarea class="tpl-details-small attr<?= @$attrs->opening->details === null ? '' : ' tpl-details-include' ?>" placeholder="Provide any details..." name="attrs[season][details]"><?= @$attrs->season->details ?></textarea>
         </div>
 
     </div>

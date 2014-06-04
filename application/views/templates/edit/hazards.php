@@ -4,7 +4,7 @@
 
         <h1>Hazards</h1>
 
-        <textarea class="attr tpl-details-large" name="attrs[hazards][details]"><?= @$attrs->hazards ?></textarea>
+        <textarea class="attr tpl-details-large" name="attrs[hazards][details]"><?= @$attrs->hazards->details ?></textarea>
 
     </div>
 </div>

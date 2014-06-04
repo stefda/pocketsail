@@ -9,7 +9,7 @@
         <h1>Contact</h1>
 
         <table class="tpl-table" id="contactTable">
-            <? for ($i = 0; $i < count(@$attrs->contact->type); $i++): ?>
+            <? for ($i = 0; $i < count(@$attrs->contact->types); $i++): ?>
                 <tr>
                     <td class="tpl-table-item-label">
                         <select class="tpl-select contactTypeInput attr" name="attrs[contact][types][]">
@@ -28,15 +28,15 @@
             <tr>
                 <td class="tpl-table-item-label">
                     <select class="tpl-select contactTypeInput" name="attrs[contact][types][]">
-                        <option value="tel"<?= @$attrs->contact->types[$i] === 'tel' ? ' selected' : '' ?>>Tel</option>
-                        <option value="mob"<?= @$attrs->contact->types[$i] === 'mob' ? ' selected' : '' ?>>Mob</option>
-                        <option value="email"<?= @$attrs->contact->types[$i] === 'email' ? ' selected' : '' ?>>Email</option>
-                        <option value="www"<?= @$attrs->contact->types[$i] === 'www' ? ' selected' : '' ?>>www</option>
-                        <option value="vhf"<?= @$attrs->contact->types[$i] === 'vhf' ? ' selected' : '' ?>>VHF</option>
+                        <option value="tel">Tel</option>
+                        <option value="mob">Mob</option>
+                        <option value="email">Email</option>
+                        <option value="www">www</option>
+                        <option value="vhf">VHF</option>
                     </select>
                 </td>
                 <td  class="tpl-table-item-value">
-                    <input class="tpl-text-small contactValueInput" type="text" name="attrs[contact][values][]" value="<?= @$attrs->contact->values[$i] ?>" style="width: 200px;" />
+                    <input class="tpl-text-small contactValueInput" type="text" name="attrs[contact][values][]" value="" style="width: 200px;" />
                 </td>
             </tr>
         </table>

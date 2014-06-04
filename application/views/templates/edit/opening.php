@@ -11,37 +11,40 @@
 
         <div class="tpl-has-details-button">
             <select id="opening" class="attr" name="attrs[opening][value]">
-                <option value="na">Don't know</option>
-                <option value="everyday">Every day</option>
-                <option value="somedays">Some days</option>
+                <option value="na"<?= @$attrs->opening->value === 'na' ? ' selected' : '' ?>>Don't know</option>
+                <option value="everyday"<?= @$attrs->opening->value === 'everyday' ? ' selected' : '' ?>>Every day</option>
+                <option value="somedays"<?= @$attrs->opening->value === 'somedays' ? ' selected' : '' ?>>Some days</option>
             </select>
-            <span class="tpl-details-button">details</span>
+            <!-- DETAILS BUTTON -->
+            <span class="tpl-details-button<?= @$attrs->opening->details === null ? '' : ' tpl-visible' ?>">
+                details
+            </span>
         </div>
 
-        <div class="tpl-details" name="attrs[opening][details]">
-            <textarea class="tpl-details-small attr" placeholder="Provide any details..."></textarea>
+        <div class="tpl-details">
+            <textarea class="tpl-details-small attr<?= @$attrs->opening->details === null ? '' : ' tpl-details-include' ?>" placeholder="Provide any details..." name="attrs[opening][details]"><?= @$attrs->opening->details ?></textarea>
         </div>
 
-        <div class="tpl-subsection" id="everydayDetails">
+        <div class="tpl-subsection" id="everydayDetails" style="<?= @$attrs->opening->value === 'everyday' ? '' : 'display: none;' ?>">
 
             <h2>Specify times</h2>
 
             <select id="everyday" class="attr" name="attrs[opening][everyday][value]">
-                <option value="na">Not sure</option>
-                <option value="24h">24h</option>
-                <option value="attimes">Fixed times</option>
+                <option value="na"<?= @$attrs->opening->everyday->value === 'na' ? ' selected' : '' ?>>Not sure</option>
+                <option value="24h"<?= @$attrs->opening->everyday->value === '24h' ? ' selected' : '' ?>>24h</option>
+                <option value="attimes"<?= @$attrs->opening->everyday->value === 'attimes' ? ' selected' : '' ?>>Fixed times</option>
             </select>
 
             <span id="everydayTimes" style="display: none; margin-left: 10px;">
-                <input class="tpl-text-small attr" name="attrs[opening][everyday][from]" placeholder="From" />
+                <input class="tpl-text-small attr" name="attrs[opening][everyday][from]" placeholder="From" value="<?= @$attrs->opening->everyday->from ?>" />
                 -
-                <input class="tpl-text-small attr" name="attrs[opening][everyday][to]" placeholder="To" />
+                <input class="tpl-text-small attr" name="attrs[opening][everyday][to]" placeholder="To" value="<?= @$attrs->opening->everyday->to ?>" />
                 <span class="tpl-note">(24h format)</span>
             </span>
 
         </div>
 
-        <div class="tpl-subsection" id="somedaysDetails">
+        <div class="tpl-subsection" id="somedaysDetails" style="<?= @$attrs->opening->value === 'somedays' ? '' : 'display: none;' ?>">
 
             <table class="tpl-table" id="somedaysTimes">
                 <? foreach (['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] AS $day): ?>
@@ -49,16 +52,16 @@
                         <td class="tpl-table-item-label"><?= ucfirst($day) ?></td>
                         <td class="tpl-table-item-value">
                             <select class="somedays attr" name="attrs[opening][somedays][<?= $day ?>][value]">
-                                <option value="na">Not sure</option>
-                                <option value="closed">Closed</option>
-                                <option value="24h">24h</option>
-                                <option value="attimes">Fixed times</option>
+                                <option value="na"<?= @$attrs->opening->somedays->{$day}->value === 'na' ? ' selected' : '' ?>>Not sure</option>
+                                <option value="closed"<?= @$attrs->opening->somedays->{$day}->value === 'closed' ? ' selected' : '' ?>>Closed</option>
+                                <option value="24h"<?= @$attrs->opening->somedays->{$day}->value === '24h' ? ' selected' : '' ?>>24h</option>
+                                <option value="attimes"<?= @$attrs->opening->somedays->{$day}->value === 'attimes' ? ' selected' : '' ?>>Fixed times</option>
                             </select>
                         </td>
-                        <td style="padding-left: 10px; display: none;">
-                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" />
+                        <td style="padding-left: 10px;<?= @$attrs->opening->somedays->{$day}->value === 'attimes' ? '' : ' display: none;' ?>">
+                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" value="<?= @$attrs->opening->somedays->{$day}->from ?>" />
                             -
-                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" />
+                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" value="<?= @$attrs->opening->somedays->{$day}->to ?>" />
                             <span class="tpl-note">(24h format)</span>
                         </td>
                     </tr>
