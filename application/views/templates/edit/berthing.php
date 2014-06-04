@@ -1,12 +1,12 @@
 
 <? include_view('templates/edit/contact'); ?>
+<?= include_view('templates/edit/season'); ?>
+<?= include_view('templates/edit/opening'); ?>
 <? include_view('templates/edit/description'); ?>
 <? include_view('templates/edit/approach'); ?>
 <? include_view('templates/edit/attractions'); ?>
 <? include_view('templates/edit/hazards'); ?>
 <? include_view('templates/edit/berthinginfo'); ?>
-<?= include_view('templates/edit/season'); ?>
-<?= include_view('templates/edit/opening'); ?>
 <?= include_view('templates/edit/sources'); ?>
 
 <div class="par">

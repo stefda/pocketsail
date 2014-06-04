@@ -1,6 +1,7 @@
 
 <style type="text/css">
     table.openingTimes { border-collapse: collapse; font-family: Arial; font-size: 12px; }
+    table.openingTimes td { padding-bottom: 2px; }
     input.everydayTimes, .somedaysTimes { font-size: 12px; padding-left: 3px; width: 34px; border: solid 1px #aaa; }
 </style>
 
@@ -21,7 +22,7 @@
         <a class="detailsButton" href="">details</a>
 
     </div>
-    
+
     <div class="details" name="attrs[opening][details]" style="padding-top: 8px; display: none;">
         <textarea class="attr detailsText" placeholder="Provide any details..."></textarea>
     </div>
@@ -39,7 +40,7 @@
 
         <span id="everydayAttimes" style="display: none; margin-left: 10px;">
             <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][from]" placeholder="From" />
-            - <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][to]" placeholder="To" />
+            - <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][to]" placeholder="To" /> <span class="note">(24h format)</span>
         </span>
 
     </div>
@@ -54,7 +55,7 @@
                     <td><select class="attr somedays" name="attrs[opening][somedays][<?= $day ?>][value]"><option value="na">Not sure</option><option value="closed">Closed</option><option value="24h">24h</option><option value="attimes">Fixed times</option></select></td>
                     <td style="padding-left: 10px; display: none;">
                         <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" />
-                        - <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" />
+                        - <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" /> <span class="note">(24h format)</span>
                     </td>
                 </tr>
             <? endforeach; ?>

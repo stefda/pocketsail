@@ -105,6 +105,7 @@ jQuery.fn.select = function() {
             if (e.which === 32 || e.which === 38 || e.which === 40) {
                 $(this).trigger('click');
                 $(this).blur();
+                e.preventDefault();
             }
         });
         choose.click(function(e) {
@@ -136,6 +137,12 @@ jQuery.fn.select = function() {
                 });
                 item.keydown(function(e) {
                     switch (e.which) {
+                        case 13:
+                        case 32:
+                            {
+                                $(this).click();
+                                break;
+                            }
                         case 40:
                             {
                                 var next = null;
@@ -164,12 +171,8 @@ jQuery.fn.select = function() {
                                 prev.focus();
                                 break;
                             }
-                        case 32:
-                            {
-
-                                break;
-                            }
                     }
+                    e.preventDefault();
                 });
             });
             var pos = $(this).position();

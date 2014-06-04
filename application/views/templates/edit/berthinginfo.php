@@ -31,7 +31,7 @@
         <tr class="hasDetail">
             <td style="text-align: right;"><h2>Sea berths</h2></td>
             <td>
-                <input type="text" class="attr inputSmall" name="attrs[berthing][berth][total][value]" style="width: 30px;" /> / <input type="text" class="attr inputSmall" name="attrs[berthing][berth][visitor][value]" style="width: 30px;" /> <span style="font-size: 11px;">(total / visitors)</span>
+                <input type="text" class="attr inputSmall" name="attrs[berthing][berth][total][value]" style="width: 30px;" /> / <input type="text" class="attr inputSmall" name="attrs[berthing][berth][visitor][value]" style="width: 30px;" /> <span class="note">(total / visitors)</span>
                 <a class="detailsButton" href="">details</a>
             </td>
         </tr>
