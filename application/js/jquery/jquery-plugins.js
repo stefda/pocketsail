@@ -1,15 +1,30 @@
 
-$.fn.multiButtonSelect = function(value) {
-    var select = $(this);
-    select.val(value);
-    select.next().find('.ps-ui-selected').removeClass('ps-ui-selected');
-    select.next().find('[selectValue=' + value + ']').addClass('ps-ui-selected');
-    select.change();
-    return;
-};
+$.fn.selectButton = function() {
 
-$.fn.multiButton = function(o) {
+    // Perform user operation
+    if (arguments.length === 2 && typeof arguments[0] === 'string') {
+        var op = arguments[0];
+        $(this).each(function() {
+            var select = $(this);
+            switch (op) {
+                case 'select':
+                    {
+                        var value = arguments[1];
+                        select.val(value);
+                        select.next().find('.ps-ui-selected').removeClass('ps-ui-selected');
+                        select.next().find('[selectValue=' + value + ']').addClass('ps-ui-selected');
+                        select.change();
+                        break;
+                    }
+            }
+        });
+        return;
+    }
 
+    // Assign params object with the first argument
+    var o = arguments[0];
+
+    // Fix params object if undefined
     if (o === undefined) {
         o = {};
     }
@@ -26,9 +41,11 @@ $.fn.multiButton = function(o) {
         select.after(list);
 
         options.each(function() {
+
             var option = $(this);
             var value = option.val();
             var label = option.text();
+
             if (label !== '') {
                 var item = $('<a class="ps-ui-multibutton-item' + (option.is(':selected') ? ' ps-ui-selected' : '') + '" selectValue="' + value + '" href="">' + label + '</a>');
                 list.append(item);
@@ -57,26 +74,31 @@ $.fn.multiButton = function(o) {
                     select.change();
                     e.preventDefault();
                 });
+
                 item.keydown(function(e) {
                     if (e.which === 32) {
                         item.click();
                     }
                 });
+
                 item.focus(function() {
                     $(this).addClass('ps-ui-focus');
                 });
+
                 item.blur(function() {
                     $(this).removeClass('ps-ui-focus');
                 });
             }
         });
 
-        select.change(function() {
+        select.change(function(e) {
+
             var option = $(this).find('option:selected');
             var value = option.attr('value');
             var label = option.text();
+
             if (o.select !== undefined) {
-                o.select.call(this, event, {
+                o.select.call(this, e, {
                     item: {
                         value: value,
                         label: label
@@ -86,21 +108,26 @@ $.fn.multiButton = function(o) {
         });
     });
 };
-
 jQuery.fn.select = function() {
+    
     $(this).each(function() {
+        
         var text = $(this).find('option:selected').text();
         var choose = $('<a href="" class="ps-ui-select">' + text + '</a>');
-        //$(this).hide();
+        
         $(this).css('visibility', 'hidden');
         $(this).css('position', 'absolute');
+        
         choose.insertAfter($(this));
+        
         choose.focus(function() {
             $(this).addClass('hover');
         });
+        
         choose.blur(function() {
             $(this).removeClass('hover');
         });
+        
         choose.keydown(function(e) {
             if (e.which === 32 || e.which === 38 || e.which === 40) {
                 $(this).trigger('click');
@@ -108,6 +135,7 @@ jQuery.fn.select = function() {
                 e.preventDefault();
             }
         });
+        
         choose.click(function(e) {
             e.preventDefault();
             var select = $(this).prev();

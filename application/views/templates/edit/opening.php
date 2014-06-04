@@ -1,97 +1,104 @@
 
 <style type="text/css">
-    table.openingTimes { border-collapse: collapse; font-family: Arial; font-size: 12px; }
-    table.openingTimes td { padding-bottom: 2px; }
-    input.everydayTimes, .somedaysTimes { font-size: 12px; padding-left: 3px; width: 34px; border: solid 1px #aaa; }
+    #everydayTimes .tpl-text-small, #somedaysTimes .tpl-text-small { font-size: 12px; padding-left: 3px; width: 34px; border: solid 1px #aaa; }
+    #somedaysTimes .tpl-table-item-label { width: 37px; }
 </style>
 
-<div class="par">
+<div class="tpl-section">
+    <div class="tpl-section-wrapper">
 
-    <h1>
-        Open
-    </h1>
+        <h1>Open</h1>
 
-    <div class="hasDetail">
+        <div class="tpl-has-details-button">
+            <select id="opening" class="attr" name="attrs[opening][value]">
+                <option value="na">Don't know</option>
+                <option value="everyday">Every day</option>
+                <option value="somedays">Some days</option>
+            </select>
+            <span class="tpl-details-button">details</span>
+        </div>
 
-        <select id="opening" class="attr" name="attrs[opening][value]">
-            <option value="na">Don't know</option>
-            <option value="everyday">Every day</option>
-            <option value="somedays">Some days</option>
-        </select>
+        <div class="tpl-details" name="attrs[opening][details]">
+            <textarea class="tpl-details-small attr" placeholder="Provide any details..."></textarea>
+        </div>
 
-        <a class="detailsButton" href="">details</a>
+        <div class="tpl-subsection" id="everydayDetails">
+
+            <h2>Specify times</h2>
+
+            <select id="everyday" class="attr" name="attrs[opening][everyday][value]">
+                <option value="na">Not sure</option>
+                <option value="24h">24h</option>
+                <option value="attimes">Fixed times</option>
+            </select>
+
+            <span id="everydayTimes" style="display: none; margin-left: 10px;">
+                <input class="tpl-text-small attr" name="attrs[opening][everyday][from]" placeholder="From" />
+                -
+                <input class="tpl-text-small attr" name="attrs[opening][everyday][to]" placeholder="To" />
+                <span class="tpl-note">(24h format)</span>
+            </span>
+
+        </div>
+
+        <div class="tpl-subsection" id="somedaysDetails">
+
+            <table class="tpl-table" id="somedaysTimes">
+                <? foreach (['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] AS $day): ?>
+                    <tr>
+                        <td class="tpl-table-item-label"><?= ucfirst($day) ?></td>
+                        <td class="tpl-table-item-value">
+                            <select class="somedays attr" name="attrs[opening][somedays][<?= $day ?>][value]">
+                                <option value="na">Not sure</option>
+                                <option value="closed">Closed</option>
+                                <option value="24h">24h</option>
+                                <option value="attimes">Fixed times</option>
+                            </select>
+                        </td>
+                        <td style="padding-left: 10px; display: none;">
+                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" />
+                            -
+                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" />
+                            <span class="tpl-note">(24h format)</span>
+                        </td>
+                    </tr>
+                <? endforeach; ?>
+            </table>
+
+        </div>
 
     </div>
-
-    <div class="details" name="attrs[opening][details]" style="padding-top: 8px; display: none;">
-        <textarea class="attr detailsText" placeholder="Provide any details..."></textarea>
-    </div>
-
-    <div id="openingEverydayForm" style="display: none; margin-top: 10px; border-top: solid 1px #d0d1d2; padding-bottom: 5px;">
-        <div style="border-top: solid 1px #fff; padding-top: 10px;"></div>
-
-        <h2>Specify times</h2>
-
-        <select id="everyday" class="attr" name="attrs[opening][everyday][value]">
-            <option value="na">Not sure</option>
-            <option value="24h">24h</option>
-            <option value="attimes">Fixed times</option>
-        </select>
-
-        <span id="everydayAttimes" style="display: none; margin-left: 10px;">
-            <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][from]" placeholder="From" />
-            - <input class="attr everydayTimes inputSmall" name="attrs[opening][everyday][to]" placeholder="To" /> <span class="note">(24h format)</span>
-        </span>
-
-    </div>
-
-    <div id="openingSomedaysForm" style="display: none; margin-top: 10px; border-top: solid 1px #d0d1d2; padding-bottom: 5px;">
-        <div style="border-top: solid 1px #fff; padding-top: 10px;"></div>
-
-        <table class="openingTimes">
-            <? foreach (['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'] AS $day): ?>
-                <tr>
-                    <td style="text-align: right; padding: 0 10px;"><?= ucfirst($day) ?></td>
-                    <td><select class="attr somedays" name="attrs[opening][somedays][<?= $day ?>][value]"><option value="na">Not sure</option><option value="closed">Closed</option><option value="24h">24h</option><option value="attimes">Fixed times</option></select></td>
-                    <td style="padding-left: 10px; display: none;">
-                        <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" />
-                        - <input class="attr somedaysTimes inputSmall" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" /> <span class="note">(24h format)</span>
-                    </td>
-                </tr>
-            <? endforeach; ?>
-        </table>
-
-    </div>
-
 </div>
 
 <script type="text/javascript">
 
     $(function() {
 
-        $('#opening').multiButton({
+        $('#opening').selectButton({
             select: function(e, ui) {
-                $('#openingEverydayForm, #openingSomedaysForm').hide();
-                if (ui.item.value === 'everyday') {
-                    $('#openingEverydayForm').show();
-                }
-                if (ui.item.value === 'somedays') {
-                    $('#openingSomedaysForm').show();
+                $('#everydayDetails, #somedaysDetails').hide();
+                switch (ui.item.value) {
+                    case 'everyday':
+                        $('#everydayDetails').show();
+                        break;
+                    case 'somedays':
+                        $('#somedaysDetails').show();
+                        break;
                 }
             }
         });
 
-        $('#everyday').multiButton({
+        $('#everyday').selectButton({
             select: function(e, ui) {
                 if (ui.item.value !== 'attimes') {
-                    $('#everydayAttimes').hide();
+                    $('#everydayTimes').hide();
                 } else {
-                    $('#everydayAttimes').show();
+                    $('#everydayTimes').show();
                 }
             }
         });
 
-        $('.somedays').multiButton({
+        $('.somedays').selectButton({
             select: function(e, ui) {
                 if (ui.item.value !== 'attimes') {
                     $(this).closest('td').next().hide();
@@ -101,32 +108,7 @@
             }
         });
 
-        $('.everydayTimes').change(function() {
-            var select = $(this).siblings('select');
-            $(select).multiButtonSelect('attimes');
-        });
-
-        $('.somedaysTimes').change(function() {
-            var select = $(this).closest('tr').find('select');
-            $(select).multiButtonSelect('attimes');
-        });
-
         validator.add(function() {
-//            function n(name) {
-//                name = name.replace(/\]/g, '\\]');
-//                name = name.replace(/\[/g, '\\[');
-//                var selector = "[name=" + name + "]";
-//                return $(selector);
-//            }
-//            var days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
-//            for (var i = 0; i < days.length; i++) {
-//                var day = days[i];
-//                if (n('attrs[opening][somedays][' + day + '][value]').val() === 'attimes'
-//                        && (n('attrs[opening][somedays][' + day + '][from]').val() === '' || n('attrs[opening][somedays][' + day + '][to]').val() === '')) {
-//                    //console.log('error');
-//                    return false;
-//                }
-//            }
             return true;
         });
     });

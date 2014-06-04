@@ -1,41 +1,38 @@
 
-<div class="par">
+<div class="tpl-section">
+    <div class="tpl-section-wrapper">
 
-    <h1>
-        Approach & Pilotage
-    </h1>
+        <h1>Approach & Pilotage</h1>
 
-    <textarea class="attr text" name="attrs[approach][details]"><?= @$attrs->appraoch->description ?></textarea>
+        <textarea class="tpl-details-large attr" name="attrs[approach][details]"><?= @$attrs->approach->details ?></textarea>
 
-    <div class="hasDetail" style="margin-top: 5px;">
+        <div class="tpl-has-details-button" style="margin-top: 8px;">
 
-        <h2>Drying</h2>
+            <h2>Approach drying</h2>
 
-        <select id="approachDrying" class="attr" type="checkbox" name="attrs[approach][drying][value]">
-            <option value="na" <?= @$attrs->approach->drying->value === 'na' ? 'selected' : '' ?>>Don't know</option>
-            <option value="no" <?= @$attrs->approach->drying->value === 'no' ? 'selected' : '' ?>>No</option>
-            <option value="yes" <?= @$attrs->approach->drying->value === 'yes' ? 'selected' : '' ?>>Yes</option>
-        </select>
+            <select class="tpl-select-button attr" name="attrs[approach][drying][value]">
+                <option value="na" <?= @$attrs->approach->drying->value === 'na' ? 'selected' : '' ?>>Don't know</option>
+                <option value="no" <?= @$attrs->approach->drying->value === 'no' ? 'selected' : '' ?>>No</option>
+                <option value="yes" <?= @$attrs->approach->drying->value === 'yes' ? 'selected' : '' ?>>Yes</option>
+            </select>
 
-        <div id="approachDryingDetails" style="display: none; padding-top: 8px;">
-            <textarea class="attr detailsText" name="attrs[approach][drying][details]" placeholder="Please provide details..."><?= @$attrs->approach->drying->details ?></textarea>
+            <span class="tpl-details-button">details</span>
+
         </div>
 
-        <a class="detailsButton" href="">details</a>
+        <div class="tpl-details">
+            <textarea class="tpl-details-large attr" name="attrs[approach][drying][details]" placeholder="Please provide details..."><?= @$attrs->approach->drying->details ?></textarea>
+        </div>
 
     </div>
-
-    <div class="details" style="padding-top: 8px; display: none;">
-        <textarea class="attr detailsText" name="attrs[approach][drying][details]" placeholder="Provide any details..."></textarea>
-    </div>
-
 </div>
 
 <script type="text/javascript">
 
     $(function() {
-
-        $('#approachDrying').multiButton();
+        validator.add(function() {
+            return true;
+        });
     });
 
 </script>

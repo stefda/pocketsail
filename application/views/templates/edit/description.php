@@ -1,10 +1,10 @@
 
-<div class="par">
+<div class="tpl-section">
+    <div class="tpl-section-wrapper">
 
-    <h1>
-        Description
-    </h1>
+        <h1>Description</h1>
 
-    <textarea class="attr text" name="attrs[description][details]"><?= @$attrs->description ?></textarea>
+        <textarea class="attr tpl-details-large" name="attrs[description][details]"><?= @$attrs->description ?></textarea>
 
+    </div>
 </div>

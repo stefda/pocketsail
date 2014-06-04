@@ -78,8 +78,8 @@
             a, input, textarea { outline: none; font-family: Arial; }
             h1 { font-size: 14px; margin-bottom: 4px; font-size: 14px; font-weight: bold; color: #555; }
             h2 { font-size: 12px; font-weight: normal; display: inline; margin-right: 8px; }
-            .par { margin-bottom: 20px; }
-            .text { width: 600px; height: 36px; resize: none; padding: 5px 7px; line-height: 1.4em; }
+            .tpl-section { margin-bottom: 20px; }
+            .tpl-details-large { width: 600px; height: 36px; resize: none; padding: 5px 7px; line-height: 1.4em; }
             .detailsText { width: 600px; height: 18px; resize: none; padding: 5px 7px; line-height: 1.4em; }
         </style>
 
