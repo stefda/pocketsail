@@ -167,11 +167,18 @@ function Map(canvas, center, zoom) {
         // Load data on the first idle
         google.maps.event.addListener(this.googleMap, 'idle', function() {
             // Skip all idles except the first one
-            if (!this_.init) {
-                return;
+            if (this_.init) {
+                this_.init = false;
+                this_.loadData();
             }
-            this_.init = false;
-            this_.loadData();
+        });
+        
+        google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {
+            if (this.getMapTypeId() === 'hybrid') {
+                $('#mapStyle').attr('href', '/application/layout/map-satellite.css');
+            } else {
+                $('#mapStyle').attr('href', '/application/layout/map.css');
+            }
         });
 
         // Load data on dragend

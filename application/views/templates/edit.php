@@ -193,7 +193,7 @@
 
         </style>
 
-        <link type="text/css" rel="stylesheet" href="/application/layout/map.css" />
+        <link type="text/css" rel="stylesheet" id="mapStyle" href="/application/layout/map.css" />
         <link type="text/css" rel="stylesheet" href="/application/layout/ui.css" />
 
     </head>
