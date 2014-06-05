@@ -1,14 +1,17 @@
 
 /**
- * @param {String} canvas
- * @param {LatLng} center
- * @param {Number} zoom
+ * @param {Object} o
  * @returns {Map}
  */
-function Map(canvas, center, zoom) {
+function Map(o) {
 
-    this.types = [];
-    this.poiId = 0;
+    var canvas = o.canvas;
+    var zoom = o.zoom;
+    var center = o.center;
+
+    this.types = o.types !== undefined ? o.types : [];
+    this.poiId = o.poiId !== undefined ? o.poiId : [];
+    this.flags = o.flags !== undefined ? o.flags : [];
     this.ignoreZoomChange = false;
     this.init = true;
     this.markers = {};
@@ -29,6 +32,13 @@ function Map(canvas, center, zoom) {
      */
     this.getPoiId = function() {
         return this.poiId;
+    };
+    
+    /**
+     * @returns {Array}
+     */
+    this.getFlags = function() {
+        return this.flags;
     };
 
     /**
@@ -60,6 +70,10 @@ function Map(canvas, center, zoom) {
         this.poiId = poiId;
     };
 
+    this.setFlags = function(flags) {
+        this.flags = flags;
+    };
+
     this.addMarker = function(marker) {
         this.markers.push(marker);
     };
@@ -77,7 +91,8 @@ function Map(canvas, center, zoom) {
                 vBounds: ViewBounds.fromMap(this.googleMap).toWKT(),
                 zoom: this.getZoom(),
                 types: this.getTypes(),
-                poiId: this.getPoiId()
+                poiId: this.getPoiId(),
+                flags: this.getFlags()
             },
             success: function(res) {
                 this_.handleResult(res);
@@ -172,7 +187,7 @@ function Map(canvas, center, zoom) {
                 this_.loadData();
             }
         });
-        
+
         google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {
             if (this.getMapTypeId() === 'hybrid') {
                 $('#mapStyle').attr('href', '/application/layout/map-satellite.css');

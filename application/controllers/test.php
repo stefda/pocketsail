@@ -5,14 +5,47 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
+    
+    function markup() {
+        $text = "**Subheader**\nTextText\n\n**Dalsi Subheader**Text Text text\nThis link [Google|http://www.google.com] is working!";
+        $headedText = preg_replace('/\*\*([^*]*)\*\*\n?/', "<h2>\\1</h2>", $text);
+        echo preg_replace('/\[([^|]*)\|([^\]]*)\]/', "<a href=\"\\2\">\\1</a>", $headedText);
+    }
 
     function index() {
+
         $this->load->library('geo/*');
         $this->load->model('POIModel');
-        $poi = POIModel::load(8);
-        $attrs = $poi->attributes();
-        $this->assign('poi', $poi);
-        $this->assign('attrs', $attrs);
+
+        $poiId = filter_input(INPUT_GET, 'poiId', FILTER_VALIDATE_INT);
+        $lat = filter_input(INPUT_GET, 'lat', FILTER_VALIDATE_FLOAT);
+        $lng = filter_input(INPUT_GET, 'lng', FILTER_VALIDATE_FLOAT);
+        $cat = filter_input(INPUT_GET, 'cat', FILTER_SANITIZE_STRING);
+        $sub = filter_input(INPUT_GET, 'sub', FILTER_SANITIZE_STRING);
+
+        $poiObject = new stdClass();
+        $attrsObject = new stdClass();
+
+        if ($poiId !== NULL) {
+            $poi = POIModel::load($poiId);
+            $poiObject->id = $poi->id();
+            $poiObject->name = $poi->name();
+            $poiObject->cat = $poi->cat();
+            $poiObject->sub = $poi->sub();
+            $poiObject->latLng = $poi->latLng();
+            $poiObject->border = $poi->border();
+            $attrsObject = $poi->attributes();
+        } else {
+            $poiObject->id = 0;
+            $poiObject->name = '';
+            $poiObject->cat = $cat;
+            $poiObject->sub = $sub;
+            $poiObject->latLng = new LatLng($lat, $lng);
+            $poiObject->border = null;
+        }
+
+        $this->assign('poi', $poiObject);
+        $this->assign('attrs', $attrsObject);
         $this->load->view('templates/edit');
     }
 
@@ -22,7 +55,7 @@ class Test extends CL_Controller {
      * @AjaxAsync=TRUE
      */
     function post() {
-        
+
         $this->load->library('geo/*');
         $this->load->model('POIModel');
 
@@ -33,7 +66,7 @@ class Test extends CL_Controller {
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
         $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
         $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        
+
         $latLng = LatLng::fromWKT($latLngWKT);
         $border = Polygon::fromWKT($borderWKT);
 

@@ -34,7 +34,11 @@
 
             $(function() {
 
-                var map = new Map('canvas', new LatLng(43.866433, 15.309780), 12);
+                var map = new Map({
+                    canvas: 'canvas',
+                    center: new LatLng(43.866433, 15.309780),
+                    zoom: 12
+                });
 
                 $('#clearSearchButton').click(function() {
                     map.setPoiId(0);

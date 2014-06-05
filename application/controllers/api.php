@@ -94,7 +94,7 @@ class API extends CL_Controller {
             'flags' => []
         ];
 
-        if ($poiId !== 0) {
+        if ($poiId !== 0 && !in_array('excludePoiLabel', $flags)) {
 
             $poi = POIModel::load($poiId);
             $res['labels'][] = LabelModel::loadDynamic($poiId);
@@ -165,7 +165,7 @@ class API extends CL_Controller {
 
         $this->load->library('geo/*');
         $this->load->model('POIModel');
-        
+
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);

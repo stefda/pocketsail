@@ -112,7 +112,7 @@
                     Max draught
                 </td>
                 <td class="tpl-table-item-value">
-                    <input type="text" class="tpl-text-small attr" name="attrs[berthing][maxdraught][value]" value="<?= $attrs->berthing->maxdraught->value ?>"/>
+                    <input type="text" class="tpl-text-small attr" name="attrs[berthing][maxdraught][value]" value="<?= @$attrs->berthing->maxdraught->value ?>"/>
                     <select class="tpl-select attr" name="attrs[berthing][maxdraught][type]">
                         <option value="m"<?= @$attrs->berthing->maxdraught->type === 'm' ? ' selected' : '' ?>>meters</option>
                         <option value="ft"<?= @$attrs->berthing->maxdraught->type === 'ft' ? ' selected' : '' ?>>feet</option>
@@ -136,7 +136,7 @@
                     Max length
                 </td>
                 <td class="tpl-table-item-value">
-                    <input class="tpl-text-small attr" type="text" name="attrs[berthing][maxlength][value]" value="<?= $attrs->berthing->maxlength->value ?>"/>
+                    <input class="tpl-text-small attr" type="text" name="attrs[berthing][maxlength][value]" value="<?= @$attrs->berthing->maxlength->value ?>"/>
                     <select class="tpl-select attr" name="attrs[berthing][maxlength][type]">
                         <option value="m"<?= @$attrs->berthing->maxlength->type === 'm' ? ' selected' : '' ?>>meters</option>
                         <option value="ft"<?= @$attrs->berthing->maxlength->type === 'ft' ? ' selected' : '' ?>>feet</option>
@@ -159,7 +159,7 @@
                     Price
                 </td>
                 <td class="tpl-table-item-value">
-                    <input class="tpl-text-small attr" type="text" name="attrs[berthing][price][value]" value="<?= $attrs->berthing->price->value ?>" />
+                    <input class="tpl-text-small attr" type="text" name="attrs[berthing][price][value]" value="<?= @$attrs->berthing->price->value ?>" />
                     <select class="tpl-select attr" name="attrs[berthing][price][currency]">
                         <option value="gbp"<?= @$attrs->berthing->price->currency === 'gbp' ? ' selected' : '' ?>>£</option>
                         <option value="eur"<?= @$attrs->berthing->price->currency === 'eur' ? ' selected' : '' ?>>€</option>
@@ -186,7 +186,7 @@
                     Soujourn tax
                 </td>
                 <td class="tpl-table-item-value">
-                    <input class="tpl-text-small attr" type="text" name="attrs[berthing][soujourn][value]" value="<?= $attrs->berthing->soujourn->value ?>" />
+                    <input class="tpl-text-small attr" type="text" name="attrs[berthing][soujourn][value]" value="<?= @$attrs->berthing->soujourn->value ?>" />
                     <select class="tpl-select attr" name="attrs[berthing][soujourn][currency]">
                         <option value="gbp"<?= @$attrs->berthing->soujourn->currency === 'gbp' ? ' selected' : '' ?>>£</option>
                         <option value="eur"<?= @$attrs->berthing->soujourn->currency === 'eur' ? ' selected' : '' ?>>€</option>

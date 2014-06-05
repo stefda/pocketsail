@@ -74,15 +74,33 @@
             }
 
             var validator = new Validator();
-            var id = <?= $poi->id() ?>;
-            var cat = '<?= $poi->cat() ?>';
-            var sub = '<?= $poi->sub() ?>';
-            var latLng = LatLng.fromWKT('<?= $poi->latLng() === null ? 'NULL' : $poi->latLng()->toWKT() ?>');
-            var border = Polygon.fromWKT('<?= $poi->border() === null ? 'NULL' : $poi->border()->toWKT() ?>');
+            var poiId = <?= $poi->id ?>;
+            var cat = '<?= $poi->cat ?>';
+            var sub = '<?= $poi->sub ?>';
+            var latLng = LatLng.fromWKT('<?= $poi->latLng === null ? 'NULL' : $poi->latLng->toWKT() ?>');
+            var border = Polygon.fromWKT('<?= $poi->border === null ? 'NULL' : $poi->border->toWKT() ?>');
 
             $(function() {
 
-                var map = new Map('canvas', new LatLng(43.866433, 15.309780), 12);
+                var map = new Map({
+                    canvas: 'canvas',
+                    center: latLng,
+                    zoom: 16,
+                    flags: ['excludePoiLabel'],
+                    poiId: poiId
+                });
+
+                //console.log(map.googleMap);
+                new google.maps.Marker({
+                    map: map.googleMap,
+                    position: latLng.toGoogleLatLng(),
+                    draggable: true,
+                    crossOnDrag: false,
+                    icon: {
+                        anchor: new google.maps.Point(5, 23),
+                        url: '/application/layout/images/add-icon.png'
+                    }
+                });
 
                 $('.tpl-select').select();
                 $('.tpl-select-button').selectButton();
@@ -126,6 +144,17 @@
                         $(this).closest('.tpl-details').prev('.tpl-has-details-button').find('.tpl-details-button').addClass('tpl-visible');
                         $(this).addClass('attr-include');
                     }
+                });
+
+                $('#canvasResizeButton').click(function() {
+                    var center = map.getCenter();
+                    if ($('.tpl-canvas-wrapper').hasClass('tpl-canvas-wrapper-large')) {
+                        $('.tpl-canvas-wrapper').removeClass('tpl-canvas-wrapper-large');
+                    } else {
+                        $('.tpl-canvas-wrapper').addClass('tpl-canvas-wrapper-large');
+                    }
+                    google.maps.event.trigger(map.googleMap, 'resize');
+                    map.setCenter(center);
                 });
 
                 $('#saveButton').click(function() {
@@ -190,6 +219,12 @@
             .tpl-delete-button { cursor: pointer; display: block; width: 10px; height: 10px; background-repeat: no-repeat; background-image: url('/application/layout/images/delete-cross.png'); }
             .tpl-delete-button:hover { background-position-y: -10px; }
 
+            .tpl-canvas-wrapper { height: 200px; margin-bottom: 20px; border: solid 1px #d0d1d2; }
+            .tpl-canvas-wrapper-large { height: 500px; }
+            .tpl-canvas-resize-button { cursor: pointer; position: relative; top: -5px; left: 425px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; }
+            .tpl-canvas-wrapper-large .tpl-canvas-resize-button { background-image: url('/application/layout/images/arrow-up.png'); }
+            
+
 
         </style>
 
@@ -205,13 +240,16 @@
 
         <div style="width: 900px; margin: 20px auto;">
 
-            <div id="canvas" style="width: 100%; height: 200px; margin-bottom: 20px;"></div>
+            <div class="tpl-canvas-wrapper" id="canvasWrapper">
+                <div id="canvas" style="width: 100%; height: 100%;"></div>
+                <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
+            </div>
 
             <div class="tpl-section">
                 <div class="tpl-section-wrapper">
 
                     <h1>Name</h1>
-                    <input type="text" name="name" value="<?= $poi->name() ?>" style="width: 300px;" />
+                    <input type="text" name="name" value="<?= $poi->name ?>" style="width: 300px;" />
 
                 </div>
             </div>
