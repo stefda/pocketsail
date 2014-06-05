@@ -29,7 +29,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->assistance->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][assistance][details]" placeholder="Provide any details..."><?= @$attrs->berthing->assistance->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->assistance->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][assistance][details]" placeholder="Provide any details..."><?= @$attrs->berthing->assistance->details ?></textarea>
                 </td>
             </tr>
             <!-- /Assistance -->
@@ -55,7 +55,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->type->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][type][details]" placeholder="Provide any details..."><?= @$attrs->berthing->type->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->type->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][type][details]" placeholder="Provide any details..."><?= @$attrs->berthing->type->details ?></textarea>
                 </td>
             </tr>
             <!-- /Type -->
@@ -79,7 +79,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->seaberths->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][seaberths][details]" placeholder="Provide any details..."><?= @$attrs->berthing->seaberths->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->seaberths->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][seaberths][details]" placeholder="Provide any details..."><?= @$attrs->berthing->seaberths->details ?></textarea>
                 </td>
             </tr>
             <!-- /Sea berhts -->
@@ -100,7 +100,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->dryberths->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][dryberths][details]" placeholder="Provide any details..."><?= @$attrs->berthing->dryberths->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->dryberths->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][dryberths][details]" placeholder="Provide any details..."><?= @$attrs->berthing->dryberths->details ?></textarea>
                 </td>
             </tr>
             <!-- /Dry berths -->
@@ -125,7 +125,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->maxdraught->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][maxdraught][details]" placeholder="Provide any details..."><?= @$attrs->berthing->maxdraught->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->maxdraught->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][maxdraught][details]" placeholder="Provide any details..."><?= @$attrs->berthing->maxdraught->details ?></textarea>
                 </td>
             </tr>
             <!-- /Max draught -->
@@ -149,7 +149,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->maxlength->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][maxlength][details]" placeholder="Provide any details..."><?= @$attrs->berthing->maxlength->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->maxlength->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][maxlength][details]" placeholder="Provide any details..."><?= @$attrs->berthing->maxlength->details ?></textarea>
                 </td>
             </tr>
 
@@ -161,9 +161,9 @@
                 <td class="tpl-table-item-value">
                     <input class="tpl-text-small attr" type="text" name="attrs[berthing][price][value]" value="<?= $attrs->berthing->price->value ?>" />
                     <select class="tpl-select attr" name="attrs[berthing][price][currency]">
-                        <option value="gbp"<?= @$attrs->berthing->price->type === 'gbp' ? ' selected' : '' ?>>£</option>
-                        <option value="eur"<?= @$attrs->berthing->price->type === 'eur' ? ' selected' : '' ?>>€</option>
-                        <option value="usd"<?= @$attrs->berthing->price->type === 'usd' ? ' selected' : '' ?>>$</option>
+                        <option value="gbp"<?= @$attrs->berthing->price->currency === 'gbp' ? ' selected' : '' ?>>£</option>
+                        <option value="eur"<?= @$attrs->berthing->price->currency === 'eur' ? ' selected' : '' ?>>€</option>
+                        <option value="usd"<?= @$attrs->berthing->price->currency === 'usd' ? ' selected' : '' ?>>$</option>
                     </select>
                     <select class="tpl-select attr" name="attrs[berthing][price][type]">
                         <option value="m">per meter</option><option value="ft">per foot</option>
@@ -176,7 +176,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->price->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][price][details]" placeholder="Provide any details..."><?= @$attrs->berthing->price->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->price->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][price][details]" placeholder="Provide any details..."><?= @$attrs->berthing->price->details ?></textarea>
                 </td>
             </tr>
 
@@ -188,9 +188,9 @@
                 <td class="tpl-table-item-value">
                     <input class="tpl-text-small attr" type="text" name="attrs[berthing][soujourn][value]" value="<?= $attrs->berthing->soujourn->value ?>" />
                     <select class="tpl-select attr" name="attrs[berthing][soujourn][currency]">
-                        <option value="gbp"<?= @$attrs->berthing->soujourn->type === 'gbp' ? ' selected' : '' ?>>£</option>
-                        <option value="eur"<?= @$attrs->berthing->soujourn->type === 'eur' ? ' selected' : '' ?>>€</option>
-                        <option value="usd"<?= @$attrs->berthing->soujourn->type === 'usd' ? ' selected' : '' ?>>$</option>
+                        <option value="gbp"<?= @$attrs->berthing->soujourn->currency === 'gbp' ? ' selected' : '' ?>>£</option>
+                        <option value="eur"<?= @$attrs->berthing->soujourn->currency === 'eur' ? ' selected' : '' ?>>€</option>
+                        <option value="usd"<?= @$attrs->berthing->soujourn->currency === 'usd' ? ' selected' : '' ?>>$</option>
                     </select>
                     <select class="tpl-select attr" name="attrs[berthing][soujourn][type]">
                         <option value="person">per person</option><option value="boat">per boat</option>
@@ -203,7 +203,7 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr<?= @$attrs->berthing->soujourn->details === null ? '' : ' tpl-details-include' ?>" name="attrs[berthing][soujourn][details]" placeholder="Provide any details..."><?= @$attrs->berthing->soujourn->details ?></textarea>
+                    <textarea class="tpl-details-small ?= @$attrs->berthing->soujourn->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][soujourn][details]" placeholder="Provide any details..."><?= @$attrs->berthing->soujourn->details ?></textarea>
                 </td>
             </tr>
 

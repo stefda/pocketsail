@@ -16,12 +16,12 @@
                 <option value="yes"<?= @$attrs->approach->drying->value === 'yes' ? ' selected' : '' ?>>Yes</option>
             </select>
 
-            <span class="tpl-details-button<?= @$attrs->appraoch->drying->details !== '' ?  ' tpl-visible' : '' ?>">details</span>
+            <span class="tpl-details-button<?= @$attrs->approach->drying->details === null ?  '' : ' tpl-visible' ?>">details</span>
 
         </div>
 
         <div class="tpl-details">
-            <textarea class="tpl-details-small attr" name="attrs[approach][drying][details]" placeholder="Please provide details..."><?= @$attrs->approach->drying->details ?></textarea>
+            <textarea class="tpl-details-small<?= @$attrs->approach->drying->details === null ? '' : ' attr-include' ?>" name="attrs[approach][drying][details]" placeholder="Please provide details..."><?= @$attrs->approach->drying->details ?></textarea>
         </div>
 
     </div>

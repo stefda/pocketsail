@@ -23,6 +23,9 @@
                     <td  class="tpl-table-item-value">
                         <input class="tpl-text-small contactValueInput attr" type="text" name="attrs[contact][values][]" value="<?= @$attrs->contact->values[$i] ?>" style="width: 200px;" />
                     </td>
+                    <td  class="tpl-table-item-value">
+                        <span class="tpl-delete-button"></span>
+                    </td>
                 </tr>
             <? endfor; ?>
             <tr>

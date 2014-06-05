@@ -25,14 +25,33 @@ body { height: 100%; margin: 0; padding: 0 }
 .icon { cursor: default; z-index: 96; background-image: url('/application/images/marker-icons.png'); }
 .icon.p { z-index: 95; opacity: 1; }
 
-.tpl-details-large { z-index: 99; white-space: nowrap; font-family: Arial; color: #000; cursor: default;
-       text-shadow:
-           -1px -1px 0 rgba(255, 255, 255, 0.8),
-           1px -1px 0 rgba(255, 255, 255, 0.8),
-           -1px 1px 0 rgba(255, 255, 255, 0.8),
-           1px 1px 0 rgba(255, 255, 255, 0.8);
+/*
+.text {
+    z-index: 99;
+    white-space: nowrap;
+    font-family: Arial;
+    color: #fff;
+    cursor: default;
+    text-shadow:
+        -1px -1px 0 rgba(0, 0, 0, 0.8),
+        1px -1px 0 rgba(0, 0, 0, 0.8),
+        -1px 1px 0 rgba(0, 0, 0, 0.8),
+        1px 1px 0 rgba(0, 0, 0, 0.8);
 }
-/* .text { z-index: 99; white-space: nowrap; font-family: Arial; color: #fff; text-shadow: -1px -1px 0 rgba(0, 0, 0, 0.8), 1px -1px 0 rgba(0, 0, 0, 0.8), -1px 1px 0 rgba(0, 0, 0, 0.8), 1px 1px 0 rgba(0, 0, 0, 0.8); cursor: default; } */
+*/
+
+.text {
+    z-index: 99;
+    white-space: nowrap;
+    font-family: Arial;
+    color: #000;
+    cursor: default;
+    text-shadow:
+        -1px -1px 0 rgba(255, 255, 255, 0.8),
+        1px -1px 0 rgba(255, 255, 255, 0.8),
+        -1px 1px 0 rgba(255, 255, 255, 0.8),
+        1px 1px 0 rgba(255, 255, 255, 0.8);
+}
 
 .icon .tpl-details-large {
     -webkit-user-select: none; /* webkit (safari, chrome) browsers */

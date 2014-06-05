@@ -11,6 +11,7 @@
 
         <table class="tpl-table" id="facilities" style="width: 100%;">
 
+            <!-- WATER -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Water</h2>
@@ -21,15 +22,23 @@
                         <option value="yes"<?= @$attrs->facilities->water->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->water->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->water->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][water][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->water->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][water][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->water->details ?></textarea>
                 </td>
             </tr>
+            <!-- /WATER -->
 
+
+            <!-- ELECTRICITY -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Electricity</h2>
@@ -40,15 +49,23 @@
                         <option value="yes"<?= @$attrs->facilities->water->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->water->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->electricity->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][electricity][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->electricity->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][electricity][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->electricity->details ?></textarea>
                 </td>
             </tr>
+            <!-- /ELECTRICITY -->
 
+
+            <!-- SHOWERS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Showers</h2>
@@ -59,15 +76,23 @@
                         <option value="yes"<?= @$attrs->facilities->showers->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->showers->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->showers->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][showers][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->showers->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][showers][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->showers->details ?></textarea>
                 </td>
             </tr>
+            <!-- /SHOWERS -->
 
+
+            <!-- TOILETS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Toilets</h2>
@@ -78,15 +103,23 @@
                         <option value="yes"<?= @$attrs->facilities->toilets->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->toilets->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->toilets->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][toilets][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->toilets->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][toilets][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->toilets->details ?></textarea>
                 </td>
             </tr>
+            <!-- /TOILETS -->
 
+            
+            <!-- WASTE DISPOSAL -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Waste disposal</h2>
@@ -97,15 +130,23 @@
                         <option value="yes"<?= @$attrs->facilities->waste->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->waste->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->waste->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][waste][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->waste->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][waste][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->waste->details ?></textarea>
                 </td>
             </tr>
+            <!-- /WASTE DISPOSAL -->
 
+            
+            <!-- RECEPTION -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Reception</h2>
@@ -116,15 +157,23 @@
                         <option value="yes"<?= @$attrs->facilities->reception->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->reception->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->reception->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][reception][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->reception->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][reception][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->reception->details ?></textarea>
                 </td>
             </tr>
+            <!-- /RECEPTION -->
 
+            
+            <!-- CUSTOMS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Customs</h2>
@@ -135,15 +184,23 @@
                         <option value="yes"<?= @$attrs->facilities->customs->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->customs->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->customs->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][customs][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->customs->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][customs][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->customs->details ?></textarea>
                 </td>
             </tr>
+            <!-- /CUSTOMS -->
 
+            
+            <!-- ENQUIRIES -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Enquiries</h2>
@@ -154,15 +211,23 @@
                         <option value="yes"<?= @$attrs->facilities->enquiries->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->enquiries->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->enquiries->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][enquiries][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->enquiries->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][enquiries][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->enquiries->details ?></textarea>
                 </td>
             </tr>
+            <!-- /ENQUIRIES -->
+            
 
+            <!-- LAUNDRY -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Laundry</h2>
@@ -173,15 +238,23 @@
                         <option value="yes"<?= @$attrs->facilities->laundry->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->laundry->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->laundry->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][laundry][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->laundry->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][laundry][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->laundry->details ?></textarea>
                 </td>
             </tr>
+            <!-- /LAUNDRY -->
+            
 
+            <!-- WIFI -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>WiFi</h2>
@@ -200,15 +273,23 @@
                             <option value="no"<?= @$attrs->facilities->wifi->price->value === 'no' ? ' selected' : '' ?>>Paid</option>
                         </select>
                     </span>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->wifi->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][wifi][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->wifi->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][wifi][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->wifi->details ?></textarea>
                 </td>
             </tr>
+            <!-- /WIFI -->
 
+            
+            <!-- DISABILITY ACCESS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Disability access</h2>
@@ -219,15 +300,23 @@
                         <option value="yes"<?= @$attrs->facilities->disability->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->disability->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->disability->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][disability][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->disability->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][disability][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->disability->details ?></textarea>
                 </td>
             </tr>
+            <!-- /DISABILITY ACCESS -->
+            
 
+            <!-- PETS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Pets</h2>
@@ -238,14 +327,20 @@
                         <option value="yes"<?= @$attrs->facilities->pets->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->facilities->pets->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->facilities->pets->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[facilities][pets][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->facilities->pets->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][pets][details]"
+                              placeholder="Provide any details..."><?= @$attrs->facilities->pets->details ?></textarea>
                 </td>
             </tr>
+            <!-- /PETS -->
 
         </table>
 
@@ -255,7 +350,7 @@
 <script type="text/javascript">
 
     $(function() {
-        
+
         $('#wifi').selectButton({
             select: function(e, ui) {
                 if (ui.item.value === 'yes') {

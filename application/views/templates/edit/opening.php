@@ -22,7 +22,7 @@
         </div>
 
         <div class="tpl-details">
-            <textarea class="tpl-details-small attr<?= @$attrs->opening->details === null ? '' : ' tpl-details-include' ?>" placeholder="Provide any details..." name="attrs[opening][details]"><?= @$attrs->opening->details ?></textarea>
+            <textarea class="tpl-details-small<?= @$attrs->opening->details === null ? '' : ' attr-include' ?>" placeholder="Provide any details..." name="attrs[opening][details]"><?= @$attrs->opening->details ?></textarea>
         </div>
 
         <div class="tpl-subsection" id="everydayDetails" style="<?= @$attrs->opening->value === 'everyday' ? '' : 'display: none;' ?>">

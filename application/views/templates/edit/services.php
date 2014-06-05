@@ -12,6 +12,7 @@
 
         <table class="tpl-table" id="services" style="width: 100%;">
 
+            <!-- SLIPWAY -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Slipway</h2>
@@ -22,15 +23,23 @@
                         <option value="yes"<?= @$attrs->services->slipway->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->services->slipway->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->services->slipway->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[services][slipway][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->slipway->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][slipway][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->slipway->details ?></textarea>
                 </td>
             </tr>
+            <!-- /SLIPWAY -->
 
+            
+            <!-- PUMP OUT -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Pump out</h2>
@@ -41,15 +50,23 @@
                         <option value="yes"<?= @$attrs->services->pumpout->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->services->pumpout->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->services->pumpout->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[services][pumpout][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->pumpout->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][pumpout][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->pumpout->details ?></textarea>
                 </td>
             </tr>
+            <!-- /PUMP OUT -->
 
+            
+            <!-- REPAIRS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Repairs</h2>
@@ -60,15 +77,23 @@
                         <option value="yes"<?= @$attrs->services->repairs->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->services->repairs->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->services->repairs->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[services][repairs][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->pumpout->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][repairs][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->repairs->details ?></textarea>
                 </td>
             </tr>
+            <!-- /REPAIRS -->
 
+            
+            <!-- TRAVELIFT -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Travelift</h2>
@@ -80,18 +105,26 @@
                         <option value="no"<?= @$attrs->services->travelift->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
                     <span id="maxtonnage" style="<?= @$attrs->services->travelift->value === 'yes' ? '' : 'display: none;' ?>">
-                        <h2>Max tonnage</h2> <input class="tpl-text-small" type="text" />
+                        <h2>Max tonnage</h2> <input class="tpl-text-small attr" name="attrs[services][travelift][maxtonnage]" type="text" value="<?= @$attrs->services->travelift->maxtonnage ?>" />
                         <span class="tpl-note">(tonnes)</span>
                     </span>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->services->travelift->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[services][travelift][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->travelift->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][travelift][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->travelift->details ?></textarea>
                 </td>
             </tr>
+            <!-- /TRAVELIFT -->
+
             
+            <!-- STORAGE -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Storage</h2>
@@ -102,15 +135,23 @@
                         <option value="yes"<?= @$attrs->services->storage->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->services->storage->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->services->storage->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[services][storage][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->storage->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][storage][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->storage->details ?></textarea>
                 </td>
             </tr>
+            <!-- /STORAGE -->
+
             
+            <!-- DIVERS -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     <h2>Divers</h2>
@@ -121,14 +162,20 @@
                         <option value="yes"<?= @$attrs->services->divers->value === 'yes' ? ' selected' : '' ?>>Yes</option>
                         <option value="no"<?= @$attrs->services->divers->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span class="tpl-details-button">details</span>
+                    <!-- DETAILS BUTTON -->
+                    <span class="tpl-details-button<?= @$attrs->services->divers->details === null ? '' : ' tpl-visible' ?>">
+                        details
+                    </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="2">
-                    <textarea class="tpl-details-small attr" name="attrs[services][divers][details]" placeholder="Provide any details..."></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->divers->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][divers][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->divers->details ?></textarea>
                 </td>
             </tr>
+            <!-- /DIVERS -->
 
         </table>
 
