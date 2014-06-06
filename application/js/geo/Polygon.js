@@ -72,19 +72,13 @@ Polygon.fromWKT = function(wkt) {
     }
 
     // Explode by comma matched coordinates trimmed off of spaces
-    //var sPoints = explode(",", trim($matches[1]));
     var sPoints = matches[1].trim().split(",");
-
-    // If points are fewer than 2 the LineString is actually a point...
-    if (sPoints.length < 3) {
-        return null;
-    }
 
     // Iterate over coordinates to instantiate Points of the Polygons
     for (var i = 0; i < sPoints.length; i++) {
         // Parse xy point coordinates
         var pattern = / *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) */;
-        var matches = pattern.exec(wkt);
+        var matches = pattern.exec(sPoints[i]);
         // Return null if matching fails
         if (matches.length === 0) {
             return null;

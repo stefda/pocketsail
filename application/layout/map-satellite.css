@@ -9,20 +9,21 @@ body { height: 100%; margin: 0; padding: 0 }
 
 .label { position: absolute; }
 .label.sel { z-index: 100; }
-.label.sel .tpl-details-large { color: #001943; }
-.label.acc .tpl-details-large { z-index: 99; }
+.label.sel .text { color: #001943; }
+.label.acc .text { z-index: 99; }
 .label.acc .icon { z-index: 98; }
 .label.dim .icon { -webkit-filter: grayscale(100%); }
-.label.dim .tpl-details-large { color: #666; }
+.label.dim .text { color: #666; }
 
-.label.cove .tpl-details-large { color: #5676a2; }
-.label.bay .tpl-details-large { color: #5676a2; }
-.label.channel .tpl-details-large { color: #5676a2; }
-.label.town .tpl-details-large { text-transform: uppercase; }
+.label.cove .text { color: lightblue; }
+.label.bay .text { color: #5676a2; }
+.label.archipelago .text { color: lightgreen; }
+.label.channel .text { color: #5676a2; }
+.label.town .text { text-transform: uppercase; }
 
 /* 006699 */
 
-.icon { cursor: default; z-index: 96; background-image: url('/application/images/marker-icons.png'); }
+.icon { cursor: default; z-index: 96; background-image: url('/application/images/satellite-icons.png'); }
 .icon.p { z-index: 95; opacity: 1; }
 
 

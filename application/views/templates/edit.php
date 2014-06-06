@@ -89,6 +89,11 @@
                     flags: ['excludePoiLabel'],
                     poiId: poiId
                 });
+                
+                $('#zoom').click(function() {
+                    map.setPoiIds([121]);
+                    map.loadData(['zoomToPois']);
+                });
 
                 //console.log(map.googleMap);
                 new google.maps.Marker({
@@ -163,7 +168,7 @@
                         var attrs = $('.attr:visible,.attr-include').serialize()
                         TestBroker.post({
                             post: $.param({
-                                id: id,
+                                id: poiId,
                                 name: name,
                                 cat: cat,
                                 sub: sub,
@@ -223,7 +228,7 @@
             .tpl-canvas-wrapper-large { height: 500px; }
             .tpl-canvas-resize-button { cursor: pointer; position: relative; top: -5px; left: 425px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; }
             .tpl-canvas-wrapper-large .tpl-canvas-resize-button { background-image: url('/application/layout/images/arrow-up.png'); }
-            
+
 
 
         </style>
@@ -234,6 +239,10 @@
     </head>
     <body>
 
+        <div style="position: absolute; left: 0px; top: 0px;">
+            <input id="zoom" type="button" value="Zoom" />
+        </div>
+        
         <div style="position: fixed; top: 20px; left: 960px;">
             <input type="button" id="saveButton" value="Save" />
         </div>
@@ -254,7 +263,7 @@
                 </div>
             </div>
 
-            <? include_view('templates/edit/berthing'); ?>
+            <? include_edit_template($poi->sub, $poi->cat); ?>
 
         </div>
 

@@ -7,11 +7,18 @@ class ViewBounds extends Bounds implements JsonSerializable {
     public $n;
     public $e;
 
-    protected function __construct($sw, $ne) {
-        $this->s = $sw->lat();
-        $this->w = $sw->lng();
-        $this->n = $ne->lat();
-        $this->e = $ne->lng();
+    public function __construct($sw = NULL, $ne = NULL) {
+        if ($sw === NULL) {
+            $this->s = NULL;
+            $this->w = NULL;
+            $this->n = NULL;
+            $this->e = NULL;
+        } else {
+            $this->s = $sw->lat();
+            $this->w = $sw->lng();
+            $this->n = $ne->lat();
+            $this->e = $ne->lng();
+        }
     }
 
     /**
@@ -71,6 +78,34 @@ class ViewBounds extends Bounds implements JsonSerializable {
 
         // Instantiate ViewBounds accordingly, then return
         return new ViewBounds(new LatLng($s, $w), new LatLng($n, $e));
+    }
+
+    public function extendByLatLng(LatLng $latLng) {
+        if ($this->s === NULL) {
+            $this->s = $latLng->lat();
+            $this->w = $latLng->lng();
+            $this->n = $latLng->lat();
+            $this->e = $latLng->lng();
+        } else {
+            $this->s = min($this->s, $latLng->lat());
+            $this->w = min($this->w, $latLng->lng());
+            $this->n = max($this->n, $latLng->lat());
+            $this->e = max($this->e, $latLng->lng());
+        }
+    }
+
+    public function extendByBounds(ViewBounds $bounds) {
+        if ($this->s === NULL) {
+            $this->s = $bounds->s;
+            $this->w = $bounds->w;
+            $this->n = $bounds->n;
+            $this->e = $bounds->e;
+        } else {
+            $this->s = min($this->s, $bounds->s);
+            $this->w = min($this->w, $bounds->w);
+            $this->n = max($this->n, $bounds->n);
+            $this->e = max($this->e, $bounds->e);
+        }
     }
 
     /**

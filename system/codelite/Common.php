@@ -141,6 +141,32 @@ function include_view($view) {
     echo CL_Loader::get_instance()->view($view, FALSE);
 }
 
+function include_edit_template($sub, $cat) {
+    $viewPath = APPPATH . 'views/templates/edit/' . $sub . '.php';
+    if (file_exists($viewPath)) {
+        echo CL_Loader::get_instance()->view('templates/edit/' . $sub, FALSE);
+        return;
+    }
+    echo CL_Loader::get_instance()->view('templates/edit/' . $cat, FALSE);
+}
+
+function include_view_template($sub, $cat) {
+    $viewPath = APPPATH . 'views/templates/view/' . $sub . '.php';
+    if (file_exists($viewPath)) {
+        echo CL_Loader::get_instance()->view('templates/view/' . $sub, FALSE);
+        return;
+    }
+    echo CL_Loader::get_instance()->view('templates/view/' . $cat, FALSE);
+}
+
+function html($text) {
+    $text = str_replace("\r\n", "</p><p>", $text);
+    $text = "<p>" . str_replace("\n", "</p><p>", $text) . "</p>";
+    $text = preg_replace("/\*\*([^*]*)\*\*/", "<h2>\\1</h2>", $text);
+    $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "<a href=\"\\2\">\\1</a>", $text);
+    return $text;
+}
+
 function show_error($message, $header = 'error', $type = 'default') {
 
     if ($header == 'error') {

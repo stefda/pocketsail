@@ -3,7 +3,7 @@
 <? include_view('templates/edit/season'); ?>
 <? include_view('templates/edit/opening'); ?>
 <? include_view('templates/edit/charts'); ?>
-<? include_view('templates/edit/exposition'); ?>
+<? include_view('templates/edit/exposure'); ?>
 <? include_view('templates/edit/description'); ?>
 <? include_view('templates/edit/approach'); ?>
 <? include_view('templates/edit/attractions'); ?>

@@ -10,7 +10,8 @@ function Map(o) {
     var center = o.center;
 
     this.types = o.types !== undefined ? o.types : [];
-    this.poiId = o.poiId !== undefined ? o.poiId : [];
+    this.poiId = o.poiId !== undefined ? o.poiId : 0;
+    this.poiIds = o.poiIds !== undefined ? o.poiIds : [];
     this.flags = o.flags !== undefined ? o.flags : [];
     this.ignoreZoomChange = false;
     this.init = true;
@@ -33,7 +34,14 @@ function Map(o) {
     this.getPoiId = function() {
         return this.poiId;
     };
-    
+
+    /**
+     * @returns {Array}
+     */
+    this.getPoiIds = function() {
+        return this.poiIds;
+    };
+
     /**
      * @returns {Array}
      */
@@ -70,6 +78,10 @@ function Map(o) {
         this.poiId = poiId;
     };
 
+    this.setPoiIds = function(poiIds) {
+        this.poiIds = poiIds;
+    };
+
     this.setFlags = function(flags) {
         this.flags = flags;
     };
@@ -85,14 +97,21 @@ function Map(o) {
         this.markers = [];
     };
 
-    this.loadData = function() {
+    this.loadData = function(flags) {
+
+        // Normalise flags
+        if (flags === undefined) {
+            flags = [];
+        }
+
         APIBroker.loadData({
             post: {
                 vBounds: ViewBounds.fromMap(this.googleMap).toWKT(),
                 zoom: this.getZoom(),
                 types: this.getTypes(),
                 poiId: this.getPoiId(),
-                flags: this.getFlags()
+                poiIds: this.getPoiIds(),
+                flags: this.getFlags().concat(flags)
             },
             success: function(res) {
                 this_.handleResult(res);
@@ -191,6 +210,17 @@ function Map(o) {
         google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {
             if (this.getMapTypeId() === 'hybrid') {
                 $('#mapStyle').attr('href', '/application/layout/map-satellite.css');
+                this_.googleMap.setOptions({
+                    styles: [{
+                            featureType: "all",
+                            elementType: "labels",
+                            stylers: [{visibility: "off"}]
+                        },
+                        {
+                            featureType: "road",
+                            stylers: [{visibility: "off"}]}
+                    ]
+                });
             } else {
                 $('#mapStyle').attr('href', '/application/layout/map.css');
             }

@@ -5,11 +5,17 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
-    
+
     function markup() {
-        $text = "**Subheader**\nTextText\n\n**Dalsi Subheader**Text Text text\nThis link [Google|http://www.google.com] is working!";
-        $headedText = preg_replace('/\*\*([^*]*)\*\*\n?/', "<h2>\\1</h2>", $text);
-        echo preg_replace('/\[([^|]*)\|([^\]]*)\]/', "<a href=\"\\2\">\\1</a>", $headedText);
+        $this->load->library('geo/*');
+        $this->load->model('LabelModel');
+        print_r(LabelModel::loadDynamicByIds([1]));
+//        $vb = new ViewBounds();
+//        $vb->extend(new LatLng(44, 17));
+//        $vb->extend(new LatLng(43, 12));
+//        $vb->extend(new LatLng(40, 12));
+//        $vb->extend(new LatLng(41, 14));
+//        echo $vb;
     }
 
     function index() {
@@ -47,6 +53,30 @@ class Test extends CL_Controller {
         $this->assign('poi', $poiObject);
         $this->assign('attrs', $attrsObject);
         $this->load->view('templates/edit');
+    }
+
+    function view() {
+
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+
+        $poiId = filter_input(INPUT_GET, 'poiId', FILTER_VALIDATE_INT);
+
+        $poiObject = new stdClass();
+        $attrsObject = new stdClass();
+
+        $poi = POIModel::load($poiId);
+        $poiObject->id = $poi->id();
+        $poiObject->name = $poi->name();
+        $poiObject->cat = $poi->cat();
+        $poiObject->sub = $poi->sub();
+        $poiObject->latLng = $poi->latLng();
+        $poiObject->border = $poi->border();
+        $attrsObject = $poi->attributes();
+        
+        $this->assign('poi', $poiObject);
+        $this->assign('attrs', $attrsObject);
+        $this->load->view('templates/view');
     }
 
     /**

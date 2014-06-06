@@ -14,7 +14,7 @@
                     Wind
                 </td>
                 <td class="tpl-table-item-value">
-                    <input class="tpl-text-small attr" name="attrs[exposition][wind]" value="<?= @$attrs->exposition->wind ?>" />
+                    <input class="tpl-text-small attr" name="attrs[exposure][wind]" value="<?= @$attrs->exposure->wind ?>" />
                 </td>
             </tr>
             <tr>
@@ -22,7 +22,7 @@
                     Swell
                 </td>
                 <td class="tpl-table-item-value">
-                    <input class="tpl-text-small attr" name="attrs[exposition][swell]" value="<?= @$attrs->exposition->swell ?>" />
+                    <input class="tpl-text-small attr" name="attrs[exposure][swell]" value="<?= @$attrs->exposure->swell ?>" />
                 </td>
             </tr>
         </table>

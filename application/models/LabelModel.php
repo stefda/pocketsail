@@ -50,7 +50,31 @@ class LabelModel implements JsonSerializable {
 
         return LabelModel::fromObject($r->fetchObject(), 'selected');
     }
+    
+    /**
+     * @param int[] $id
+     * @return \LabelModel[]|null
+     */
+    public static function loadDynamicByIds($ids) {
 
+        if (count($ids) === 0) {
+            return [];
+        }
+        
+        $r = db()->select()
+                ->all('ld')
+                ->col('desc', 'ldd')
+                ->from('label_dynamic')->alias('ld')
+                ->leftJoin('label_dynamic_descriptor')->alias('ldd')->on('sub')
+                ->where('id', IN, $ids)
+                ->exec();
+
+        while ($o = $r->fetchObject()) {
+            $labels[] = LabelModel::fromObject($o, 'selected');
+        }
+        return $labels;
+    }
+    
     /**
      * @param Bounds $bounds
      * @param int $zoom
@@ -76,14 +100,42 @@ class LabelModel implements JsonSerializable {
         return $labels;
     }
 
-    /**
+//    /**
+//     * @param Bounds $bounds
+//     * @param int $zoom
+//     * @param int $exceptId
+//     * @param string[] $exceptTypes
+//     * @return \LabelModel
+//     */
+//    public static function loadStaticDynamicByBounds(Bounds $bounds, $zoom, $exceptId = 0, $exceptTypes = []) {
+//
+//        $res = db()->select()
+//                ->all()
+//                ->from('label_static')->alias('ls')
+//                ->leftJoin('label_static_descriptor')->alias('lsd')->on('sub')
+//                ->where('zoom', 'lsd', EQ, $zoom)
+//                ->und('zoom', 'ls', EQ, $zoom)
+//                ->und(self::buildBoundsClause($bounds))
+//                ->und('id', NE, $exceptId)
+//                ->und('sub', 'ls', NOT_IN, $exceptTypes)
+//                ->orderBy('order')
+//                ->exec();
+//
+//        $labels = [];
+//        while ($o = $res->fetchObject()) {
+//            $labels[] = new LabelModel($o, 'dynamic');
+//        }
+//        return $labels;
+//    }
+    
+        /**
      * @param Bounds $bounds
      * @param int $zoom
      * @param int $exceptId
      * @param string[] $exceptTypes
      * @return \LabelModel
      */
-    public static function loadStaticDynamicByBounds(Bounds $bounds, $zoom, $exceptId = 0, $exceptTypes = []) {
+    public static function loadStaticDynamicByBounds(Bounds $bounds, $zoom, $exceptIds, $exceptTypes = []) {
 
         $res = db()->select()
                 ->all()
@@ -92,7 +144,7 @@ class LabelModel implements JsonSerializable {
                 ->where('zoom', 'lsd', EQ, $zoom)
                 ->und('zoom', 'ls', EQ, $zoom)
                 ->und(self::buildBoundsClause($bounds))
-                ->und('id', NE, $exceptId)
+                ->und('id', NOT_IN, $exceptIds)
                 ->und('sub', 'ls', NOT_IN, $exceptTypes)
                 ->orderBy('order')
                 ->exec();
