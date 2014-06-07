@@ -111,6 +111,9 @@
             .nearGroup { text-decoration: none; color: #3079ed; font-weight: bold; font-size: 14px; }
             .near { text-decoration: none; color: #4c8efc; }
 
+            .page { position: absolute; width: 300px; height:145px; background-color: #fff; border-radius: 2px; box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2); }
+            .in { position: absolute; bottom: 9px; left: 12px; color: #888; }
+
         </style>
 
         <link type="text/css" rel="stylesheet" id="mapStyle" href="/application/layout/map.css" />
@@ -118,6 +121,11 @@
 
     </head>
     <body>
+
+        <div class="page" style="top: 160px; left: 10px;"><div class="in">ACI Marina Palmizana</div></div>
+        <div class="page" style="top: 125px; left: 10px;"></div>
+        <div class="page" style="top: -30px; left: 10px;"></div>
+        <div class="page" style="top: -65px; left: 10px;"></div>
 
         <div style="width: 100%; height: 45px; background-color: #f5f6f7; position: relative; z-index: 1;">
             <img src="/application/images/logo.png" style="margin: 7px 10px;" />
@@ -140,7 +148,7 @@
             <div style="float: right; width: 280px; margin-top: 20px;">
                 <div style="padding: 0 10px;">
                     <div style="color: #444; font-size: 14px; font-weight: bold;">Within 5 miles</div>
-                    
+
                     <? if (property_exists($near, 'restaurant')): ?>
                         <div style="margin: 10px 0 7px;">
                             <div>
@@ -156,7 +164,7 @@
                             </div>
                         </div>
                     <? endif; ?>
-                    
+
                     <? if (property_exists($near, 'anchorage')): ?>
                         <div style="margin: 10px 0 7px;">
                             <div>
@@ -172,7 +180,7 @@
                             </div>
                         </div>
                     <? endif; ?>
-                    
+
                 </div>
             </div>
 
