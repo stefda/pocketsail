@@ -141,6 +141,36 @@ class POIModel implements JsonSerializable {
         return $pois;
     }
 
+    public static function loadByBorder(Polygon $border, $types, $exceptId = 0) {
+
+        $res = db()->select()
+                ->all('poi')
+                ->col('latLng', 'poi')->op(AS_TEXT)->alias('latLngWKT')
+                ->col('border', 'poi')->op(AS_TEXT)->alias('borderWKT')
+                ->col('name', 'poiNear')->alias('nearName')
+                ->col('name', 'poiCountry')->alias('countryName')
+                ->col('name', 'poiType')->alias('subName')
+                ->from('poi')
+                ->leftJoin('poi')->alias('poiNear')->on('id', 'nearId')
+                ->leftJoin('poi')->alias('poiCountry')->on('id', 'countryId')
+                ->leftJoin('poi_type')->alias('poiType')->on('id', 'sub')
+                ->where("ST_Within(`poi`.`latLng`, GeomFromText('{$border->toWKT()}'))")
+                ->und('sub', 'poi', IN, $types)
+                ->und('id', 'poi', NE, $exceptId)
+                ->exec();
+
+//                ->all()
+//                ->from('poi')
+//                ->where("ST_Within(`latLng`, GeomFromText('{$border->toWKT()}'))")
+//                ->und('sub', IN, $types)
+//                ->exec();
+
+        while ($o = $res->fetchObject()) {
+            $pois[] = new POIModel($o);
+        }
+        return $pois;
+    }
+
     /**
      * @param LatLng $latLng
      * @return POIModel[]
@@ -179,6 +209,21 @@ class POIModel implements JsonSerializable {
             $pois[] = new POIModel($o);
         }
         return $pois;
+    }
+
+    //Helper method
+    private static function buildBoundsClause(Bounds $bounds) {
+
+        $s = $bounds->s();
+        $w = $bounds->w();
+        $n = $bounds->n();
+        $e = $bounds->e();
+
+        if ($w > $e) {
+            return "(`lat` < $n AND `lat` > $s AND (`lng` < $e OR `lng` > $w))";
+        } else {
+            return "(`lat` < $n AND `lat` > $s AND `lng` < $e AND `lng` > $w)";
+        }
     }
 
     public function id() {
@@ -242,6 +287,20 @@ class POIModel implements JsonSerializable {
 
     public function info() {
         return new POIInfo($this);
+    }
+    
+    public function toObject() {
+        $res = new stdClass();
+        $res->id = $this->id();
+        $res->name = $this->name();
+        $res->cat = $this->cat();
+        $res->sub = $this->sub();
+        $res->subName = $this->subName();
+        $res->nearId = $this->nearId();
+        $res->nearName = $this->nearName();
+        $res->latLng = $this->latLng();
+        $res->border = $this->border();
+        return $res;
     }
 
     public function jsonSerialize() {

@@ -43,7 +43,7 @@
         <script>
 
             var poiId = <?= $poi->id ?>;
-            var cat = '<?= $poi->cat ?>';   
+            var cat = '<?= $poi->cat ?>';
             var sub = '<?= $poi->sub ?>';
             var latLng = LatLng.fromWKT('<?= $poi->latLng === null ? 'NULL' : $poi->latLng->toWKT() ?>');
 
@@ -60,13 +60,22 @@
                     var center = map.getCenter();
                     if ($('.tpl-canvas-wrapper').hasClass('tpl-canvas-wrapper-large')) {
                         $('.tpl-canvas-wrapper').removeClass('tpl-canvas-wrapper-large');
-                        $('#canvas').width('280px');;
+                        $('#bunka').width('280px');
+                        $('#gallery').show();
                     } else {
                         $('.tpl-canvas-wrapper').addClass('tpl-canvas-wrapper-large');
-                        $('#canvas').width('100%');
+                        $('#gallery').hide();
+                        $('#bunka').width('100%');
                     }
                     google.maps.event.trigger(map.googleMap, 'resize');
                     map.setCenter(center);
+                });
+
+                $('.near').click(function(e) {
+                    var id = $(this).attr('poiId');
+                    map.setPoiIds([id]);
+                    map.loadData(['zoomToPois']);
+                    e.preventDefault();
                 });
             });
 
@@ -88,8 +97,8 @@
             #canvas { box-shadow: 0 0 1px rgba(0, 0, 0, 0.2); }
             .tpl-canvas-wrapper { height: 200px; }
             .tpl-canvas-wrapper-large { height: 500px; }
-            .tpl-canvas-resize-button { cursor: pointer; position: relative; top: -5px; left: 425px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; }
-            .tpl-canvas-wrapper-large .tpl-canvas-resize-button { background-image: url('/application/layout/images/arrow-up.png'); }
+            /* .tpl-canvas-resize-button { cursor: pointer; position: absolute; bottom: 20px; right: 25px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; } */
+            .tpl-canvas-resize-button { cursor: pointer; position: absolute; bottom: 22px; right: 28px; width: 30px; height: 23px; background-color: #fff; border-radius: 2px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3); }
 
         </style>
 
@@ -102,20 +111,52 @@
         <div style="width: 100%; height: 45px; background-color: #f5f6f7; position: relative; z-index: 1;">
             <img src="/application/images/logo.png" style="margin: 7px 10px;" />
         </div>
-        
+
+        <div style="width: 900px; margin: 0 auto; position: relative; z-index: 0;">
+            <div class="tpl-canvas-wrapper" id="canvasWrapper">
+                <div id="bunka" style="position: relative; float: right; width: 280px; height: 100%;">
+                    <div id="canvas" style="width: 100%; height: 100%;"></div>
+                    <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
+                </div>
+                <div id="gallery" style="width: 600px; height: 200px; background-color: #d0d1d2; overflow: hidden;">
+                    <img src="https://www.aci.hr/imageGen.ashx?image=/media/101493/zut940.jpg&width=940" style="height: 200px;"/>
+                </div>
+            </div>
+        </div>
+
         <div style="width: 900px; margin: 0 auto 20px auto; position: relative; z-index: 0;">
 
-            <div class="tpl-canvas-wrapper" id="canvasWrapper">
-                <div id="canvas" style="float: right; width: 280px; height: 100%;"></div>
-                <div id="gallery" style="width: 600px; height: 200px; background-color: #d0d1d2;">
+            <div style="float: right; width: 280px; margin-top: 20px;">
+                <div style="padding: 0 10px;">
+                    <div style="color: #444; font-size: 14px; font-weight: bold;">Within 5 miles</div>
+                    <? if (property_exists($near, 'restaurant')): ?>
+                        Restaurants
+                        <div>
+                            <? foreach ($near->restaurant AS $restaurant): ?>
+                                <a class="near" poiId="<?= $restaurant['poi']->id ?>" href=""><?= $restaurant['poi']->name ?></a> <?= round($restaurant['dist'], 1) ?> km<br />
+                            <? endforeach; ?>
+                        </div>
+                    <? endif; ?>
+                    <? if (property_exists($near, 'anchorage')): ?>
+                        Anchorages
+                        <div>
+                            <? foreach ($near->anchorage AS $anchorage): ?>
+                                <a class="near" poiId="<?= $anchorage['poi']->id ?>" href=""><?= $anchorage['poi']->nearName ?></a> <?= round($anchorage['dist'], 1) ?> km<br />
+                            <? endforeach; ?>
+                        </div>
+                    <? endif; ?>
                 </div>
-                <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
             </div>
 
-            <div class="tpl-section" style="border-radius: 0 2px 2px 0;">
+            <div class="tpl-section" style="border-radius: 0 0 2px 2px;">
                 <div class="tpl-section-wrapper">
 
-                    <?= $poi->name ?>
+                    <div style="font-size: 18px; font-weight: bold; color: #444; margin: 4px 0 6px 0;">
+                        <?= $poi->name ?>
+                    </div>
+                    <div>
+                        <?= $poi->latLng->latFormatted() . " - " . $poi->latLng->lngFormatted() ?>
+                    </div>
 
                 </div>
             </div>

@@ -4,6 +4,20 @@ if (!defined('SYSPATH')) {
     exit("No direct script access allowed!");
 }
 
+function aasort(&$array, $key) {
+    $res = array();
+    $sorted = array();
+    reset($array);
+    foreach ($array as $ii => $va) {
+        $sorted[$ii] = $va[$key];
+    }
+    asort($sorted);
+    foreach ($sorted as $ii => $va) {
+        $res[$ii] = $array[$ii];
+    }
+    $array = $res;
+}
+
 function db() {
     return CL_MySQLi::get_instance();
 }

@@ -188,6 +188,7 @@ function Map(o) {
             center: center.toGoogleLatLng(),
             panControl: false,
             streetViewControl: false,
+            scaleControl: true,
             zoomControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_BOTTOM,
                 style: google.maps.ZoomControlStyle.SMALL

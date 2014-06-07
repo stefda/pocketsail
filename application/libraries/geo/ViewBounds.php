@@ -108,6 +108,45 @@ class ViewBounds extends Bounds implements JsonSerializable {
         }
     }
 
+    public function buffer($x, $y, $zoom) {
+
+        $f = GEO_TILE_SIZE * pow(2, $zoom);
+
+//        echo $x . "," . $y . "\n";
+//        echo $this->s . "\n";
+//        echo $this->w . "\n";
+//        echo $this->n . "\n";
+//        echo $this->e . "\n";
+
+        $s_g = (Geo::mercatorLat($this->s) + M_PI) / GEO_2_PI * $f;
+        $w_g = (Geo::mercatorLng($this->w) + M_PI) / GEO_2_PI * $f;
+        $n_g = (Geo::mercatorLat($this->n) + M_PI) / GEO_2_PI * $f;
+        $e_g = (Geo::mercatorLng($this->e) + M_PI) / GEO_2_PI * $f;
+
+        $s_g -= $y;
+        $w_g -= $x;
+        $n_g += $y;
+        $e_g += $x;
+
+        $this->s = Geo::mercatorLatInv(($s_g - $y) / $f * GEO_2_PI - M_PI);
+        $this->w = Geo::mercatorLngInv(($w_g - $x) / $f * GEO_2_PI - M_PI);
+        $this->n = Geo::mercatorLatInv(($n_g + $y) / $f * GEO_2_PI - M_PI);
+        $this->e = Geo::mercatorLngInv(($e_g + $x) / $f * GEO_2_PI - M_PI);
+
+//        echo $this->s . "\n";
+//        echo $this->w . "\n";
+//        echo $this->n . "\n";
+//        echo $this->e . "\n";
+    }
+
+//    public function copy() {
+//        return new ViewBounds(new LatLng($this->s, $this->w), new LatLng($this->n, $this->e));
+//    }
+
+    public function __clone() {
+        return new ViewBounds(new LatLng($this->s, $this->w), new LatLng($this->n, $this->e));
+    }
+
     /**
      * @return LatLng
      */
@@ -153,11 +192,21 @@ class ViewBounds extends Bounds implements JsonSerializable {
         // Compute zooming factor
         $zoomFact = 1 - 1 / pow(2, $zoomDiff);
 
-        // Compute latitude difference between east-west extremities
-        $lngDiff = $this->e - $this->w;
-        // Compute new east-west extremities
-        $this->e -= $lngDiff / 2 * $zoomFact;
-        $this->w += $lngDiff / 2 * $zoomFact;
+//        // Compute latitude difference between east-west extremities
+//        $lngDiff = $this->e - $this->w;
+//        // Compute new east-west extremities
+//        $this->e -= $lngDiff / 2 * $zoomFact;
+//        $this->w += $lngDiff / 2 * $zoomFact;
+
+        $xE = Geo::mercatorLng($this->e);
+        $xW = Geo::mercatorLng($this->w);
+        $xDiff = $xE - $xW;
+        $xE -= $xDiff / 2 * $zoomFact;
+        $xW += $xDiff / 2 * $zoomFact;
+
+        $this->e = Geo::mercatorLngInv($xE);
+        $this->w = Geo::mercatorLngInv($xW);
+
 
         // Project latitudes onto a square
         $yN = Geo::mercatorLat($this->n);
@@ -199,14 +248,16 @@ class ViewBounds extends Bounds implements JsonSerializable {
         $bN = Geo::mercatorLat($bounds->n());
         $bS = Geo::mercatorLat($bounds->s());
         $bLatDiff = $bN - $bS;
+        
         // Compute meridian zoom difference
-        $latZoomDiff = floor((log($aLatDiff) - log($bLatDiff)) / log(2));
+        $latZoomDiff = floor((log($aLatDiff) - log($bLatDiff)) / log(2) + 0.01);
 
         // Compute parallel differences for this and given bounds
         $aLngDiff = $this->e - $this->w;
         $bLngDiff = $bounds->e() - $bounds->w();
+        
         // Compute parallel zoom difference
-        $lngZoomDiff = floor((log($aLngDiff) - log($bLngDiff)) / log(2));
+        $lngZoomDiff = floor((log($aLngDiff) - log($bLngDiff)) / log(2) + 0.01);
 
         // Change zoom using smaller of the two computed zoom differences
         $zoomDiff = min($latZoomDiff, $lngZoomDiff);
@@ -219,10 +270,22 @@ class ViewBounds extends Bounds implements JsonSerializable {
     }
 
     /**
-     * @return Bounds
+     * @return \Bounds
      */
     public function toBounds() {
         return new Bounds(new LatLng($this->s, $this->w), new LatLng($this->n, $this->e));
+    }
+
+    /**
+     * @return \Polygon
+     */
+    public function toPolygon() {
+        $topRight = new Point($this->e, $this->n);
+        $bottomRight = new Point($this->e, $this->s);
+        $bottomLeft = new Point($this->w, $this->s);
+        $topLeft = new Point($this->w, $this->n);
+        $points = [$topRight, $bottomRight, $bottomLeft, $topLeft, $topRight];
+        return new Polygon($points);
     }
 
     public function toWKT() {

@@ -159,6 +159,13 @@ class API extends CL_Controller {
                     }
                 }
                 $vBounds->fitBounds($bounds, $zoom);
+                $tempBounds = clone($vBounds);
+//                $tempBounds = new ViewBounds($vBounds->getSouthWest(), $vBounds->getNorthEast());
+                $tempBounds->buffer(1000, 1000, $zoom);
+//                print_r($vBounds);
+//                print_r($tempBounds);
+                $vBounds->fitBounds($tempBounds, $zoom);
+//                echo $zoom;
             }
             addFlag($res, "panToCenter");
             addFlag($res, "doLabelling");
@@ -174,6 +181,9 @@ class API extends CL_Controller {
                     $zoom--;
                     in_array('panToCenter', $res['flags']) ? null : $res['flags'][] = 'panToCenter';
                 }
+                $tempBounds = clone($vBounds);
+//                $tempBounds->buffer(10, 10, $zoom);
+//                $vBounds->fitBounds($tempBounds, $zoom);
             }
             $res['labels'] = array_merge($res['labels'], LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
             addFlag($res, "doLabelling");
