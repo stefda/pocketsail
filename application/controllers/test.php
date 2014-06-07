@@ -28,18 +28,24 @@ class Test extends CL_Controller {
 
         $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
         $nearSorted = [];
+        $nearIds = [];
 
         // Separate into subcategories
         foreach ($near AS $poiTo) {
             $sub = $poiTo->sub();
             if (!array_key_exists($sub, $nearSorted)) {
                 $nearSorted[$sub] = [];
+                $nearIds[$sub] = [];
             }
             $nearSorted[$sub][] = [
                 'poi' => $poiTo->toObject(),
                 'dist' => Geo::haversine($poi->latLng(), $poiTo->latLng())
             ];
+            $nearIds[] = $poiTo->id();
         }
+
+        print_r($nearIds);
+        exit();
 
         // Sort each subcategory by disance
         foreach ($nearSorted AS &$near) {
@@ -58,12 +64,11 @@ class Test extends CL_Controller {
 //        
 //        echo rad2deg(deg2rad(-180) + 0.1);
 //        exit();
-        
 //        echo Geo::mercatorLng(180) . "<br>";
 //        echo Geo::mercatorLng(-180);
 //        
 //        exit();
-        
+
         $latLng = new LatLng(-44.32341234, 17.345456);
         echo $latLng->latFormatted() . " - " . $latLng->lngFormatted();
 
@@ -118,43 +123,39 @@ class Test extends CL_Controller {
         $poiObject->border = $poi->border();
         $attrsObject = $poi->attributes();
 
-        // Load nears
-//        if ($poi->border() === NULL) {
-            $r = sqrt(2 * pow(9, 2));
-            $sw = Geo::proximity($poi->latLng(), $r, 215);
-            $ne = Geo::proximity($poi->latLng(), $r, 45);
-            $vb = new ViewBounds($sw, $ne);
-            $poiBorder = $vb->toPolygon();
-//        } else {
-//            $poiBorder = $poi->border();
-//        }
+        $r = sqrt(2 * pow(9, 2));
+        $sw = Geo::proximity($poi->latLng(), $r, 215);
+        $ne = Geo::proximity($poi->latLng(), $r, 45);
+        $vb = new ViewBounds($sw, $ne);
+        $poiBorder = $vb->toPolygon();
 
         $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
         $nearSorted = [];
+        $nearSortedIds = [];
 
         // Separate into subcategories
         foreach ($near AS $poiTo) {
             $sub = $poiTo->sub();
             if (!array_key_exists($sub, $nearSorted)) {
                 $nearSorted[$sub] = [];
+                $nearSortedIds[$sub] = [];
             }
             $nearSorted[$sub][] = [
                 'poi' => $poiTo->toObject(),
                 'dist' => Geo::haversine($poi->latLng(), $poiTo->latLng())
             ];
+            $nearSortedIds[$sub][] = $poiTo->id();
         }
 
         // Sort each subcategory by disance
         foreach ($nearSorted AS &$near) {
             aasort($near, 'dist');
         }
-        
-//        print_r((object) $nearSorted);
-//        exit();
-        
+
         $this->assign('poi', $poiObject);
         $this->assign('attrs', $attrsObject);
         $this->assign('near', (object) $nearSorted);
+        $this->assign('nearIds', $nearSortedIds);
         $this->load->view('templates/view');
     }
 

@@ -71,6 +71,14 @@
                     map.setCenter(center);
                 });
 
+                $('.nearGroup').click(function(e) {
+                    var idsStr = $(this).attr('data-poiids');
+                    var ids = $.parseJSON(idsStr);
+                    map.setPoiIds(ids);
+                    map.loadData(['zoomToPois']);
+                    e.preventDefault();
+                });
+
                 $('.near').click(function(e) {
                     var id = $(this).attr('poiId');
                     map.setPoiIds([id]);
@@ -83,7 +91,7 @@
 
         <style>
 
-            html, body { font-family: Arial; background-color: #fff; }
+            html, body { font-family: Arial; }
             body { overflow-y: scroll; font-size: 14px; background-color: #e6e7e8; }
             a, input, textarea, select { outline: none; font-family: Arial; display: inline-block; margin: 0; }
             h1 { font-size: 16px; margin: 0 0 7px 0; font-weight: bold; color: #555; }
@@ -98,7 +106,10 @@
             .tpl-canvas-wrapper { height: 200px; }
             .tpl-canvas-wrapper-large { height: 500px; }
             /* .tpl-canvas-resize-button { cursor: pointer; position: absolute; bottom: 20px; right: 25px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; } */
-            .tpl-canvas-resize-button { cursor: pointer; position: absolute; bottom: 22px; right: 28px; width: 30px; height: 23px; background-color: #fff; border-radius: 2px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.3); }
+            .tpl-canvas-resize-button { cursor: pointer; position: absolute; bottom: 22px; right: 28px; width: 30px; height: 23px; background-color: #fff; border-radius: 2px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.25); }
+
+            .nearGroup { text-decoration: none; color: #3079ed; font-weight: bold; font-size: 14px; }
+            .near { text-decoration: none; color: #4c8efc; }
 
         </style>
 
@@ -118,7 +129,7 @@
                     <div id="canvas" style="width: 100%; height: 100%;"></div>
                     <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
                 </div>
-                <div id="gallery" style="width: 600px; height: 200px; background-color: #d0d1d2; overflow: hidden;">
+                <div id="gallery" style="width: 600px; height: 200px; background-color: #d0d1d2; overflow: hidden; box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);">
                     <img src="https://www.aci.hr/imageGen.ashx?image=/media/101493/zut940.jpg&width=940" style="height: 200px;"/>
                 </div>
             </div>
@@ -129,22 +140,39 @@
             <div style="float: right; width: 280px; margin-top: 20px;">
                 <div style="padding: 0 10px;">
                     <div style="color: #444; font-size: 14px; font-weight: bold;">Within 5 miles</div>
+                    
                     <? if (property_exists($near, 'restaurant')): ?>
-                        Restaurants
-                        <div>
-                            <? foreach ($near->restaurant AS $restaurant): ?>
-                                <a class="near" poiId="<?= $restaurant['poi']->id ?>" href=""><?= $restaurant['poi']->name ?></a> <?= round($restaurant['dist'], 1) ?> km<br />
-                            <? endforeach; ?>
+                        <div style="margin: 10px 0 7px;">
+                            <div>
+                                <a class="nearGroup" href="" data-poiids="<?= htmlspecialchars(json_encode($nearIds['restaurant'])); ?>">Restaurants</a>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <? foreach ($near->restaurant AS $restaurant): ?>
+                                    <div style="margin-bottom: 1px;">
+                                        <a class="near" poiId="<?= $restaurant['poi']->id ?>" href=""><?= $restaurant['poi']->name ?></a>
+                                        <span style="font-size: 11px; color: #333; margin-left: 3px;"><?= round($restaurant['dist'], 1) ?> km</span>
+                                    </div>
+                                <? endforeach; ?>
+                            </div>
                         </div>
                     <? endif; ?>
+                    
                     <? if (property_exists($near, 'anchorage')): ?>
-                        Anchorages
-                        <div>
-                            <? foreach ($near->anchorage AS $anchorage): ?>
-                                <a class="near" poiId="<?= $anchorage['poi']->id ?>" href=""><?= $anchorage['poi']->nearName ?></a> <?= round($anchorage['dist'], 1) ?> km<br />
-                            <? endforeach; ?>
+                        <div style="margin: 10px 0 7px;">
+                            <div>
+                                <a class="nearGroup" href="" data-poiids="<?= htmlspecialchars(json_encode($nearIds['anchorage'])); ?>">Anchorages</a>
+                            </div>
+                            <div style="margin-top: 5px;">
+                                <? foreach ($near->anchorage AS $anchorage): ?>
+                                    <div style="margin-bottom: 1px;">
+                                        <a class="near" poiId="<?= $anchorage['poi']->id ?>" href=""><?= $anchorage['poi']->nearName ?></a>
+                                        <span style="font-size: 11px; color: #333; margin-left: 3px;"><?= round($anchorage['dist'], 1) ?> km</span>
+                                    </div>
+                                <? endforeach; ?>
+                            </div>
                         </div>
                     <? endif; ?>
+                    
                 </div>
             </div>
 

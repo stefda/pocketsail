@@ -59,9 +59,17 @@ class API extends CL_Controller {
         $this->load->model('POIModel');
         $this->load->model('LabelModel');
 
-        // Helper function to set flags
+        // Helper functions
         function addFlag(&$res, $flag) {
             in_array($flag, $res['flags']) ? null : $res['flags'][] = $flag;
+        }
+
+        function hasFlag($res, $flag) {
+            return in_array($flag, $res);
+        }
+
+        function addLabels(&$res, $labels) {
+            $res['labels'] = array_merge($res['labels'], $labels);
         }
 
         // Required params
@@ -99,26 +107,26 @@ class API extends CL_Controller {
             'flags' => []
         ];
 
-        if ($poiId !== 0 && !in_array('excludePoiLabel', $flags)) {
+        if ($poiId !== 0 && !hasFlag($flags, 'excludePoiLabel')) {
 
             $poi = POIModel::load($poiId);
             $res['labels'][] = LabelModel::loadDynamic($poiId);
             $res['poi'] = [];
-            addFlag($res, "doLabelling");
+            addFlag($res, 'doLabelling');
 
             // Load poi info
-            if (in_array('poiInfo', $flags)) {
+            if (hasFlag($flags, 'poiInfo')) {
                 $res['poi']['info'] = $poi->info();
             }
 
             // Load poi card
-            if (in_array('poiCard', $flags)) {
+            if (hasFlag($flags, 'poiCard')) {
                 $res['poi']['card'] = "<div>Card</div>";
-                addFlag($res, "showCard");
+                addFlag($res, 'showCard');
             }
 
             // Pan to poi and fit border or adjust zoom accordingly
-            if (in_array('panToPoi', $flags)) {
+            if (hasFlag($flags, 'panToPoi')) {
                 $border = $poi->border();
                 if ($border === NULL) {
                     $vBounds->setCenter($poi->latLng());
@@ -128,42 +136,42 @@ class API extends CL_Controller {
                     $borderBounds = ViewBounds::fromPolygon($border);
                     $vBounds->fitBounds($borderBounds, $zoom);
                 }
-                addFlag($res, "panToCenter");
+                addFlag($res, 'panToCenter');
             }
         }
 
         if (count($poiIds) > 0) {
 
             // Load labels by poiIds
-            $res['labels'] = array_merge($res['labels'], LabelModel::loadDynamicByIds($poiIds));
+            addLabels($res, LabelModel::loadDynamicByIds($poiIds));
 
-            if (in_array('zoomToPois', $flags)) {
+            if (hasFlag($flags, 'zoomToPois')) {
 
                 // Load pois for their positions and borders
                 $pois = POIModel::loadByIds($poiIds);
 
-                // Initialise bounds
+                // Expand pois
                 if ($poiId !== 0) {
                     $poi = POIModel::load($poiId);
-                    $bounds = new ViewBounds($poi->latLng(), $poi->latLng());
-                } else {
-                    $bounds = new ViewBounds();
+                    $pois = array_merge($pois, [$poi]);
                 }
 
-                foreach ($pois AS $poi) {
-                    if ($poi->border() === NULL) {
-                        $bounds->extendByLatLng($poi->latLng());
+                // Initialise bounds and extend by all pois
+                $bounds = new ViewBounds($pois[0]->latLng(), $pois[0]->latLng());
+                for ($i = 1; $i < count($pois); $i++) {
+                    if ($pois[$i]->border() === NULL) {
+                        $bounds->extendByLatLng($pois[$i]->latLng());
                     } else {
-                        $borderBounds = ViewBounds::fromPolygon($poi->border());
+                        $borderBounds = ViewBounds::fromPolygon($pois[$i]->border());
                         $bounds->extendByBounds($borderBounds);
                     }
                 }
                 $vBounds->fitBounds($bounds, $zoom);
-                $bounds->buffer(15, 15, $zoom);
+                $bounds->buffer(30, 30, $zoom);
                 $vBounds->fitBounds($bounds, $zoom);
             }
-            addFlag($res, "panToCenter");
-            addFlag($res, "doLabelling");
+            addFlag($res, 'panToCenter');
+            addFlag($res, 'doLabelling');
         }
 
         if (count($types) > 0) {
@@ -176,12 +184,9 @@ class API extends CL_Controller {
                     $zoom--;
                     in_array('panToCenter', $res['flags']) ? null : $res['flags'][] = 'panToCenter';
                 }
-                $tempBounds = clone($vBounds);
-//                $tempBounds->buffer(10, 10, $zoom);
-//                $vBounds->fitBounds($tempBounds, $zoom);
             }
-            $res['labels'] = array_merge($res['labels'], LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
-            addFlag($res, "doLabelling");
+            addLabels($res, LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
+            addFlag($res, 'doLabelling');
         }
 
         if ($poiId !== 0 || $types !== NULL && count($types) > 0) {
@@ -190,7 +195,7 @@ class API extends CL_Controller {
             $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticDynamicByBounds($bounds, $zoom, $exceptIds, $types));
         } else {
             $bounds = $vBounds->toBounds();
-            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticByBounds($bounds, $zoom));
+            addLabels($res, LabelModel::loadStaticByBounds($bounds, $zoom));
         }
 
         $res['center'] = $vBounds->getCenter()->toWKT();
@@ -198,114 +203,6 @@ class API extends CL_Controller {
 
         return $res;
     }
-
-//    /**
-//     * @AjaxCallable=TRUE
-//     * @AjaxMethod=POST
-//     * @AjaxAsync=TRUE
-//     */
-//    public function loadData() {
-//
-//        $this->load->library('geo/*');
-//        $this->load->model('POIModel');
-//        $this->load->model('LabelModel');
-//
-//        // Helper function to set flags
-//        function addFlag(&$res, $flag) {
-//            in_array($flag, $res['flags']) ? null : $res['flags'][] = $flag;
-//        }
-//
-//        // Required params
-//        $vBoundsWKT = filter_input(INPUT_POST, 'vBounds', FILTER_SANITIZE_STRING);
-//        $zoom = filter_input(INPUT_POST, 'zoom', FILTER_VALIDATE_INT);
-//
-//        // Optional params, need to normalise if not present
-//        $types = filter_input(INPUT_POST, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-//        $poiId = filter_input(INPUT_POST, 'poiId', FILTER_VALIDATE_INT);
-//        $flags = filter_input(INPUT_POST, 'flags', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-//
-//        $vBounds = ViewBounds::fromWKT($vBoundsWKT);
-//
-//        // Normalise parameters
-//        if ($types === NULL) {
-//            $types = [];
-//        }
-//
-//        if ($poiId === NULL) {
-//            $poiId = 0;
-//        }
-//
-//        if ($flags === NULL) {
-//            $flags = [];
-//        }
-//
-//        // Prepare result object
-//        $res = [
-//            'labels' => [],
-//            'flags' => []
-//        ];
-//
-//        if ($poiId !== 0 && !in_array('excludePoiLabel', $flags)) {
-//
-//            $poi = POIModel::load($poiId);
-//            $res['labels'][] = LabelModel::loadDynamic($poiId);
-//            $res['poi'] = [];
-//            addFlag($res, "doLabelling");
-//
-//            // Load poi info
-//            if (in_array('poiInfo', $flags)) {
-//                $res['poi']['info'] = $poi->info();
-//            }
-//
-//            // Load poi card
-//            if (in_array('poiCard', $flags)) {
-//                $res['poi']['card'] = "<div>Card</div>";
-//                addFlag($res, "showCard");
-//            }
-//
-//            // Pan to poi and fit border or adjust zoom accordingly
-//            if (in_array('panToPoi', $flags)) {
-//                $border = $poi->border();
-//                if ($border === NULL) {
-//                    $vBounds->setCenter($poi->latLng());
-//                    $vBounds->changeZoom(14 - $zoom);
-//                    $zoom = 14;
-//                } else {
-//                    $borderBounds = ViewBounds::fromPolygon($border);
-//                    $vBounds->fitBounds($borderBounds, $zoom);
-//                }
-//                addFlag($res, "panToCenter");
-//            }
-//        }
-//
-//        if (count($types) > 0) {
-//            $bounds = $vBounds->toBounds();
-//            if (in_array('zoomToTypes', $flags)) {
-//                $guard = 18;
-//                while (!LabelModel::typesWithinBounds($bounds, $types, $poiId) && --$guard > 0) {
-//                    $vBounds->zoomOut();
-//                    $bounds = $vBounds->toBounds();
-//                    $zoom--;
-//                    in_array('panToCenter', $res['flags']) ? null : $res['flags'][] = 'panToCenter';
-//                }
-//            }
-//            $res['labels'] = array_merge($res['labels'], LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
-//            addFlag($res, "doLabelling");
-//        }
-//
-//        if ($poiId !== 0 || $types !== NULL && count($types) > 0) {
-//            $bounds = $vBounds->toBounds();
-//            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticDynamicByBounds($bounds, $zoom, $poiId, $types));
-//        } else {
-//            $bounds = $vBounds->toBounds();
-//            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticByBounds($bounds, $zoom, $poiId));
-//        }
-//
-//        $res['center'] = $vBounds->getCenter()->toWKT();
-//        $res['zoom'] = $zoom;
-//
-//        return $res;
-//    }
 
     /**
      * @AjaxCallable=TRUE

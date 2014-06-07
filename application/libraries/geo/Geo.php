@@ -4,6 +4,45 @@ define('GEO_R', 6371);
 define('GEO_TILE_SIZE', 256);
 define('GEO_2_PI', 2 * M_PI);
 
+function merLat($lat) {
+    return Geo::mercatorLat($lat);
+}
+
+function merLng($lng) {
+    return Geo::mercatorLng($lng);
+}
+
+function meriLat($y) {
+    return Geo::mercatorLatInv($y);
+}
+
+function meriLng($x) {
+    return Geo::mercatorLngInv($x);
+}
+
+function mergLat($lat, $zoom) {
+    $f = GEO_TILE_SIZE * pow(2, $zoom);
+    return (Geo::mercatorLat($lat) + M_PI) / GEO_2_PI * $f;
+}
+
+function mergLng($lng, $zoom) {
+    $f = GEO_TILE_SIZE * pow(2, $zoom);
+    return (Geo::mercatorLng($lng) + M_PI) / GEO_2_PI * $f;
+}
+
+function mergiLat($lat, $zoom) {
+    $f = GEO_TILE_SIZE * pow(2, $zoom);
+    return Geo::mercatorLatInv(($lat) / $f * GEO_2_PI - M_PI);
+}
+
+function mergiLng($lng, $zoom) {
+    $f = GEO_TILE_SIZE * pow(2, $zoom);
+    return Geo::mercatorLngInv(($lng) / $f * GEO_2_PI - M_PI);
+}
+
+/**
+ * 
+ */
 class Geo {
 
     public static function wrapLat($lat) {
@@ -92,14 +131,14 @@ class Geo {
      * @return \LatLng
      */
     public static function proximity(LatLng $latlng, $d, $dir) {
-        
+
         $lat = deg2rad($latlng->lat());
         $lng = deg2rad($latlng->lng());
         $dir = deg2rad($dir);
-        
+
         $lat = asin(sin($lat) * cos($d / GEO_R) + cos($lat) * sin($d / GEO_R) * cos($dir));
         $lng = $lng + atan2(sin($dir) * sin($d / GEO_R) * cos($lat), cos($d / GEO_R) - sin($lat) * sin($lat));
-        
+
         return new LatLng(rad2deg($lat), rad2deg($lng));
     }
 
