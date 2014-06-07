@@ -159,13 +159,8 @@ class API extends CL_Controller {
                     }
                 }
                 $vBounds->fitBounds($bounds, $zoom);
-                $tempBounds = clone($vBounds);
-//                $tempBounds = new ViewBounds($vBounds->getSouthWest(), $vBounds->getNorthEast());
-                $tempBounds->buffer(1000, 1000, $zoom);
-//                print_r($vBounds);
-//                print_r($tempBounds);
-                $vBounds->fitBounds($tempBounds, $zoom);
-//                echo $zoom;
+                $bounds->buffer(15, 15, $zoom);
+                $vBounds->fitBounds($bounds, $zoom);
             }
             addFlag($res, "panToCenter");
             addFlag($res, "doLabelling");
