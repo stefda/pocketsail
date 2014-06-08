@@ -3,7 +3,7 @@
     <head>
         <title>Pages</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+        
         <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
         <script src="/application/js/jquery/jquery.js"></script>
         <script src="/application/js/jquery/jquery-ui.js"></script>
@@ -94,22 +94,22 @@
                     if ($('.selected').length > 0) {
                         if ($(this).isAfter('.selected')) {
                             $('.selected').animate({
-                                top: "-=140px"
+                                top: "-=148px"
                             }, 50);
                             $('.selected').nextUntil($(this)).animate({
-                                top: "-=140px"
+                                top: "-=148px"
                             }, 50);
                             $('.selected').removeClass('selected');
                             $(this).animate({
                                 top: "-=3px"
-                            });
+                            }, 50);
                             $(this).addClass('selected');
                         } else {
                             $(this).animate({
-                                top: "+=135px"
+                                top: "+=145px"
                             }, 50);
                             $(this).nextUntil('.selected').animate({
-                                top: "+=140px"
+                                top: "+=148px"
                             }, 50);
                             $('.selected').removeClass('selected');
                             $(this).addClass('selected');
@@ -117,10 +117,10 @@
                     } else {
                         $(this).addClass('selected');
                         $(this).animate({
-                            top: "+=135px"
+                            top: "+=145px"
                         }, 50);
                         $(this).nextAll().animate({
-                            top: "+=140px"
+                            top: "+=148px"
                         }, 50);
                     }
                 });
@@ -128,18 +128,21 @@
         </script>
         <style>
             html, body { width: 100%; height: 100%; margin: 0; padding: 0; font-family: Arial; font-size: 15px; color: #444; cursor: pointer; }
-            .page { position: absolute; width: 350px; height: 175px; background-color: #fff; border-radius: 2px; box-shadow: 0 2px 3px #aaa; }
+            .page { position: absolute; width: 350px; height: 175px; background-color: #fff; border-radius: 2px; box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2); }
             .content { position: absolute; bottom: 8px; left: 13px; }
             .selected {  }
         </style>
     </head>
     <body>
+        
         <div id="canvasWrapper" style="width: 100%; height: 100%; background-color: #e0e1e2; position: fixed;">
             <div id="canvas" style="width: 100%; height: 100%;"></div>
         </div>
-        <div style="height: 45px; width: 100%; z-index: 999; background-color: #f0f1f2; position: fixed; z-index: 9999;">
+        
+        <div style="height: 45px; width: 100%; z-index: 999; background-color: #f0f1f2; position: fixed; z-index: 9999; box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);">
             <img src="/application/images/logo.png" style="margin: 8px 0 0 15px;"/>
         </div>
+        
         <div id="pages" style="width: 100%; height: 100%; background-color: #e0e1e2; overflow-y: hidden;">
             <div style="padding: 10px;">
                 <div class="page"><div class="content"></div></div>

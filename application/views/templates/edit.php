@@ -96,7 +96,7 @@
                 });
 
                 //console.log(map.googleMap);
-                new google.maps.Marker({
+                var marker = new google.maps.Marker({
                     map: map.googleMap,
                     position: latLng.toGoogleLatLng(),
                     draggable: true,
@@ -105,6 +105,10 @@
                         anchor: new google.maps.Point(5, 23),
                         url: '/application/layout/images/add-icon.png'
                     }
+                });
+                
+                google.maps.event.addListener(map.googleMap, 'click', function(e) {
+                    marker.setPosition(e.latLng);
                 });
 
                 $('.tpl-select').select();
@@ -166,7 +170,7 @@
                     if (validator.validate()) {
                         var name = $('[name=name]').val();
                         var attrs = $('.attr:visible,.attr-include').serialize()
-                        TestBroker.post({
+                        TestBroker.save_data({
                             post: $.param({
                                 id: poiId,
                                 name: name,
@@ -238,10 +242,6 @@
 
     </head>
     <body>
-
-        <div style="position: absolute; left: 0px; top: 0px;">
-            <input id="zoom" type="button" value="Zoom" />
-        </div>
         
         <div style="position: fixed; top: 20px; left: 960px;">
             <input type="button" id="saveButton" value="Save" />

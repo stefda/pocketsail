@@ -33,7 +33,8 @@ class Search {
                 foreach ($docs AS $doc) {
                     $poiBrief = new POIBrief($doc);
                     $types = $res['types'];
-                    $value = $res["keyword"] . " near " . $doc->name . " " . $doc->subName;
+                    //$value = $res["keyword"] . " near " . $doc->name . " " . $doc->subName;
+                    $value = $res["keyword"] . " near " . $doc->name;
                     $label = $res["keyword"] . " near " . $doc->name;
                     $items[] = new SearchResult($poiBrief, $types, $value, $label);
                 }
@@ -47,7 +48,8 @@ class Search {
             foreach ($docs AS $doc) {
                 $poiBrief = new POIBrief($doc);
                 $types = NULL;
-                $value = $doc->name . " " . $doc->subName;
+                //$value = $doc->name . " " . $doc->subName;
+                $value = $doc->name;
                 $label = $doc->name;
                 $items[] = new SearchResult($poiBrief, $types, $value, $label);
             }
