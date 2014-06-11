@@ -5,6 +5,10 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
+    
+    function menu() {
+        $this->load->view('menu');
+    }
 
     function edit() {
 
