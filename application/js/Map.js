@@ -8,6 +8,7 @@ function Map(o) {
     var canvas = o.canvas;
     var zoom = o.zoom;
     var center = o.center;
+    var cursor = o.cursor === undefined ? 'auto' : o.cursor;
 
     this.types = o.types !== undefined ? o.types : [];
     this.poiId = o.poiId !== undefined ? o.poiId : 0;
@@ -177,6 +178,12 @@ function Map(o) {
         this.setZoom(zoom);
     };
 
+    this.addListener = function(type, fx) {
+        google.maps.event.addListener(this.googleMap, type, function(e) {
+            fx.call(this, e);
+        });
+    };
+
     this.initGoogleMap = function() {
 
         // Initialise custom map style
@@ -189,6 +196,7 @@ function Map(o) {
             panControl: false,
             streetViewControl: false,
             scaleControl: true,
+            draggableCursor: cursor,
             zoomControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_BOTTOM,
                 style: google.maps.ZoomControlStyle.SMALL

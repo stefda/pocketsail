@@ -36,7 +36,7 @@
             .button-ynn a { line-height: 13px; height: 13px; position: absolute; text-decoration: none; background-color: #f4f5f6; border: solid 1px #d9d9d9; text-align: center; color: #333; }
             .button-ynn a:hover { z-index: 9998; border-color: #c0c1c2; background-color: #f0f1f2; }
             .button-ynn a:active { color: #333; }
-            .button-ynn a.hover { z-index: 9998; border-color: #c0c1c2; background-color: #f0f1f2; }
+            .button-ynn a.ps-ui-menuitem-hover { z-index: 9998; border-color: #c0c1c2; background-color: #f0f1f2; }
             .button-ynn a.nk { left: 0; width: 22px; border-radius: 2px 0 0 2px; }
             .button-ynn a.yes { left: 23px; width: 27px; }
             .button-ynn a.no { left: 51px; width: 24px; border-radius: 0 2px 2px 0; }
@@ -49,10 +49,10 @@
             a.select:hover { border-color: #c0c1c2; background-color: #f0f1f2; }
             a.select:active { color: #333; }
             a.select:visited { color: #333; }            
-            a.select.hover { border-color: #c0c1c2; background-color: #f0f1f2; }
+            a.select.ps-ui-menuitem-hover { border-color: #c0c1c2; background-color: #f0f1f2; }
             ul.selectList { position: absolute; left: 300px; list-style: none; list-style-type: none; padding: 3px 0; margin: 0; background-color: #fff; border: solid 1px #e0e1e2; border-radius: 2px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
             .selectList a { text-decoration: none; color: #333; font-size: 12px; cursor: pointer; display: list-item; padding: 3px 23px 3px 13px; }
-            .selectList a.hover { background-color: #f0f1f2; }
+            .selectList a.ps-ui-menuitem-hover { background-color: #f0f1f2; }
             .selectList a.selected { background-color: #f0f1f2; }
 
             .contact input { margin: 0; display: block; outline: none; font-size: 13px; border: solid 1px #c0c1c2; padding-left: 3px; }

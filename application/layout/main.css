@@ -23,7 +23,7 @@ a:hover { text-decoration: underline; }
 
 #infoMenu .icon { display: block; float: left; margin-left: 5px; width: 12px; height: 18px; background-repeat: no-repeat; }
 #infoMenu .label { margin-left: 8px; }
-#infoMenu .icon.menu { background-image: url('/application/images/menu-icon.png'); }
+#infoMenu .icon.ps-ui-menu { background-image: url('/application/images/menu-icon.png'); }
 #infoMenu .icon.edit { background-image: url('/application/images/edit-icon.png'); }
 #infoMenu .icon.summary { background-image: url('/application/images/summary-icon.png'); }
 #infoMenu .icon.fullview { background-image: url('/application/images/fullview-icon.png'); }

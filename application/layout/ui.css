@@ -7,6 +7,38 @@
 }
 
 /**
+ * Menu styles
+ */
+ul.ps-ui-menu {
+    display: none;
+    position: absolute;
+    list-style: none;
+    list-style-type: none;
+    padding: 4px 0;
+    margin: 0;
+    border: solid 1px #d0d1d2;
+    font-family: Arial;
+    background-color: #fff;
+    box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+    font-size: 12px;
+    cursor: default;
+}
+
+ul.ps-ui-menu li { color: #333; padding: 4px 25px 4px 25px; margin: 0 -1px; white-space: nowrap; text-wrap: none; }
+ul.ps-ui-menu li.ps-ui-menuitem-hover { background-color: #e0e1e2; color: #000; }
+ul.ps-ui-menu li.ps-ui-menuitem-stayhover { background-color: #e0e1e2; color: #000; }
+
+ul.ps-ui-menu li span.ps-ui-submenu-arrow {
+    margin: 4px -15px 0 0;
+    float: right;
+    display: block;
+    width: 4px;
+    height: 7px;
+    background-image: url('/application/layout/images/details-arrow-right.png');
+    background-repeat: no-repeat;
+}
+
+/**
  * MultiButton styles
  */
 ul.ps-ui-multibutton {
@@ -73,7 +105,7 @@ a.ps-ui-select {
 a.ps-ui-select:hover { border-color: #c0c1c2; background-color: #f0f1f2; }
 a.ps-ui-select:active { color: #333; }
 a.ps-ui-select:visited { color: #333; }
-a.ps-ui-select.hover { border-color: #c0c1c2; background-color: #f0f1f2; }
+a.ps-ui-select.ps-ui-menuitem-hover { border-color: #c0c1c2; background-color: #f0f1f2; }
 
 ul.ps-ui-select-list {
     text-align: left;
@@ -98,5 +130,5 @@ ul.ps-ui-select-list {
     padding: 3px 23px 3px 13px;
 }
 
-.ps-ui-select-list a.hover { background-color: #f0f1f2; }
+.ps-ui-select-list a.ps-ui-menuitem-hover { background-color: #f0f1f2; }
 .ps-ui-select-list a.selected { background-color: #f0f1f2; }

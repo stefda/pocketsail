@@ -7,7 +7,6 @@
         <script src="/application/js/jquery/jquery.js"></script>
         <script src="/application/js/jquery/jquery-ui.js"></script>
         <script src="/application/js/jquery/ajax.js"></script>
-        <!--<script src="/application/js/search.js"></script>-->
         <script src="/application/js/controllers/API.js"></script>
         <script src="/application/js/controllers/Admin.js"></script>
 
