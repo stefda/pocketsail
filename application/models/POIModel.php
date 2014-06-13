@@ -2,10 +2,48 @@
 
 class POIModel implements JsonSerializable {
 
-    private $o;
+    private $id;
+    private $nearId;
+    private $countryId;
+    private $nearName;
+    private $countryName;
+    private $userId;
+    private $name;
+    private $label;
+    private $cat;
+    private $sub;
+    private $lat;
+    private $lng;
+    private $border;
+    private $attrs;
+    private $rank;
+    private $timestamp;
 
-    public function __construct($o) {
-        $this->o = $o;
+    public function __construct($id, $nearId, $countryId, $nearName, $countryName, $userId, $name, $label, $cat, $sub, $lat, $lng, $border, $attrs, $rank, $timestamp) {
+        $this->id = $id;
+        $this->nearId = $nearId;
+        $this->countryId = $countryId;
+        $this->nearName = $nearName;
+        $this->countryName = $countryName;
+        $this->userId = $userId;
+        $this->name = $name;
+        $this->label = $label;
+        $this->cat = $cat;
+        $this->sub = $sub;
+        $this->lat = $lat;
+        $this->lng = $lng;
+        $this->border = $border;
+        $this->attrs = $attrs;
+        $this->rank = $rank;
+        $this->timestamp = $timestamp;
+    }
+
+    /**
+     * @param stdClass $o
+     * @return POIModel
+     */
+    public static function fromObject($o) {
+        return new POIModel($o->id, $o->nearId, $o->countryId, $o->userId, $o->nearName, $o->countryName, $o->name, $o->label, $o->cat, $o->sub, $o->lat, $o->lng, $o->border, $o->attrs, $o->rank, $o->timestamp);
     }
 
     /**
@@ -25,7 +63,7 @@ class POIModel implements JsonSerializable {
 
         $mysql = CL_MySQLi::get_instance();
         $query = insert($mysql)
-                ->into('poi_new')
+                ->into('poi')
                 ->value('userId', $userId)
                 ->value('countryId', $countryId)
                 ->value('nearId', $nearId)
@@ -33,10 +71,10 @@ class POIModel implements JsonSerializable {
                 ->value('label', $label)
                 ->value('cat', $cat)
                 ->value('sub', $sub)
-                ->value('latLng', $latLng->toWKT())->op(GEOM_FROM_TEXT)
+                ->value('lat', $latLng->lat())
+                ->value('lng', $latLng->lng())
                 ->value('border', $border->toWKT())->op(GEOM_FROM_TEXT)
-                ->value('attributes', json_encode($attrs))
-                ->value('status', 'confirmed');
+                ->value('attrs', json_encode($attrs));
 
         $mysql->query($query);
         return $mysql->insertId();
@@ -63,24 +101,11 @@ class POIModel implements JsonSerializable {
                 ->set('label', $label)
                 ->set('cat', $cat)
                 ->set('sub', $sub)
-                ->set('latLng', $latLng === NULL ? 'NULL' : $latLng->toWKT())->op(GEOM_FROM_TEXT)
+                ->set('lat', $latLng->lat())
+                ->set('lng', $latLng->lng())
                 ->set('border', $border === NULL ? 'NULL' : $border->toWKT())->op(GEOM_FROM_TEXT)
                 ->set('attributes', json_encode($attrs))
                 ->where('id', EQ, $id)
-                ->exec();
-    }
-
-    /**
-     * @param int $id
-     * @param int $nearID
-     * @param int $countryID
-     */
-    public static function updateAdmin($id, $nearID, $countryID) {
-        db()->update()
-                ->table('poi')
-                ->set('nearId', $nearID)
-                ->set('countryId', $countryID)
-                ->where('id', $id)
                 ->exec();
     }
 
@@ -92,7 +117,6 @@ class POIModel implements JsonSerializable {
 
         $r = db()->select()
                 ->all('poi')
-                ->col('latLng', 'poi')->op(AS_TEXT)->alias('latLngWKT')
                 ->col('border', 'poi')->op(AS_TEXT)->alias('borderWKT')
                 ->col('name', 'poiNear')->alias('nearName')
                 ->col('name', 'poiCountry')->alias('countryName')
@@ -107,7 +131,7 @@ class POIModel implements JsonSerializable {
         if ($r->numRows() == 0) {
             return NULL;
         }
-        return new POIModel($r->fetchObject());
+        return POIModel::fromObject($r->fetchObject());
     }
 
     /**
@@ -123,7 +147,6 @@ class POIModel implements JsonSerializable {
 
         $r = db()->select()
                 ->all('poi')
-                ->col('latLng', 'poi')->op(AS_TEXT)->alias('latLngWKT')
                 ->col('border', 'poi')->op(AS_TEXT)->alias('borderWKT')
                 ->col('name', 'poiNear')->alias('nearName')
                 ->col('name', 'poiCountry')->alias('countryName')
@@ -154,7 +177,7 @@ class POIModel implements JsonSerializable {
                 ->leftJoin('poi')->alias('poiNear')->on('id', 'nearId')
                 ->leftJoin('poi')->alias('poiCountry')->on('id', 'countryId')
                 ->leftJoin('poi_type')->alias('poiType')->on('id', 'sub')
-                ->where("ST_Within(`poi`.`latLng`, GeomFromText('{$border->toWKT()}'))")
+                ->where("ST_Within(GeomFromText(Point(`poi`.`lng`, `poi`.`lat`)), GeomFromText('{$border->toWKT()}'))")
                 ->und('sub', 'poi', IN, $types)
                 ->und('id', 'poi', NE, $exceptId)
                 ->exec();
@@ -288,7 +311,7 @@ class POIModel implements JsonSerializable {
     public function info() {
         return new POIInfo($this);
     }
-    
+
     public function toObject() {
         $res = new stdClass();
         $res->id = $this->id();
@@ -319,9 +342,9 @@ class POIInfo implements JsonSerializable {
 
     public function jsonSerialize() {
         return [
-            'id' => $this->poi->id(),
-            'name' => $this->poi->name(),
-            'label' => $this->poi->label(),
+            'id' => $this->id,
+            'name' => $this->name,
+            'label' => $this->label,
             'nearName' => $this->poi->nearName(),
             'countryName' => $this->poi->countryName(),
             'subName' => $this->poi->subName(),

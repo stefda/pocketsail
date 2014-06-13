@@ -6,6 +6,13 @@ class Test extends CL_Controller {
         parent::__construct();
     }
     
+    function poi() {
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+        //print_r(POIModel::load(95));
+        POIModel::add(1, 12, 1, 'Dalsi', 'Dalsi (ACI)', 'marina', 'marina', new LatLng(44, 17), new Polygon(), new stdClass());
+    }
+    
     function menu() {
         $this->load->view('menu');
     }
