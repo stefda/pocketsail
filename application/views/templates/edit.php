@@ -263,7 +263,7 @@
                 </div>
             </div>
 
-            <? include_edit_template($poi->sub, $poi->cat); ?>
+            <? include_edit_template($poi->cat, $poi->sub); ?>
 
         </div>
 

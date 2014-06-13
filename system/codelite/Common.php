@@ -155,13 +155,21 @@ function include_view($view) {
     echo CL_Loader::get_instance()->view($view, FALSE);
 }
 
-function include_edit_template($sub, $cat) {
-    $viewPath = APPPATH . 'views/templates/edit/' . $sub . '.php';
-    if (file_exists($viewPath)) {
+function include_edit_template($cat, $sub) {
+    
+    $subPath = APPPATH . 'views/templates/edit/' . $sub . '.php';
+    $catPath = APPPATH . 'views/templates/edit/' . $cat . '.php';
+    
+    if (file_exists($subPath)) {
         echo CL_Loader::get_instance()->view('templates/edit/' . $sub, FALSE);
         return;
+    } else if (file_exists($catPath)) {
+        echo CL_Loader::get_instance()->view('templates/edit/' . $cat, FALSE);
+        return;
     }
-    echo CL_Loader::get_instance()->view('templates/edit/' . $cat, FALSE);
+    
+    // If neither sub- or cat-specific template exists, use default
+    echo CL_Loader::get_instance()->view('templates/edit/default', FALSE);
 }
 
 function include_view_template($sub, $cat) {

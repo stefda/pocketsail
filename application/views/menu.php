@@ -50,14 +50,14 @@
                         top: e.pixel.y,
                         left: e.pixel.x,
                         select: function(e, ui) {
-                            var type = ui.item.type;
-                            var val = ui.item.val;
-                            if (type === 'sub') {
+                            var sub = ui.item.value;
+                            if (sub !== undefined) {
                                 $('#menu').menu('hide');
                                 var lat = latLng.lat;
                                 var lng = latLng.lng;
                                 latLng = null;
-                                window.location = '/test/edit?cat=berthing&sub=marina&lat=' + lat + '&lng=' + lng;
+                                //window.location = '/test/edit?cat=berthing&sub=marina&lat=' + lat + '&lng=' + lng;
+                                window.location = '/poi/add?sub=' + sub + '&lat=' + lat + '&lng=' + lng;
                             }
                         }
                     });

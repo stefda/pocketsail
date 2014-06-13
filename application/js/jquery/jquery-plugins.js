@@ -119,13 +119,11 @@ $.fn.menu = function() {
 
     menu.on('mouseup', 'li', function(e) {
         var item = $(this);
-        var type = item.attr('data-type');
-        var val = item.attr('data-' + type);
+        var val = item.attr('data-value');
         if (selectFx !== null) {
             selectFx.call(this, e, {
                 item: {
-                    type: type,
-                    val: val
+                    value: val
                 }
             });
         }

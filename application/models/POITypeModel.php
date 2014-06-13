@@ -6,10 +6,14 @@ class POITypeModel implements JsonSerializable {
     public $parentId;
     public $name;
 
-    public function __construct($o) {
-        $this->id = $o->id;
-        $this->parentId = $o->parentId;
-        $this->name = $o->name;
+    public function __construct($id, $parentId, $name) {
+        $this->id = $id;
+        $this->parentId = $parentId;
+        $this->name = $name;
+    }
+
+    public static function fromObject($o) {
+        return new POITypeModel($o->id, $o->parentId, $o->name);
     }
 
     public static function loadSubs($id) {
@@ -30,6 +34,21 @@ class POITypeModel implements JsonSerializable {
             $cats[] = new POITypeModel($o);
         }
         return $cats;
+    }
+
+    public static function catFromSub($sub) {
+
+        $r = db()->select()
+                ->all('cat')
+                ->from('poi_type')->alias('cat')
+                ->leftJoin('poi_type')->alias('sub')->on('parentId', 'id')
+                ->where('id', 'sub', EQ, $sub)
+                ->exec();
+
+        if ($r->numRows() === 0) {
+            return NULL;
+        }
+        return self::fromObject($r->fetchObject());
     }
 
     public function jsonSerialize() {
