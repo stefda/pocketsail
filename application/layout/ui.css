@@ -16,7 +16,7 @@ ul.ps-ui-menu {
     list-style-type: none;
     padding: 4px 0;
     margin: 0;
-    border: solid 1px #d0d1d2;
+    border: solid 1px #e0e1e2;
     font-family: Arial;
     background-color: #fff;
     box-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
@@ -24,7 +24,14 @@ ul.ps-ui-menu {
     cursor: default;
 }
 
-ul.ps-ui-menu li { color: #333; padding: 4px 25px 4px 25px; margin: 0 -1px; white-space: nowrap; text-wrap: none; }
+ul.ps-ui-menu li {
+    color: #333;
+    padding: 4px 25px 4px 25px;
+    margin: 0 -1px;
+    white-space: nowrap;
+    text-wrap: none;
+}
+
 ul.ps-ui-menu li.ps-ui-menuitem-hover { background-color: #e0e1e2; color: #000; }
 ul.ps-ui-menu li.ps-ui-menuitem-stayhover { background-color: #e0e1e2; color: #000; }
 
@@ -34,7 +41,8 @@ ul.ps-ui-menu li span.ps-ui-submenu-arrow {
     display: block;
     width: 4px;
     height: 7px;
-    background-image: url('/application/layout/images/details-arrow-right.png');
+    background-image: url('/application/layout/images/ui.png');
+    background-position: 0 0;
     background-repeat: no-repeat;
 }
 

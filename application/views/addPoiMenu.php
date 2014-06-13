@@ -4,9 +4,17 @@
         Cove
     </li>
     <li data-type="sub" data-cat="anchorage">
+        <span style="
+              display: block; float: left; width: 14px;
+              height: 14px; margin-left: -16px;
+              background-image: url('/application/images/marker-icons.png'); background-position: -240px -120px;"></span>
         Anchorage
     </li>
     <li data-type="sub" data-cat="marina">
+        <span style="
+              display: block; float: left; width: 14px;
+              height: 14px; margin-left: -16px;
+              background-image: url('/application/images/marker-icons.png'); background-position: -240px -2px;"></span>
         Marina
     </li>
     <div style="width: 100%; border-top: solid 1px #e0e1e2; margin: 4px 0;">

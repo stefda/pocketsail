@@ -31,7 +31,7 @@ $.fn.menu = function() {
     var top = 0;
     var left = 0;
     var selectFx = null;
-    
+
     // Add ui menu class
     menu.find('ul').add(menu).addClass('ps-ui-menu');
 
@@ -139,9 +139,23 @@ $.fn.menu = function() {
     top = o.top === undefined ? top : o.top;
     left = o.left === undefined ? left : o.left;
 
+    var winHeight = $(window).outerHeight();
+    var docTop = $(document).scrollTop();
+    var docBottom = docTop + winHeight;
+
+    var menuOffsetBottom = top + menu.outerHeight();
+
+    if (menuOffsetBottom > docBottom) {
+        top -= menuOffsetBottom - docBottom;
+    }
+
+    if (docTop > top) {
+        top += docTop - top;
+    }
+
     // Finally, position menu and show
     menu.css('top', top + 'px');
-    menu.css('left', left + 'px');
+    menu.css('left', left + 1 + 'px');
     menu.show();
 };
 
