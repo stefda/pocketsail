@@ -378,7 +378,7 @@ class POIModel implements JsonSerializable {
      * @param LatLng $latLng
      * @return \POIModel
      */
-    public static function loadNearbys(LatLng $latLng) {
+    public static function loadNears(LatLng $latLng) {
 
         $r = db()->select()
                 ->col('id')
@@ -456,7 +456,7 @@ class POIModel implements JsonSerializable {
     public function attrs() {
         return $this->attrs;
     }
-    
+
     public function rank() {
         return $this->rank;
     }

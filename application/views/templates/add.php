@@ -53,18 +53,26 @@
                 var latLng = LatLng.fromWKT('<?= $poi->latLng->toWKT() ?>');
                 var border = null;
 
+                // Initialise map
                 var map = new Map({
                     canvas: 'canvas',
                     center: latLng,
                     zoom: 16
                 });
 
+                // Show latLng marker
                 var marker = new google.maps.Marker({
                     map: map.googleMap,
                     position: latLng.toGoogleLatLng(),
                     draggable: true
                 });
 
+                // Update latLng when marker is dropped
+                google.maps.event.addListener(marker, 'dragend', function(e) {
+                    latLng = LatLng.fromGoogleLatLng(e.latLng);
+                });
+
+                // Set-up border drawing facilities
                 var polyline = null;
                 var polygon = null;
 
@@ -133,25 +141,33 @@
 
                 function initUI() {
 
+                    // Style select inputs
                     $('.tpl-select').select();
+
+                    // Style select-button inputs
                     $('.tpl-select-button').selectButton();
 
+                    // Change border on focus
                     $('a,input,textarea').focus(function() {
                         $(this).addClass('ps-ui-focus');
                     });
 
+                    // Change border on blur
                     $('a,input,textarea').blur(function() {
                         $(this).removeClass('ps-ui-focus');
                     });
 
+                    // Autosize all textareas
                     $('textarea').autosize({
                         append: false
                     });
 
+                    // Contact delete button
                     $('.tpl-delete-button').click(function() {
                         $(this).closest('tr').remove();
                     });
 
+                    // Details button
                     $('.tpl-details-button').click(function(e) {
                         var elem = $(this).closest('.tpl-has-details-button');
                         if ($(this).hasClass('tpl-stay-visible')) {
@@ -187,6 +203,7 @@
                     map.setCenter(center);
                 });
 
+                // Load subs for changed cat
                 $('#catSelectButton').change(function() {
 
                     PoiBroker.getSubs({
@@ -195,23 +212,20 @@
                         },
                         success: function(subs) {
                             var select = $('#subSelectButton');
-                            // Empty select
                             select.empty();
-                            // Fill in with new options
                             for (var i = 0; i < subs.length; i++) {
                                 var sub = subs[i];
                                 select.append('<option value="' + sub.id + '">' + sub.name + '</option>');
                             }
-                            // Re-initialise UI
                             initUI();
                             select.trigger('change');
                         }
                     });
                 });
 
+                // Change template when sub is changed
                 $('#subSelectButton').change(function() {
 
-                    // Remember some form values
                     var name = $('[name=name]').val();
                     var label = $('[name=label]').val();
                     var attrs = $('.attr:visible,.attr-include').serialize();
@@ -236,14 +250,15 @@
 
                     if (validator.validate()) {
                         var name = $('[name=name]').val();
+                        var label = $('[name=label]').val();
                         var attrs = $('.attr:visible,.attr-include').serialize();
                         var border = polygon === null ? null : Polygon.fromGooglePath(polygon.getPath().getArray()).toWKT();
                         APIBroker.addPoi({
                             post: $.param({
                                 name: name,
-                                label: name,
-                                nearId: 999,
-                                countryId: 100,
+                                label: label,
+                                nearId: 1,
+                                countryId: 1,
                                 cat: cat,
                                 sub: sub,
                                 latLng: latLng.toWKT(),
@@ -338,6 +353,24 @@
                     <select id="subSelectButton" class="tpl-select" name="sub">
                         <? foreach ($subs AS $sub): ?>
                             <option value="<?= $sub->id ?>"<?= $sub->id === $poi->sub ? ' selected' : '' ?>><?= $sub->name ?></option>
+                        <? endforeach; ?>
+                    </select>
+
+                </div>
+            </div>
+            
+            <div class="tpl-section">
+                <div class="tpl-section-wrapper">
+
+                    Near: <select id="" class="tpl-select" name="cat">
+                        <? foreach ($nears AS $near): ?>
+                            <option value="<?= $near->id() ?>"><?= $near->name() ?></option>
+                        <? endforeach; ?>
+                    </select>
+                    
+                    Country: <select id="" class="tpl-select" name="cat">
+                        <? foreach ($countries AS $country): ?>
+                            <option value="<?= $country->id() ?>"><?= $country->name() ?></option>
                         <? endforeach; ?>
                     </select>
 

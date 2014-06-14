@@ -30,10 +30,13 @@ class Poi extends CL_Controller {
 
         $cats = POITypeModel::loadCats();
         $subs = POITypeModel::loadSubs($catObject->id);
+        
+        $nears = POIModel::loadNears($latLng);
+        $countries = POIModel::loadCountries($latLng);
 
         $this->assign('poi', $poi);
-        $this->assign('cat', $catObject->id);
-        $this->assign('sub', $sub);
+        $this->assign('nears', $nears);
+        $this->assign('countries', $countries);
         $this->assign('cats', $cats);
         $this->assign('subs', $subs);
         $this->assign('attrs', new stdClass());

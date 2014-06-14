@@ -224,6 +224,8 @@ class API extends CL_Controller {
         $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
         $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT);
         $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT);
+        $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
+        $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
         $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
         $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING,
@@ -232,13 +234,8 @@ class API extends CL_Controller {
         $latLng = LatLng::fromWKT($latLngWKT);
         $border = Polygon::fromWKT($borderWKT);
 
-        echo $name . "\n";
-        echo $label . "\n";
-        echo $nearId . "\n";
-        echo $countryId . "\n";
-        print_r($latLng) . "\n";
-        print_r($border) . "\n";
-        print_r($attrs) . "\n";
+        POIModel::addNew(1, $nearId, $countryId, $name, $label, $cat, $sub,
+                $latLng, $border, $attrs);
 
         return TRUE;
     }
