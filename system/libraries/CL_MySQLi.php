@@ -29,8 +29,8 @@ class CL_MySQLi {
     private static $instance = null;
     private $mysql = null;
 
-    private function __construct() {
-        $this->mysql = new mysqli('localhost', 'root', '', 'pocketsail');
+    public function __construct($host, $user, $password, $database) {
+        $this->mysql = new mysqli($host, $user, $password, $database);
     }
 
     /**
@@ -38,7 +38,12 @@ class CL_MySQLi {
      */
     public static function get_instance() {
         if (self::$instance === null) {
-            self::$instance = new CL_MySQLi();
+            $config = CL_Config::get_instance();
+            $host = $config->get_item('database', 'host');
+            $user = $config->get_item('database', 'user');
+            $password = $config->get_item('database', 'password');
+            $database = $config->get_item('database', 'database');
+            self::$instance = new CL_MySQLi($host, $user, $password, $database);
         }
         return self::$instance;
     }
@@ -58,11 +63,11 @@ class CL_MySQLi {
         }
         return new CL_MySQLiResult($result);
     }
-    
+
     public function insert() {
         return new CL_MySQLiInsertQuery($this);
     }
-    
+
     public function update() {
         return new CL_MySQLiUpdateQuery($this);
     }

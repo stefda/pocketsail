@@ -270,6 +270,10 @@ jQuery.fn.select = function() {
 
     $(this).each(function() {
 
+        if ($(this).next().hasClass('ps-ui-select')) {
+            $(this).next().remove();
+        }
+
         var text = $(this).find('option:selected').text();
         var choose = $('<a href="" class="ps-ui-select">' + text + '</a>');
 
@@ -312,8 +316,12 @@ jQuery.fn.select = function() {
                 }
                 item.click(function(e) {
                     e.preventDefault();
+                    var former = select.val();
                     select.val($(this).attr('value'));
                     choose.text($(this).text());
+                    if (former !== select.val()) {
+                        select.trigger('change');
+                    }
                 });
                 item.hover(function() {
                     $(this).siblings().removeClass('hover');

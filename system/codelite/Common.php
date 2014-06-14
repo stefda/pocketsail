@@ -68,7 +68,8 @@ function printJS($o) {
  */
 function array_values_recursive($array) {
     $values = [];
-    array_walk_recursive($array, function ($value) use(&$values) {
+    array_walk_recursive($array,
+            function ($value) use(&$values) {
         $values[] = $value;
     }, $values);
     return $values;
@@ -83,13 +84,15 @@ function &get_config($file = 'main') {
     }
 
     if (!file_exists(APPPATH . '/config/' . $file . '.php')) {
-        show_error("The configuration file $file.php does not exits.", "Config Error");
+        show_error("The configuration file $file.php does not exits.",
+                "Config Error");
     }
 
     require_once APPPATH . '/config/' . $file . '.php';
 
     if (!isset($config) OR !is_array($config)) {
-        show_error("The configuration file $file.php does not appear to be formatted correctly.", "Config Error");
+        show_error("The configuration file $file.php does not appear to be formatted correctly.",
+                "Config Error");
     }
 
     $configs[$file] = & $config;
@@ -135,41 +138,23 @@ function get_view_html($view) {
     return CL_Loader::get_instance()->view($view, FALSE);
 }
 
-function tpl_assign_var($name, $value) {
-    CL_Output::get_instance()->assign($name, $value);
-}
-
-function tpl_get_html($name, $type) {
-    assign_var('type', $type);
-    return CL_Loader::get_instance()->view('template/' . $name, FALSE);
-}
-
-function tpl_include($name, $info = NULL) {
-    if ($info !== NULL) {
-        assign_var('info', $info);
-    }
-    echo CL_Loader::get_instance()->view('template/' . $name, FALSE);
-}
-
 function include_view($view) {
-    echo CL_Loader::get_instance()->view($view, FALSE);
+    return CL_Loader::get_instance()->view($view, FALSE);
 }
 
 function include_edit_template($cat, $sub) {
-    
+
     $subPath = APPPATH . 'views/templates/edit/' . $sub . '.php';
     $catPath = APPPATH . 'views/templates/edit/' . $cat . '.php';
-    
+
     if (file_exists($subPath)) {
-        echo CL_Loader::get_instance()->view('templates/edit/' . $sub, FALSE);
-        return;
+        return CL_Loader::get_instance()->view('templates/edit/' . $sub, FALSE);
     } else if (file_exists($catPath)) {
-        echo CL_Loader::get_instance()->view('templates/edit/' . $cat, FALSE);
-        return;
+        return CL_Loader::get_instance()->view('templates/edit/' . $cat, FALSE);
     }
-    
+
     // If neither sub- or cat-specific template exists, use default
-    echo CL_Loader::get_instance()->view('templates/edit/default', FALSE);
+    return CL_Loader::get_instance()->view('templates/edit/default', FALSE);
 }
 
 function include_view_template($sub, $cat) {
@@ -185,7 +170,8 @@ function html($text) {
     $text = str_replace("\r\n", "</p><p>", $text);
     $text = "<p>" . str_replace("\n", "</p><p>", $text) . "</p>";
     $text = preg_replace("/\*\*([^*]*)\*\*/", "<h2>\\1</h2>", $text);
-    $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "<a href=\"\\2\">\\1</a>", $text);
+    $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "<a href=\"\\2\">\\1</a>",
+            $text);
     return $text;
 }
 
@@ -193,7 +179,8 @@ function show_error($message, $header = 'error', $type = 'default') {
 
     if ($header == 'error') {
         $trace = debug_backtrace();
-        if (count($trace) > 1 && key_exists('function', $trace[1]) && key_exists('class', $trace[1])) {
+        if (count($trace) > 1 && key_exists('function', $trace[1]) && key_exists('class',
+                        $trace[1])) {
             $header = $trace[1]['class'] . '::' . $trace[1]['function'];
         }
     }
@@ -308,5 +295,26 @@ function is_mobile() {
     $op = key_exists('HTTP_X_OPERAMINI_PHONE', $_SERVER) ? strtolower($_SERVER['HTTP_X_OPERAMINI_PHONE']) : '';
     $ua = strtolower($_SERVER['HTTP_USER_AGENT']);
 
-    return strpos($ac, 'application/vnd.wap.xhtml+xml') !== false || $op != '' || strpos($ua, 'sony') !== false || strpos($ua, 'symbian') !== false || strpos($ua, 'nokia') !== false || strpos($ua, 'samsung') !== false || strpos($ua, 'mobile') !== false || strpos($ua, 'windows ce') !== false || strpos($ua, 'epoc') !== false || strpos($ua, 'opera mini') !== false || strpos($ua, 'nitro') !== false || strpos($ua, 'j2me') !== false || strpos($ua, 'midp-') !== false || strpos($ua, 'cldc-') !== false || strpos($ua, 'netfront') !== false || strpos($ua, 'mot') !== false || strpos($ua, 'up.browser') !== false || strpos($ua, 'up.link') !== false || strpos($ua, 'audiovox') !== false || strpos($ua, 'blackberry') !== false || strpos($ua, 'ericsson,') !== false || strpos($ua, 'panasonic') !== false || strpos($ua, 'philips') !== false || strpos($ua, 'sanyo') !== false || strpos($ua, 'sharp') !== false || strpos($ua, 'sie-') !== false || strpos($ua, 'portalmmm') !== false || strpos($ua, 'blazer') !== false || strpos($ua, 'avantgo') !== false || strpos($ua, 'danger') !== false || strpos($ua, 'palm') !== false || strpos($ua, 'series60') !== false || strpos($ua, 'palmsource') !== false || strpos($ua, 'pocketpc') !== false || strpos($ua, 'smartphone') !== false || strpos($ua, 'rover') !== false || strpos($ua, 'ipaq') !== false || strpos($ua, 'au-mic,') !== false || strpos($ua, 'alcatel') !== false || strpos($ua, 'ericy') !== false || strpos($ua, 'up.link') !== false || strpos($ua, 'vodafone/') !== false || strpos($ua, 'wap1.') !== false || strpos($ua, 'wap2.') !== false;
+    return strpos($ac, 'application/vnd.wap.xhtml+xml') !== false || $op != '' || strpos($ua,
+                    'sony') !== false || strpos($ua, 'symbian') !== false || strpos($ua,
+                    'nokia') !== false || strpos($ua, 'samsung') !== false || strpos($ua,
+                    'mobile') !== false || strpos($ua, 'windows ce') !== false || strpos($ua,
+                    'epoc') !== false || strpos($ua, 'opera mini') !== false || strpos($ua,
+                    'nitro') !== false || strpos($ua, 'j2me') !== false || strpos($ua,
+                    'midp-') !== false || strpos($ua, 'cldc-') !== false || strpos($ua,
+                    'netfront') !== false || strpos($ua, 'mot') !== false || strpos($ua,
+                    'up.browser') !== false || strpos($ua, 'up.link') !== false || strpos($ua,
+                    'audiovox') !== false || strpos($ua, 'blackberry') !== false || strpos($ua,
+                    'ericsson,') !== false || strpos($ua, 'panasonic') !== false || strpos($ua,
+                    'philips') !== false || strpos($ua, 'sanyo') !== false || strpos($ua,
+                    'sharp') !== false || strpos($ua, 'sie-') !== false || strpos($ua,
+                    'portalmmm') !== false || strpos($ua, 'blazer') !== false || strpos($ua,
+                    'avantgo') !== false || strpos($ua, 'danger') !== false || strpos($ua,
+                    'palm') !== false || strpos($ua, 'series60') !== false || strpos($ua,
+                    'palmsource') !== false || strpos($ua, 'pocketpc') !== false || strpos($ua,
+                    'smartphone') !== false || strpos($ua, 'rover') !== false || strpos($ua,
+                    'ipaq') !== false || strpos($ua, 'au-mic,') !== false || strpos($ua,
+                    'alcatel') !== false || strpos($ua, 'ericy') !== false || strpos($ua,
+                    'up.link') !== false || strpos($ua, 'vodafone/') !== false || strpos($ua,
+                    'wap1.') !== false || strpos($ua, 'wap2.') !== false;
 }

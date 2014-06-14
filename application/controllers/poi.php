@@ -21,19 +21,60 @@ class Poi extends CL_Controller {
 
         // Create dummy poi object
         $poi = new stdClass();
-        $poi->id = 0;
         $poi->name = '';
+        $poi->label = '';
         $poi->cat = $catObject->id;
         $poi->sub = $sub;
         $poi->latLng = $latLng;
         $poi->border = null;
 
+        $cats = POITypeModel::loadCats();
+        $subs = POITypeModel::loadSubs($catObject->id);
+
         $this->assign('poi', $poi);
         $this->assign('cat', $catObject->id);
         $this->assign('sub', $sub);
+        $this->assign('cats', $cats);
+        $this->assign('subs', $subs);
         $this->assign('attrs', new stdClass());
 
-        $this->load->view('templates/edit');
+        $this->load->view('templates/add');
+    }
+
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    function getSubs() {
+        $this->load->model('POITypeModel');
+        $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
+        $subs = POITypeModel::loadSubs($cat);
+        return $subs;
+    }
+
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    function getTemplate() {
+
+        $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
+        $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING,
+                FILTER_REQUIRE_ARRAY);
+
+        $poi = new stdClass();
+        $poi->name = $name;
+        $poi->label = $label;
+
+        $this->assign('poi', $poi);
+        $this->assign('attrs', json_decode(json_encode($attrs)));
+        
+        return include_edit_template($cat, $sub);
     }
 
     function edit() {
@@ -93,7 +134,9 @@ class Poi extends CL_Controller {
         $vb = new ViewBounds($sw, $ne);
         $poiBorder = $vb->toPolygon();
 
-        $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
+        $near = POIModel::loadByBorder($poiBorder,
+                        ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'],
+                        198);
         $nearSorted = [];
         $nearSortedIds = [];
 

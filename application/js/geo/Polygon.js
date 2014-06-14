@@ -44,8 +44,8 @@ function Polygon(points) {
  */
 Polygon.fromGooglePath = function(path) {
     var points = [];
-    for (var i = 0; i < path.getLength(); i++) {
-        var latLng = path.getAt(i);
+    for (var i = 0; i < path.length; i++) {
+        var latLng = path[i];
         points.push(new Point(latLng.lng(), latLng.lat()));
     }
     if (points[0].x !== points[points.length - 1].x

@@ -39,10 +39,18 @@ class CL_MySQLiInsertQuery {
         return $this;
     }
 
+    /**
+     * @return CL_MySQLiResult
+     */
+    public function exec() {
+        return $this->mysql->query($this);
+    }
+
     public function __toString() {
         $names = array_keys($this->valuesBuffer);
         $values = array_values($this->valuesBuffer);
-        $query = "INSERT INTO $this->table (`" . implode("`,`", $names) . "`) VALUES (" . implode(",", $values) . ")";
+        $query = "INSERT INTO $this->table (`" . implode("`,`", $names) . "`) VALUES (" . implode(",",
+                        $values) . ")";
         return $query;
     }
 

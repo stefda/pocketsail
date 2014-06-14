@@ -5,14 +5,24 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
-    
+
     function poi() {
-        $this->load->library('geo/*');
+
         $this->load->model('POIModel');
-        //print_r(POIModel::load(95));
-        POIModel::add(1, 12, 1, 'Dalsi', 'Dalsi (ACI)', 'marina', 'marina', new LatLng(44, 17), new Polygon(), new stdClass());
+        $this->load->library('geo/*');
+
+        $poi = POIModel::load(95);
+        POIModel::addArchive($poi->id(), $poi->nearId(), $poi->countryId(),
+                $poi->userId(), $poi->name(), $poi->label(), $poi->cat(),
+                $poi->sub(), $poi->latLng(), $poi->border(), $poi->attrs(),
+                $poi->rank(), $poi->timestamp());
+        
+//        POIModel::addEdit(95, 14, 80, 1, $poi->name(), 'Uprava', $poi->cat(),
+//                $poi->sub(), $poi->latLng(), $poi->border(), $poi->attrs());
+//        POIModel::updateEdit(95, 1, 14, 1, 'Jmeno', 'berth', 'cat', 'sub', new LatLng(44, 17), NULL, new stdClass());
+//        var_dump(POIModel::editExists(95, 2));
     }
-    
+
     function menu() {
         $this->load->view('menu');
     }
@@ -74,7 +84,9 @@ class Test extends CL_Controller {
         $vb = new ViewBounds($sw, $ne);
         $poiBorder = $vb->toPolygon();
 
-        $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
+        $near = POIModel::loadByBorder($poiBorder,
+                        ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'],
+                        198);
         $nearSorted = [];
         $nearSortedIds = [];
 
@@ -141,12 +153,49 @@ class Test extends CL_Controller {
         $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
         $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
-        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING,
+                FILTER_REQUIRE_ARRAY);
 
         $latLng = LatLng::fromWKT($latLngWKT);
         $border = Polygon::fromWKT($borderWKT);
 
-        POIModel::update($id, 1, 1, $name, $name, $cat, $sub, $latLng, $border, $attrs);
+        POIModel::update($id, 1, 1, $name, $name, $cat, $sub, $latLng, $border,
+                $attrs);
+    }
+
+    function transfer_poi() {
+
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+
+        $new = CL_MySQLi::get_instance();
+        $old = new CL_MySQLi('localhost', 'root', '', 'ps_old');
+
+        $res = $old->query("SELECT *, AsText(latLng) AS latLngWKT, AsText(boundary) AS boundaryWKT FROM `poi`");
+        while ($o = $res->fetchObject()) {
+            $features = json_decode($o->features);
+            if ($features === NULL) {
+                echo $o->id . "<br />";
+                $attrs = [];
+            } else {
+                $attrs = [
+                    "description" => [
+                        "details" => $features->description
+                    ],
+                    "sources" => [
+                        "details" => $features->references
+                    ]
+                ];
+            }
+//            POIModel::add($o->userId, $o->nearId, $o->countryId, $o->name,
+//                    $o->label, $o->cat, $o->sub, LatLng::fromWKT($o->latLngWKT),
+//                    Polygon::fromWKT($o->boundaryWKT), $attrs);
+        }
+
+        $old->close();
+        $new->close();
+
+        //print_r(POIModel::loadNearbys(new LatLng(44.044967, 15.106567)));
     }
 
 }

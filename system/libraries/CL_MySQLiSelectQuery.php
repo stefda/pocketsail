@@ -132,7 +132,7 @@ class CL_MySQLiSelectQuery {
         return $this;
     }
 
-    public function und() {
+    public function andCond() {
         $args = func_get_args();
         if (count($args) === 1) {
             if ($args[0] === '' || $args[0] === NULL) {
@@ -153,7 +153,7 @@ class CL_MySQLiSelectQuery {
         return $this;
     }
 
-    public function oder() {
+    public function orCond() {
         $args = func_get_args();
         if (count($args) === 1) {
             if ($args[0] === '' || $args[0] === NULL) {

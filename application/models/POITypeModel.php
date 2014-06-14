@@ -17,38 +17,48 @@ class POITypeModel implements JsonSerializable {
     }
 
     public static function loadSubs($id) {
+
+        $res = db()->select()
+                ->all()
+                ->from('poi_type')
+                ->where('parentId', EQ, $id)
+                ->exec();
+
         $subs = [];
-        $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query("SELECT * FROM `poi_type` WHERE `parentId` = '$id'");
-        while ($o = $mysql->fetch_object($r)) {
-            $subs[] = new POITypeModel($o);
+        while ($o = $res->fetchObject()) {
+            $subs[] = self::fromObject($o);
         }
         return $subs;
     }
 
     public static function loadCats() {
+
+        $res = db()->select()
+                ->all()
+                ->from('poi_type')
+                ->where('parentId', IS, NULL)
+                ->exec();
+
         $cats = [];
-        $mysql = CL_MySQL::get_instance();
-        $r = $mysql->query("SELECT * FROM `poi_type` WHERE `parentId` IS NULL");
-        while ($o = $mysql->fetch_object($r)) {
-            $cats[] = new POITypeModel($o);
+        while ($o = $res->fetchObject()) {
+            $cats[] = self::fromObject($o);
         }
         return $cats;
     }
 
     public static function catFromSub($sub) {
 
-        $r = db()->select()
+        $res = db()->select()
                 ->all('cat')
                 ->from('poi_type')->alias('cat')
                 ->leftJoin('poi_type')->alias('sub')->on('parentId', 'id')
                 ->where('id', 'sub', EQ, $sub)
                 ->exec();
 
-        if ($r->numRows() === 0) {
+        if ($res->numRows() === 0) {
             return NULL;
         }
-        return self::fromObject($r->fetchObject());
+        return self::fromObject($res->fetchObject());
     }
 
     public function jsonSerialize() {

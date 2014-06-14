@@ -19,9 +19,14 @@ class CL_MySQLiUpdateQuery {
         return $this;
     }
 
-    public function set($name, $value) {
-        $value = $this->prepareValue($value);
-        $this->valuesBuffer[$name] = $value;
+    public function set() {
+        $args = func_get_args();
+        if (count($args) === 2) {
+            $value = $this->prepareValue($args[1]);
+            $this->valuesBuffer[$args[0]] = $value;
+        } else {
+            $this->valuesBuffer[$args[0]] = NULL;
+        }
         return $this;
     }
 
@@ -44,8 +49,8 @@ class CL_MySQLiUpdateQuery {
         }
         return $this;
     }
-    
-    public function und() {
+
+    public function andCond() {
         $args = func_get_args();
         if (count($args) === 1) {
             $this->condsBuffer[] = "AND $args[0]";
@@ -57,8 +62,8 @@ class CL_MySQLiUpdateQuery {
         }
         return $this;
     }
-    
-    public function oder() {
+
+    public function orCond() {
         $args = func_get_args();
         if (count($args) === 1) {
             $this->condsBuffer[] = "OR $args[0]";
@@ -81,7 +86,8 @@ class CL_MySQLiUpdateQuery {
                 $value = 'NULL';
                 break;
             case 'array':
-                array_walk($value, function(&$item) {
+                array_walk($value,
+                        function(&$item) {
                     $item = $this->prepareValue($item);
                 });
                 $value = "(" . implode(",", $value) . ")";
@@ -89,7 +95,7 @@ class CL_MySQLiUpdateQuery {
         }
         return $value;
     }
-    
+
     public function exec() {
         return $this->mysql->query($this);
     }

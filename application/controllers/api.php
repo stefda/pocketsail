@@ -77,10 +77,13 @@ class API extends CL_Controller {
         $zoom = filter_input(INPUT_POST, 'zoom', FILTER_VALIDATE_INT);
 
         // Optional params, need to normalise if not present
-        $types = filter_input(INPUT_POST, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $types = filter_input(INPUT_POST, 'types', FILTER_SANITIZE_STRING,
+                FILTER_REQUIRE_ARRAY);
         $poiId = filter_input(INPUT_POST, 'poiId', FILTER_VALIDATE_INT);
-        $poiIds = filter_input(INPUT_POST, 'poiIds', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
-        $flags = filter_input(INPUT_POST, 'flags', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $poiIds = filter_input(INPUT_POST, 'poiIds', FILTER_VALIDATE_INT,
+                FILTER_REQUIRE_ARRAY);
+        $flags = filter_input(INPUT_POST, 'flags', FILTER_SANITIZE_STRING,
+                FILTER_REQUIRE_ARRAY);
 
         $vBounds = ViewBounds::fromWKT($vBoundsWKT);
 
@@ -185,14 +188,17 @@ class API extends CL_Controller {
                     in_array('panToCenter', $res['flags']) ? null : $res['flags'][] = 'panToCenter';
                 }
             }
-            addLabels($res, LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
+            addLabels($res,
+                    LabelModel::loadDynamicByBounds($bounds, $types, $poiId));
             addFlag($res, 'doLabelling');
         }
 
         if ($poiId !== 0 || $types !== NULL && count($types) > 0) {
             $bounds = $vBounds->toBounds();
             $exceptIds = array_merge($poiIds, [$poiId]);
-            $res['labels'] = array_merge($res['labels'], LabelModel::loadStaticDynamicByBounds($bounds, $zoom, $exceptIds, $types));
+            $res['labels'] = array_merge($res['labels'],
+                    LabelModel::loadStaticDynamicByBounds($bounds, $zoom,
+                            $exceptIds, $types));
         } else {
             $bounds = $vBounds->toBounds();
             addLabels($res, LabelModel::loadStaticByBounds($bounds, $zoom));
@@ -214,21 +220,27 @@ class API extends CL_Controller {
         $this->load->library('geo/*');
         $this->load->model('POIModel');
 
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
+        $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT);
+        $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT);
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
-        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING,
+                FILTER_REQUIRE_ARRAY);
 
-        $poi = POIModel::load($id);
-        $label = $poi->label();
-        $cat = $poi->cat();
-        $sub = $poi->sub();
         $latLng = LatLng::fromWKT($latLngWKT);
-        $border = $poi->border();
-        $countryId = $poi->countryId();
-        $nearId = $poi->nearId();
+        $border = Polygon::fromWKT($borderWKT);
 
-        POIModel::update($id, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs);
+        echo $name . "\n";
+        echo $label . "\n";
+        echo $nearId . "\n";
+        echo $countryId . "\n";
+        print_r($latLng) . "\n";
+        print_r($border) . "\n";
+        print_r($attrs) . "\n";
+
+        return TRUE;
     }
 
 }

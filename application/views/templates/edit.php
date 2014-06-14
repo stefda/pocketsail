@@ -8,6 +8,7 @@
         <script src="/application/js/jquery/jquery.js"></script>
         <script src="/application/js/jquery/jquery-ui.js"></script>
         <script src="/application/js/jquery/ajax.js"></script>
+        <script src="/application/js/jquery/utils.js"></script>
 
         <script src="/application/js/brokers/APIBroker.js"></script>
 
@@ -42,42 +43,11 @@
 
         <script>
 
-            function n(name, type) {
-                name = name.replace(/\]/g, '\\]');
-                name = name.replace(/\[/g, '\\[');
-                var selector = '[name=' + name + ']' + (type === undefined ? '' : (':' + type));
-                return $(selector);
-            }
-
-            function Validator() {
-
-                this.valFxs = [];
-
-                /**
-                 * @param {Number} fx
-                 */
-                this.add = function(fx) {
-                    this.valFxs.push(fx);
-                };
-
-                /**
-                 * @returns {boolean}
-                 */
-                this.validate = function() {
-                    var allValid = true;
-                    for (var i = 0; i < this.valFxs.length; i++) {
-                        var valid = this.valFxs[i]();
-                        allValid = !allValid ? allValid : valid;
-                    }
-                    return allValid;
-                };
-            }
-
             var validator = new Validator();
             var poiId = <?= $poi->id ?>;
             var cat = '<?= $poi->cat ?>';
             var sub = '<?= $poi->sub ?>';
-            var latLng = LatLng.fromWKT('<?= $poi->latLng === null ? 'NULL' : $poi->latLng->toWKT() ?>');
+            var latLng = LatLng.fromWKT('<?= $poi->latLng->toWKT() ?>');
             var border = Polygon.fromWKT('<?= $poi->border === null ? 'NULL' : $poi->border->toWKT() ?>');
 
             $(function() {
@@ -89,7 +59,7 @@
                     flags: ['excludePoiLabel'],
                     poiId: poiId
                 });
-                
+
                 $('#zoom').click(function() {
                     map.setPoiIds([121]);
                     map.loadData(['zoomToPois']);
@@ -106,7 +76,7 @@
                         url: '/application/layout/images/add-icon.png'
                     }
                 });
-                
+
                 google.maps.event.addListener(map.googleMap, 'click', function(e) {
                     marker.setPosition(e.latLng);
                 });
@@ -169,7 +139,7 @@
                 $('#saveButton').click(function() {
                     if (validator.validate()) {
                         var name = $('[name=name]').val();
-                        var attrs = $('.attr:visible,.attr-include').serialize()
+                        var attrs = $('.attr:visible,.attr-include').serialize();
                         TestBroker.save_data({
                             post: $.param({
                                 id: poiId,
@@ -242,25 +212,16 @@
 
     </head>
     <body>
-        
+
         <div style="position: fixed; top: 20px; left: 960px;">
             <input type="button" id="saveButton" value="Save" />
         </div>
 
         <div style="width: 900px; margin: 20px auto;">
-
+            
             <div class="tpl-canvas-wrapper" id="canvasWrapper">
                 <div id="canvas" style="width: 100%; height: 100%;"></div>
                 <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
-            </div>
-
-            <div class="tpl-section">
-                <div class="tpl-section-wrapper">
-
-                    <h1>Name</h1>
-                    <input type="text" name="name" value="<?= $poi->name ?>" style="width: 300px;" />
-
-                </div>
             </div>
 
             <? include_edit_template($poi->cat, $poi->sub); ?>

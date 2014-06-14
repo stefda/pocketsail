@@ -89,7 +89,7 @@ class LabelModel implements JsonSerializable {
                 ->all()
                 ->from('label_static')->alias('ls')
                 ->where('zoom', EQ, $zoom)
-                ->und(self::buildBoundsClause($bounds))
+                ->andCond(self::buildBoundsClause($bounds))
                 ->orderBy('order')
                 ->exec();
 
@@ -142,10 +142,10 @@ class LabelModel implements JsonSerializable {
                 ->from('label_static')->alias('ls')
                 ->leftJoin('label_static_descriptor')->alias('lsd')->on('sub')
                 ->where('zoom', 'lsd', EQ, $zoom)
-                ->und('zoom', 'ls', EQ, $zoom)
-                ->und(self::buildBoundsClause($bounds))
-                ->und('id', NOT_IN, $exceptIds)
-                ->und('sub', 'ls', NOT_IN, $exceptTypes)
+                ->andCond('zoom', 'ls', EQ, $zoom)
+                ->andCond(self::buildBoundsClause($bounds))
+                ->andCond('id', NOT_IN, $exceptIds)
+                ->andCond('sub', 'ls', NOT_IN, $exceptTypes)
                 ->orderBy('order')
                 ->exec();
 
@@ -169,8 +169,8 @@ class LabelModel implements JsonSerializable {
                 ->from('label_dynamic')->alias('ld')
                 ->leftJoin('label_dynamic_descriptor')->alias('ldd')->on('sub')
                 ->where(self::buildBoundsClause($bounds))
-                ->und('sub', 'ld', IN, $types)
-                ->und('id', NE, $exceptId)
+                ->andCond('sub', 'ld', IN, $types)
+                ->andCond('id', NE, $exceptId)
                 ->orderBy('rank')
                 ->exec();
 
@@ -187,8 +187,8 @@ class LabelModel implements JsonSerializable {
                 ->all()
                 ->from('label_dynamic')
                 ->where(self::buildBoundsClause($bounds))
-                ->und('sub', IN, $types)
-                ->und('id', NE, $exceptId)
+                ->andCond('sub', IN, $types)
+                ->andCond('id', NE, $exceptId)
                 ->groupBy('sub')
                 ->exec();
 
