@@ -91,15 +91,16 @@ var mapStyle = [
 //    ]
 //},
 
-    {
-        featureType: 'road',
-        elementType: 'labels',
-        stylers: [
-            {
-                visibility: 'on'
-            }
-        ]
-    },
+//    {
+//        featureType: 'road',
+//        elementType: 'labels',
+//        stylers: [
+//            {
+//                visibility: 'on'
+//            }
+//        ]
+//    },
+
     {
         featureType: 'landscape',
         elementType: 'labels',

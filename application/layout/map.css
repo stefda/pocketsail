@@ -17,6 +17,7 @@ body { height: 100%; margin: 0; padding: 0 }
 
 .label.cove .text { color: #5676a2; }
 .label.archipelago .text { color: darkgreen; }
+.label.island .text { color: #006400; }
 .label.bay .text { color: #5676a2; }
 .label.channel .text { color: #5676a2; }
 .label.town .text { text-transform: uppercase; }
