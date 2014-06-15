@@ -10,17 +10,10 @@ class Test extends CL_Controller {
 
         $this->load->model('POIModel');
         $this->load->library('geo/*');
-
-        $poi = POIModel::load(95);
-        POIModel::addArchive($poi->id(), $poi->nearId(), $poi->countryId(),
-                $poi->userId(), $poi->name(), $poi->label(), $poi->cat(),
-                $poi->sub(), $poi->latLng(), $poi->border(), $poi->attrs(),
-                $poi->rank(), $poi->timestamp());
         
-//        POIModel::addEdit(95, 14, 80, 1, $poi->name(), 'Uprava', $poi->cat(),
-//                $poi->sub(), $poi->latLng(), $poi->border(), $poi->attrs());
-//        POIModel::updateEdit(95, 1, 14, 1, 'Jmeno', 'berth', 'cat', 'sub', new LatLng(44, 17), NULL, new stdClass());
-//        var_dump(POIModel::editExists(95, 2));
+        $poi = POIModel::loadNew(17);
+        
+        print_r($poi);
     }
 
     function menu() {

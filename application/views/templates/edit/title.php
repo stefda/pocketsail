@@ -46,3 +46,31 @@
 
     </div>
 </div>
+
+<script type="text/javascript">
+
+    $(function() {
+
+        $(function() {
+            
+            validator.add(function() {
+
+                var cat = $('[name=cat]').val().trim();
+                var sub = $('[name=sub]').val().trim();
+                var name = $('[name=name]').val().trim();
+                var label = $('[name=label]').val().trim();
+                var url = $('[name=url]').val().trim();
+
+                if (this.valid && (cat === 'geo' || sub === 'marina') && name === '') {
+                    this.valid = confirm('Do you wish to save this POI without a name?');
+                }
+
+                if (this.valid && (cat === 'geo' || sub === 'marina') && label === '') {
+                    this.valid = confirm('Do you wish to save this POI without a label?');
+                }
+                return this.valid;
+            });
+        });
+    });
+
+</script>

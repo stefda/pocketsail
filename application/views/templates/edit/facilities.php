@@ -349,12 +349,6 @@
                 }
             }
         });
-
-        $(function() {
-            validator.add(function() {
-                return true;
-            });
-        });
     });
 
 </script>

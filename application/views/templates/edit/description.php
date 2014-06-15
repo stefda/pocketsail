@@ -8,3 +8,16 @@
 
     </div>
 </div>
+
+<script type="text/javascript">
+
+    $(function() {
+
+        $(function() {
+            validator.add(function() {
+                return true;
+            });
+        });
+    });
+
+</script>

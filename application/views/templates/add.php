@@ -230,9 +230,8 @@
                     });
                 });
 
+                // TO IMPROVE!!!
                 $(window).scroll(function() {
-//                    console.log('asd');
-                    //console.log($(window).scrollTop());
                     if ($(window).scrollTop() > 20) {
                         $('#head').css('box-shadow', '0 1px 2px rgba(0, 0, 0, 0.2)');
                     } else {
@@ -257,19 +256,38 @@
                             border: border
                         }) + '&' + attrs,
                         success: function(html) {
-                            $('#body').html(html);
+                            var data = $(html);
+                            var left = data.find('.tpl-column-left .replace');
+                            var right = data.find('.tpl-column-right .replace');
+                            $('body').find('.tpl-column-left .replace').html(left.html());
+                            $('body').find('.tpl-column-right .replace').html(right.html());
                             initUI();
                         }
                     });
                 });
 
+                validator.add(function() {
+
+                    var cat = $('[name=cat]').val().trim();
+                    var sub = $('[name=sub]').val().trim();
+                    
+                    if (this.valid && (cat === 'geo' || cat === 'admin' || sub === 'marina') && polygon === null) {
+                        this.valid = confirm('Do you wish to save this POI without a border?');
+                    }
+                    return this.valid;
+                });
+
                 $('#saveButton').click(function() {
 
+                    var cat = $('[name=cat]').val().trim();
+                    var sub = $('[name=sub]').val().trim();
+                    var name = $('[name=name]').val().trim();
+                    var label = $('[name=label]').val().trim();
+                    var url = $('[name=url]').val().trim();
+                    var attrs = $('.attr:visible,.attr-include').serialize();
+                    var border = polygon === null ? null : Polygon.fromGooglePath(polygon.getPath().getArray()).toWKT();
+
                     if (validator.validate()) {
-                        var name = $('[name=name]').val();
-                        var label = $('[name=label]').val();
-                        var attrs = $('.attr:visible,.attr-include').serialize();
-                        var border = polygon === null ? null : Polygon.fromGooglePath(polygon.getPath().getArray()).toWKT();
                         APIBroker.addPoi({
                             post: $.param({
                                 name: name,
@@ -282,12 +300,9 @@
                                 border: border
                             }) + '&' + attrs,
                             success: function(res) {
-                                //location.reload();
                                 console.log(res);
                             }
                         });
-                    } else {
-                        alert('Error');
                     }
                 });
 
@@ -306,7 +321,7 @@
 
         <div id="head" style="z-index: 9999; width: 100%; height: 60px; background-color: #e9eaeb; position: fixed;">
             <div style="float: right; margin: 15px 20px 0 0;">
-                <input class="tpl-button tpl-button-blue" type="button" value="Save POI" />
+                <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
                 <input class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
             </div>
             <img src="/application/images/logo.png" style="margin: 14px 0 0 16px;" />
@@ -332,7 +347,7 @@
 
         </div>
 
-        <div style="width: 100%; height: 100px; background-color: #e9eaeb; margin-top: 40px; padding-top: 20px;">
+        <div style="clear: both; width: 100%; height: 100px; background-color: #e9eaeb; margin-top: 40px; padding-top: 20px;">
 
         </div>
 

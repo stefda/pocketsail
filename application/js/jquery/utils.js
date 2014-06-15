@@ -9,6 +9,7 @@ function n(name, type) {
 function Validator() {
 
     this.valFxs = [];
+    this.valid = true;
 
     /**
      * @param {Number} fx
@@ -23,9 +24,10 @@ function Validator() {
     this.validate = function() {
         var allValid = true;
         for (var i = 0; i < this.valFxs.length; i++) {
-            var valid = this.valFxs[i]();
+            var valid = this.valFxs[i].call(this);
             allValid = !allValid ? allValid : valid;
         }
+        this.valid = true;
         return allValid;
     };
 }
