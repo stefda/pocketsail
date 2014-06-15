@@ -1,12 +1,5 @@
 
 /**
- * General styles
- */
-.ps-ui-focus {
-    border-color: #5676a2;
-}
-
-/**
  * Menu styles
  */
 ul.ps-ui-menu {
@@ -47,9 +40,9 @@ ul.ps-ui-menu li span.ps-ui-submenu-arrow {
 }
 
 /**
- * MultiButton styles
+ * SelectButton styles
  */
-ul.ps-ui-multibutton {
+ul.ps-ui-selectbutton {
     list-style: none;
     list-style-type: none;
     display: inline-block;
@@ -60,7 +53,7 @@ ul.ps-ui-multibutton {
     font-family: Arial;
 }
 
-a.ps-ui-multibutton-item {
+a.ps-ui-selectbutton-item {
     position: relative;
     display: inline-block;
     background-color: #fff;
@@ -73,25 +66,30 @@ a.ps-ui-multibutton-item {
     color: #333;
 }
 
-a.ps-ui-multibutton-item.ps-ui-selected {
-    z-index: 99;
-    /* border-color: #b0b1b2; */
+a.ps-ui-selectbutton-item:hover {
+    z-index: 98;
+    background-color: #f0f1f2;
+    border-color: #c0c1c2;
+}
+
+a.ps-ui-selectbutton-item.ps-ui-selected {
+    z-index: 97;
     border-color: #b0b1b2;
     color: #000;
     background-color: #e0e1e2;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2) inset;
 }
 
-a.ps-ui-multibutton-item.ps-ui-focus {
+a.ps-ui-selectbutton-item.ps-ui-focus {
     z-index: 99;
-    border-color: #666;
+    border-color: #3079ed;
 }
 
 /**
  * Select styles
  */
 a.ps-ui-select {
-    vertical-align: bottom;
+    position: relative;
     text-align: left;
     line-height: 19px;
     height: 19px;
@@ -102,18 +100,24 @@ a.ps-ui-select {
     padding: 0 17px 0 4px;
     cursor: pointer;
     box-shadow: 0 1px 1px #eee;
-    background-color: #f7f8f9;
+    background-color: #fff;
     border: solid 1px #d9d9d9;
-    /*border-radius: 2px;*/
-    background-image: url('/application/layout/images/select-arrows.png');
-    background-repeat: no-repeat;
-    background-position: top 4px right 4px;
 }
 
+a.ps-ui-select .ps-ui-select-label { font-weight: normal; }
+
+a.ps-ui-select .ps-ui-select-arrows {
+    position: absolute;
+    right: 4px;
+    top: 4px;
+    width: 7px;
+    height: 11px;
+    background-image: url('/application/layout/images/ui.png');
+    background-repeat: no-repeat;
+    background-position: 0 -7px; }
+
 a.ps-ui-select:hover { border-color: #c0c1c2; background-color: #f0f1f2; }
-a.ps-ui-select:active { color: #333; }
-a.ps-ui-select:visited { color: #333; }
-a.ps-ui-select.ps-ui-menuitem-hover { border-color: #c0c1c2; background-color: #f0f1f2; }
+a.ps-ui-select.ps-ui-focus { border-color: #3079ed; background-color: #f0f1f2; }
 
 ul.ps-ui-select-list {
     text-align: left;
@@ -125,18 +129,18 @@ ul.ps-ui-select-list {
     margin: 0;
     background-color: #fff;
     border: solid 1px #e0e1e2;
-    /*border-radius: 2px;*/
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.ps-ui-select-list a {
+a.ps-ui-select-list-item {
     text-decoration: none;
     color: #333;
     font-size: 12px;
+    font-weight: normal;
     cursor: pointer;
     display: list-item;
     padding: 3px 23px 3px 13px;
 }
 
-.ps-ui-select-list a.ps-ui-menuitem-hover { background-color: #f0f1f2; }
-.ps-ui-select-list a.selected { background-color: #f0f1f2; }
+a.ps-ui-select-list-item:hover { background-color: #f0f1f2; }
+a.ps-ui-select-list-item.ps-ui-hover { background-color: #f0f1f2; }

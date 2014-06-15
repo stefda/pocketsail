@@ -1,6 +1,7 @@
 
 <style type="text/css">
-    #everydayTimes .tpl-text-small, #somedaysTimes .tpl-text-small { font-size: 12px; padding-left: 3px; width: 34px; border: solid 1px #aaa; }
+    #openingTable { width: 100%; }
+    #everydayTimes .tpl-text-small, #somedaysTimes .tpl-text-small { font-size: 12px; padding-left: 3px; width: 30px; border: solid 1px #aaa; }
     #somedaysTimes .tpl-table-item-label { width: 37px; }
 </style>
 
@@ -9,21 +10,29 @@
 
         <h1>Open</h1>
 
-        <div class="tpl-has-details-button">
-            <select id="opening" class="attr" name="attrs[opening][value]">
-                <option value="na"<?= @$attrs->opening->value === 'na' ? ' selected' : '' ?>>Don't know</option>
-                <option value="everyday"<?= @$attrs->opening->value === 'everyday' ? ' selected' : '' ?>>Every day</option>
-                <option value="somedays"<?= @$attrs->opening->value === 'somedays' ? ' selected' : '' ?>>Some days</option>
-            </select>
-            <!-- DETAILS BUTTON -->
-            <span class="tpl-details-button<?= @$attrs->opening->details === null ? '' : ' tpl-visible' ?>">
-                details
-            </span>
-        </div>
-
-        <div class="tpl-details">
-            <textarea class="tpl-details-small<?= @$attrs->opening->details === null ? '' : ' attr-include' ?>" placeholder="Provide any details..." name="attrs[opening][details]"><?= @$attrs->opening->details ?></textarea>
-        </div>
+        <table id="openingTable" class="tpl-table">
+            <tr class="tpl-has-details-button">
+                <td>
+                    <select id="opening" class="attr" name="attrs[opening][value]">
+                        <option value="na"<?= @$attrs->opening->value === 'na' ? ' selected' : '' ?>>?</option>
+                        <option value="everyday"<?= @$attrs->opening->value === 'everyday' ? ' selected' : '' ?>>Every day</option>
+                        <option value="somedays"<?= @$attrs->opening->value === 'somedays' ? ' selected' : '' ?>>Some days</option>
+                    </select>
+                </td>
+                <td>
+                    <span class="tpl-details-button<?= @$attrs->opening->details === null ? '' : ' tpl-visible' ?>">
+                        details<span class="tpl-details-button-arrow"></span>
+                    </span>
+                </td>
+            </tr>
+            <tr class="tpl-details">
+                <td colspan="3">
+                    <textarea class="tpl-details-small<?= @$attrs->opening->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[facilities][water][details]"
+                              placeholder="Provide any details..."><?= @$attrs->opening->details ?></textarea>
+                </td>
+            </tr>
+        </table>
 
         <div class="tpl-subsection" id="everydayDetails" style="<?= @$attrs->opening->value === 'everyday' ? '' : 'display: none;' ?>">
 
@@ -32,14 +41,13 @@
             <select id="everyday" class="attr" name="attrs[opening][everyday][value]">
                 <option value="na"<?= @$attrs->opening->everyday->value === 'na' ? ' selected' : '' ?>>Not sure</option>
                 <option value="24h"<?= @$attrs->opening->everyday->value === '24h' ? ' selected' : '' ?>>24h</option>
-                <option value="attimes"<?= @$attrs->opening->everyday->value === 'attimes' ? ' selected' : '' ?>>Fixed times</option>
+                <option value="attimes"<?= @$attrs->opening->everyday->value === 'attimes' ? ' selected' : '' ?>>From-To</option>
             </select>
 
             <span id="everydayTimes" style="display: none; margin-left: 10px;">
                 <input class="tpl-text-small attr" name="attrs[opening][everyday][from]" placeholder="From" value="<?= @$attrs->opening->everyday->from ?>" />
                 -
                 <input class="tpl-text-small attr" name="attrs[opening][everyday][to]" placeholder="To" value="<?= @$attrs->opening->everyday->to ?>" />
-                <span class="tpl-note">(24h format)</span>
             </span>
 
         </div>
@@ -55,14 +63,17 @@
                                 <option value="na"<?= @$attrs->opening->somedays->{$day}->value === 'na' ? ' selected' : '' ?>>Not sure</option>
                                 <option value="closed"<?= @$attrs->opening->somedays->{$day}->value === 'closed' ? ' selected' : '' ?>>Closed</option>
                                 <option value="24h"<?= @$attrs->opening->somedays->{$day}->value === '24h' ? ' selected' : '' ?>>24h</option>
-                                <option value="attimes"<?= @$attrs->opening->somedays->{$day}->value === 'attimes' ? ' selected' : '' ?>>Fixed times</option>
+                                <option value="attimes"<?= @$attrs->opening->somedays->{$day}->value === 'attimes' ? ' selected' : '' ?>>From-To</option>
                             </select>
                         </td>
                         <td style="padding-left: 10px;<?= @$attrs->opening->somedays->{$day}->value === 'attimes' ? '' : ' display: none;' ?>">
-                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][from]" placeholder="From" value="<?= @$attrs->opening->somedays->{$day}->from ?>" />
+                            <input class="tpl-text-small attr"
+                                   name="attrs[opening][somedays][<?= $day ?>][from]"
+                                   placeholder="From" value="<?= @$attrs->opening->somedays->{$day}->from ?>" />
                             -
-                            <input class="tpl-text-small attr" name="attrs[opening][somedays][<?= $day ?>][to]" placeholder="To" value="<?= @$attrs->opening->somedays->{$day}->to ?>" />
-                            <span class="tpl-note">(24h format)</span>
+                            <input class="tpl-text-small attr"
+                                   name="attrs[opening][somedays][<?= $day ?>][to]"
+                                   placeholder="To" value="<?= @$attrs->opening->somedays->{$day}->to ?>" />
                         </td>
                     </tr>
                 <? endforeach; ?>

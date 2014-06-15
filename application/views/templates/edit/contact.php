@@ -1,6 +1,10 @@
 
-<style>
-    #contactTable .tpl-table-item-label { width: 55px; }
+<style type="text/css">
+    #contactTable { width: 100%; }
+    #contactTable .tpl-table-item-label { width: 55px; padding-right: 3px; }
+    #contactTable .tpl-table-item-delete-button { width: 10px; }
+    #contactTable .tpl-delete-button { display: none; }
+    #contactTable .contactValueInput { box-sizing: border-box; width: 99%; }
 </style>
 
 <div class="tpl-section">
@@ -21,10 +25,10 @@
                         </select>
                     </td>
                     <td  class="tpl-table-item-value">
-                        <input class="tpl-text-small contactValueInput attr" type="text" name="attrs[contact][values][]" value="<?= @$attrs->contact->values[$i] ?>" style="width: 200px;" />
+                        <input class="tpl-text-small contactValueInput attr" type="text" name="attrs[contact][values][]" value="<?= @$attrs->contact->values[$i] ?>" />
                     </td>
-                    <td  class="tpl-table-item-value">
-                        <span class="tpl-delete-button"></span>
+                    <td class="tpl-table-item-delete-button">
+                        <span class="tpl-delete-button" style="display: inherit;"></span>
                     </td>
                 </tr>
             <? endfor; ?>
@@ -39,7 +43,10 @@
                     </select>
                 </td>
                 <td  class="tpl-table-item-value">
-                    <input class="tpl-text-small contactValueInput" type="text" name="attrs[contact][values][]" value="" style="width: 200px;" />
+                    <input class="tpl-text-small contactValueInput" type="text" name="attrs[contact][values][]" value="" />
+                </td>
+                <td class="tpl-table-item-delete-button">
+                    <span class="tpl-delete-button"></span>
                 </td>
             </tr>
         </table>
@@ -60,7 +67,10 @@
                 </select>
             </td>
             <td  class="tpl-table-item-value">
-                <input class="tpl-text-small contactValueInput" type="text" name="attrs[contact][values][]" value="<?= @$attrs->contact->values[$i] ?>" style="width: 200px;" />
+                <input class="tpl-text-small contactValueInput" type="text" name="attrs[contact][values][]" value="<?= @$attrs->contact->values[$i] ?>" />
+            </td>
+            <td class="tpl-table-item-delete-button">
+                <span class="tpl-delete-button"></span>
             </td>
         </tr>
     </table>
@@ -84,10 +94,12 @@
                 $(this).removeClass('attr');
                 $(this).closest('tr').find('.contactTypeInput').removeClass('attr');
                 if ($(this).closest('tr').next().is('#contactTable tr:last')) {
+                    $(this).closest('tr').find('.tpl-delete-button').hide();
                     $(this).closest('tr').next().remove();
                 }
             } else {
                 $(this).addClass('attr');
+                $(this).closest('tr').find('.tpl-delete-button').css('display', 'inline-block');
                 $(this).closest('tr').find('.contactTypeInput').addClass('attr');
             }
         });

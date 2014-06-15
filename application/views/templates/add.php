@@ -148,13 +148,13 @@
                     $('.tpl-select-button').selectButton();
 
                     // Change border on focus
-                    $('a,input,textarea').focus(function() {
-                        $(this).addClass('ps-ui-focus');
+                    $('.tpl-text-large,.tpl-details-small,.tpl-details-large').focus(function() {
+                        $(this).addClass('tpl-focus');
                     });
 
                     // Change border on blur
-                    $('a,input,textarea').blur(function() {
-                        $(this).removeClass('ps-ui-focus');
+                    $('.tpl-text-large,.tpl-text-small,.tpl-details-small,.tpl-details-large').blur(function() {
+                        $(this).removeClass('tpl-focus');
                     });
 
                     // Autosize all textareas
@@ -193,12 +193,19 @@
                 }
 
                 $('#canvasResizeButton').click(function() {
+
                     var center = map.getCenter();
-                    if ($('.tpl-canvas-wrapper').hasClass('tpl-canvas-wrapper-large')) {
-                        $('.tpl-canvas-wrapper').removeClass('tpl-canvas-wrapper-large');
+
+                    if ($('#header').hasClass('tpl-header-expanded')) {
+                        $('#header').removeClass('tpl-header-expanded');
+                        $('#canvasWrapper').css('width', '300px');
+                        $('#gallery').show();
                     } else {
-                        $('.tpl-canvas-wrapper').addClass('tpl-canvas-wrapper-large');
+                        $('#header').addClass('tpl-header-expanded');
+                        $('#gallery').hide();
+                        $('#canvasWrapper').css('width', '100%');
                     }
+
                     google.maps.event.trigger(map.googleMap, 'resize');
                     map.setCenter(center);
                 });
@@ -221,6 +228,16 @@
                             select.trigger('change');
                         }
                     });
+                });
+
+                $(window).scroll(function() {
+//                    console.log('asd');
+                    //console.log($(window).scrollTop());
+                    if ($(window).scrollTop() > 20) {
+                        $('#head').css('box-shadow', '0 1px 2px rgba(0, 0, 0, 0.2)');
+                    } else {
+                        $('#head').css('box-shadow', 'none');
+                    }
                 });
 
                 // Change template when sub is changed
@@ -279,107 +296,43 @@
 
         </script>
 
-        <style>
-
-            html, body { font-family: Arial; background-color: #fff; }
-            body { overflow-y: scroll; }
-            a, input, textarea, select { outline: none; font-family: Arial; display: inline-block; margin: 0; }
-            h1 { font-size: 14px; margin: 0 0 7px 0; font-weight: bold; color: #555; }
-            h2 { font-size: 12px; margin: 0 2px 7px 0; font-weight: normal; color: #333; display: inline; }
-            input { font-size: 13px; border: solid 1px #d0d1d2; padding: 5px 7px; }
-            textarea { display: block; box-sizing: border-box; font-size: 13px; border: solid 1px #d0d1d2; padding: 5px 7px; line-height: 1.4em; }
-
-            .tpl-section { width: 600px; margin-bottom: 20px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
-            .tpl-section-wrapper { padding: 10px 12px; }
-            .tpl-subsection { margin-top: 10px; padding-top: 10px; border-top: solid 1px #e0e1e2; padding-bottom: 5px; }
-
-            .tpl-details-large { width: 100%; height: 48px; resize: none; }
-            .tpl-details-small { width: 100%; height: 24px; resize: none; }
-
-            .tpl-table { border-collapse: collapse; }
-            .tpl-table td { padding-bottom: 3px; }
-            .tpl-table-item-label { text-align: right; width: 70px; font-size: 12px; }
-            .tpl-table-item-value { padding-left: 5px; }
-
-            .tpl-text-small { font-size: 12px; padding: 2px 3px; }
-            .tpl-note { font-size: 11px; color: #a0a1a2; }
-
-            .tpl-details-button { display: none; cursor: pointer; margin-left: 10px; padding-right: 20px; color: #a0a1a2; font-size: 12px; text-decoration: none; background-image: url('/application/layout/images/details-arrows.png'); background-repeat: no-repeat; background-position: 40px -10px; }
-            .tpl-details-button.tpl-stay-visible { display: inline; background-repeat: no-repeat; background-position-y: 6px; }
-            .tpl-details-button.tpl-visible { display: inline; color: #3079ed; background-position-y: -40px; }
-            .tpl-details-button.tpl-stay-visible.tpl-visible { background-position-y: -24px; }
-            .tpl-has-details-button:hover .tpl-details-button { display: inline; }
-            .tpl-details { display: none; margin-top: 8px; }
-            .tpl-details td { padding: 4px 0 8px; }
-
-            .tpl-delete-button { cursor: pointer; display: block; width: 10px; height: 10px; background-repeat: no-repeat; background-image: url('/application/layout/images/delete-cross.png'); }
-            .tpl-delete-button:hover { background-position-y: -10px; }
-
-            .tpl-canvas-wrapper { height: 200px; margin-bottom: 20px; border: solid 1px #d0d1d2; }
-            .tpl-canvas-wrapper-large { height: 500px; }
-            .tpl-canvas-resize-button { cursor: pointer; position: relative; top: -5px; left: 425px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; }
-            .tpl-canvas-wrapper-large .tpl-canvas-resize-button { background-image: url('/application/layout/images/arrow-up.png'); }
-
-
-
-        </style>
-
-        <link type="text/css" rel="stylesheet" id="mapStyle" href="/application/layout/map.css" />
+        <link type="text/css" rel="stylesheet" href="/application/layout/map.css" />
         <link type="text/css" rel="stylesheet" href="/application/layout/ui.css" />
+        <link type="text/css" rel="stylesheet" href="/application/layout/template.css" />
 
     </head>
-    <body>
 
-        <div style="position: fixed; top: 20px; left: 20px;">
-            <input type="button" id="saveButton" value="Save POI" />
+    <body style="background-color: #f6f7f8; margin: 0; padding: 0;">
+
+        <div id="head" style="z-index: 9999; width: 100%; height: 60px; background-color: #e9eaeb; position: fixed;">
+            <div style="float: right; margin: 15px 20px 0 0;">
+                <input class="tpl-button tpl-button-blue" type="button" value="Save POI" />
+                <input class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+            </div>
+            <img src="/application/images/logo.png" style="margin: 14px 0 0 16px;" />
         </div>
 
-        <div style="width: 900px; margin: 20px auto;">
+        <div style="width: 900px; margin: 0 auto;">
 
-            <div class="tpl-canvas-wrapper" id="canvasWrapper">
-                <div id="canvas" style="width: 100%; height: 100%;"></div>
-                <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
-            </div>
+            <div style="padding-top: 80px;">
 
-            <div class="tpl-section">
-                <div class="tpl-section-wrapper">
-
-                    <select id="catSelectButton" class="tpl-select" name="cat">
-                        <? foreach ($cats AS $cat): ?>
-                            <option value="<?= $cat->id ?>"<?= $cat->id === $poi->cat ? ' selected' : '' ?>><?= $cat->name ?></option>
-                        <? endforeach; ?>
-                    </select>
-
-                    <select id="subSelectButton" class="tpl-select" name="sub">
-                        <? foreach ($subs AS $sub): ?>
-                            <option value="<?= $sub->id ?>"<?= $sub->id === $poi->sub ? ' selected' : '' ?>><?= $sub->name ?></option>
-                        <? endforeach; ?>
-                    </select>
-
+                <div id="header" class="tpl-header">
+                    <div id="canvasWrapper">
+                        <div id="canvasResizeButton"></div>
+                        <div id="canvas"></div>
+                    </div>
+                    <div id="gallery" class="tpl-gallery"></div>
                 </div>
-            </div>
-            
-            <div class="tpl-section">
-                <div class="tpl-section-wrapper">
 
-                    Near: <select id="" class="tpl-select" name="cat">
-                        <? foreach ($nears AS $near): ?>
-                            <option value="<?= $near->id() ?>"><?= $near->name() ?></option>
-                        <? endforeach; ?>
-                    </select>
-                    
-                    Country: <select id="" class="tpl-select" name="cat">
-                        <? foreach ($countries AS $country): ?>
-                            <option value="<?= $country->id() ?>"><?= $country->name() ?></option>
-                        <? endforeach; ?>
-                    </select>
-
-                </div>
             </div>
 
-            <div id="body">
-                <?= include_edit_template($poi->cat, $poi->sub); ?>
+            <div>
+                <?= include_edit_template($poi->cat, $poi->sub) ?>
             </div>
+
+        </div>
+
+        <div style="width: 100%; height: 100px; background-color: #e9eaeb; margin-top: 40px; padding-top: 20px;">
 
         </div>
 

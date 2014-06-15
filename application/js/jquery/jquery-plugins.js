@@ -192,7 +192,7 @@ $.fn.selectButton = function() {
         var select = $(this);
         var multiple = select.prop('multiple');
         var options = select.find('option');
-        var list = $('<ul class="ps-ui-multibutton"></ul>');
+        var list = $('<ul class="ps-ui-selectbutton"></ul>');
 
         select.css('visibility', 'hidden');
         select.css('position', 'absolute');
@@ -205,8 +205,10 @@ $.fn.selectButton = function() {
             var label = option.text();
 
             if (label !== '') {
-                var item = $('<a class="ps-ui-multibutton-item' + (option.is(':selected') ? ' ps-ui-selected' : '') + '" selectValue="' + value + '" href="">' + label + '</a>');
+                
+                var item = $('<a class="ps-ui-selectbutton-item' + (option.is(':selected') ? ' ps-ui-selected' : '') + '" selectValue="' + value + '" href="">' + label + '</a>');
                 list.append(item);
+                
                 item.click(function(e) {
 
                     var button = $(this);
@@ -229,6 +231,8 @@ $.fn.selectButton = function() {
                             select.val(value);
                         }
                     }
+                    
+                    item.focus();
                     select.change();
                     e.preventDefault();
                 });
@@ -236,6 +240,7 @@ $.fn.selectButton = function() {
                 item.keydown(function(e) {
                     if (e.which === 32) {
                         item.click();
+                        e.preventDefault();
                     }
                 });
 
@@ -266,69 +271,93 @@ $.fn.selectButton = function() {
         });
     });
 };
+
 jQuery.fn.select = function() {
 
     $(this).each(function() {
 
+        // If called more than once...
         if ($(this).next().hasClass('ps-ui-select')) {
             $(this).next().remove();
         }
 
-        var text = $(this).find('option:selected').text();
-        var choose = $('<a href="" class="ps-ui-select">' + text + '</a>');
+        var select = $(this);
+        var label = select.find('option:selected').text();
+        var button = $('<a href="" class="ps-ui-select"><span class="ps-ui-select-label">' + label + '</span><span class="ps-ui-select-arrows"></span></a>');
 
-        $(this).css('visibility', 'hidden');
-        $(this).css('position', 'absolute');
+        // Hide select
+        select.css('visibility', 'hidden');
+        select.css('position', 'absolute');
 
-        choose.insertAfter($(this));
+        // Insert button just after select
+        button.insertAfter(select);
 
-        choose.focus(function() {
-            $(this).addClass('hover');
+        button.focus(function() {
+            $(this).addClass('ps-ui-focus');
         });
 
-        choose.blur(function() {
-            $(this).removeClass('hover');
+        button.blur(function() {
+            $(this).removeClass('ps-ui-focus');
         });
 
-        choose.keydown(function(e) {
+        button.keydown(function(e) {
             if (e.which === 32 || e.which === 38 || e.which === 40) {
                 $(this).trigger('click');
-                $(this).blur();
                 e.preventDefault();
             }
         });
 
-        choose.click(function(e) {
-            e.preventDefault();
-            var select = $(this).prev();
-            var val = select.val();
-            var wrap = $('<ul class="ps-ui-select-list"></ul>');
+        button.click(function(e) {
+
+            // Hide all other select lists
+            $('.ps-ui-select-list').remove();
+
+            var value = select.val();
+            var selectList = $('<ul class="ps-ui-select-list"></ul>');
             var offset = 0;
-            $(this).parent().append(wrap);
+
+            // Append list after the select button
+            selectList.insertAfter($(this));
+
             select.find('option').each(function() {
-                var item = $('<a href="">' + $(this).text() + '</a>');
-                item.attr('value', $(this).val());
-                wrap.append(item);
-                if (val === $(this).val()) {
-                    item.addClass('hover');
+
+                var option = $(this);
+                var item = $('<a class="ps-ui-select-list-item" href="" data-value="' + option.val() + '">' + option.text() + '</a>');
+                selectList.append(item);
+
+                // Pre-select selected item
+                if (value === $(this).val()) {
+                    item.addClass('ps-ui-hover');
                     offset = item.position().top;
                     item.focus();
                 }
+
                 item.click(function(e) {
-                    e.preventDefault();
-                    var former = select.val();
-                    select.val($(this).attr('value'));
-                    choose.text($(this).text());
-                    if (former !== select.val()) {
+
+                    var oldValue = select.val();
+                    var newValue = $(this).attr('data-value');
+                    var newLabel = $(this).text();
+
+                    select.val(newValue);
+                    button.find('.ps-ui-select-label').text(newLabel);
+
+                    if (oldValue !== newValue) {
                         select.trigger('change');
                     }
+
+                    button.focus();
+                    e.preventDefault();
                 });
-                item.hover(function() {
-                    $(this).siblings().removeClass('hover');
-                    $(this).addClass('hover');
-                }, function() {
-                    $(this).removeClass('hover');
+
+                item.mouseenter(function() {
+                    $(this).siblings().removeClass('ps-ui-hover');
+                    $(this).addClass('ps-ui-hover');
                 });
+
+                item.mouseleave(function() {
+                    $(this).removeClass('ps-ui-hover');
+                });
+
                 item.keydown(function(e) {
                     switch (e.which) {
                         case 13:
@@ -342,8 +371,7 @@ jQuery.fn.select = function() {
                                 var next = null;
                                 if ($(this).next().length === 0) {
                                     next = $(this).parent().children(':first');
-                                }
-                                else {
+                                } else {
                                     next = $(this).next();
                                 }
                                 $(this).trigger('mouseleave');
@@ -356,8 +384,7 @@ jQuery.fn.select = function() {
                                 var prev = null;
                                 if ($(this).prev().length === 0) {
                                     prev = $(this).parent().children(':last');
-                                }
-                                else {
+                                } else {
                                     prev = $(this).prev();
                                 }
                                 $(this).trigger('mouseleave');
@@ -369,13 +396,18 @@ jQuery.fn.select = function() {
                     e.preventDefault();
                 });
             });
+
             var pos = $(this).position();
-            wrap.css('top', pos.top - offset - 1);
-            wrap.css('left', pos.left - 9);
+
+            selectList.css('top', pos.top - offset - 1);
+            selectList.css('left', pos.left - 9);
+
             $('html').one('click', function() {
-                wrap.hide();
-                choose.focus();
+                selectList.remove();
+                button.focus();
             });
+
+            e.preventDefault();
             e.stopPropagation();
         });
     });
