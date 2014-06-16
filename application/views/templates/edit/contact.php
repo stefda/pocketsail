@@ -18,6 +18,7 @@
                     <td class="tpl-table-item-label">
                         <select class="tpl-select contactTypeInput attr" name="attrs[contact][types][]">
                             <option value="tel"<?= @$attrs->contact->types[$i] === 'tel' ? ' selected' : '' ?>>Tel</option>
+                            <option value="tel"<?= @$attrs->contact->types[$i] === 'fax' ? ' selected' : '' ?>>Fax</option>
                             <option value="mob"<?= @$attrs->contact->types[$i] === 'mob' ? ' selected' : '' ?>>Mob</option>
                             <option value="email"<?= @$attrs->contact->types[$i] === 'email' ? ' selected' : '' ?>>Email</option>
                             <option value="www"<?= @$attrs->contact->types[$i] === 'www' ? ' selected' : '' ?>>www</option>
@@ -36,6 +37,7 @@
                 <td class="tpl-table-item-label">
                     <select class="tpl-select contactTypeInput" name="attrs[contact][types][]">
                         <option value="tel">Tel</option>
+                        <option value="fax">Fax</option>
                         <option value="mob">Mob</option>
                         <option value="email">Email</option>
                         <option value="www">www</option>
@@ -60,6 +62,7 @@
             <td class="tpl-table-item-label">
                 <select class="contactTypeInput" name="attrs[contact][types][]">
                     <option value="tel" selected>Tel</option>
+                    <option value="fax" selected>Fax</option>
                     <option value="mob">Mob</option>
                     <option value="email">Email</option>
                     <option value="www">www</option>
