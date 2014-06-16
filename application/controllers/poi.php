@@ -25,6 +25,8 @@ class POI extends CL_Controller {
         $poi->label = '';
         $poi->cat = $catObject->id;
         $poi->sub = $sub;
+        $poi->nearId = null;
+        $poi->countryId = null;
         $poi->latLng = $latLng;
         $poi->border = null;
 

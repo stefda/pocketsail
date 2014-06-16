@@ -299,9 +299,15 @@
 
                     var cat = $('[name=cat]').val().trim();
                     var sub = $('[name=sub]').val().trim();
+                    var nearId = $('[name=nearId]').val();
+                    var countryId = $('[name=countryId]').val();
 
                     if (this.valid && (cat === 'geo' || cat === 'admin' || sub === 'marina') && polygon === null) {
                         this.valid = confirm('Do you wish to save this POI without a border?');
+                    }
+
+                    if (this.valid && nearId === '' || countryId === '') {
+                        this.valid = confirm('Do you wish to save this POI without a near place and/or country?');
                     }
                     return this.valid;
                 });
@@ -314,6 +320,8 @@
 
                     var cat = $('[name=cat]').val().trim();
                     var sub = $('[name=sub]').val().trim();
+                    var nearId = $('[name=nearId]').val();
+                    var countryId = $('[name=countryId]').val();
                     var name = $('[name=name]').val().trim();
                     var label = $('[name=label]').val().trim();
                     var url = $('[name=url]').val().trim();
@@ -326,8 +334,8 @@
                                 id: id,
                                 name: name,
                                 label: label,
-                                nearId: 1,
-                                countryId: 1,
+                                nearId: nearId,
+                                countryId: countryId,
                                 cat: cat,
                                 sub: sub,
                                 latLng: latLng.toWKT(),

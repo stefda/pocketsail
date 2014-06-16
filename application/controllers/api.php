@@ -251,8 +251,8 @@ class API extends CL_Controller {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
         $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
-        $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT);
-        $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT);
+        $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
+        $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
         $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
         $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
