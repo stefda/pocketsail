@@ -50,7 +50,7 @@ class LabelModel implements JsonSerializable {
 
         return LabelModel::fromObject($r->fetchObject(), 'selected');
     }
-    
+
     /**
      * @param int[] $id
      * @return \LabelModel[]|null
@@ -60,7 +60,7 @@ class LabelModel implements JsonSerializable {
         if (count($ids) === 0) {
             return [];
         }
-        
+
         $r = db()->select()
                 ->all('ld')
                 ->col('desc', 'ldd')
@@ -74,14 +74,14 @@ class LabelModel implements JsonSerializable {
         }
         return $labels;
     }
-    
+
     /**
      * @param Bounds $bounds
      * @param int $zoom
      * @param int $exceptId
      * @param string[] $exceptTypes
      * @param boolean $rawDesc
-     * @return \LabelModel
+     * @return \LabelModel[]
      */
     public static function loadStaticByBounds(Bounds $bounds, $zoom) {
 
@@ -96,6 +96,33 @@ class LabelModel implements JsonSerializable {
         $labels = [];
         while ($o = $res->fetchObject()) {
             $labels[] = new LabelModel($o, 'static');
+        }
+        return $labels;
+    }
+
+    /**
+     * @param Bounds $bounds
+     * @param int $userId
+     * @return \LabelModel[]
+     */
+    public static function loadNew(Bounds $bounds, $userId) {
+
+        $res = db()->select()
+                ->col('id')
+                ->col('name')->alias('text')
+                ->col('cat')
+                ->col('sub')
+                ->col('lat')
+                ->col('lng')
+                ->from('poi_new')
+                ->where('userId', EQ, $userId)
+                ->andCond(self::buildBoundsClause($bounds))
+                ->exec();
+
+        $labels = [];
+        while ($o = $res->fetchObject()) {
+            $o->desc = NULL;
+            $labels[] = new LabelModel($o, 'user');
         }
         return $labels;
     }
@@ -127,8 +154,8 @@ class LabelModel implements JsonSerializable {
 //        }
 //        return $labels;
 //    }
-    
-        /**
+
+    /**
      * @param Bounds $bounds
      * @param int $zoom
      * @param int $exceptId

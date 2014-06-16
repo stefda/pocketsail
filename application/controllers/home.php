@@ -10,6 +10,6 @@ class Home extends CL_Controller {
     }
     
     function index() {
-        $this->load->view('map');
+        $this->load->view('main');
     }
 }

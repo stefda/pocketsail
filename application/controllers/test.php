@@ -9,11 +9,11 @@ class Test extends CL_Controller {
     function poi() {
 
         $this->load->model('POIModel');
+        $this->load->model('LabelModel');
         $this->load->library('geo/*');
         
-        $poi = POIModel::loadNew(17);
-        
-        print_r($poi);
+        $labels = LabelModel::loadNew(new ViewBounds(new LatLng(40, 13), new LatLng(48, 19)), 1);        
+        print_r($labels);
     }
 
     function menu() {

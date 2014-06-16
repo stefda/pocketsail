@@ -270,11 +270,15 @@
 
                     var cat = $('[name=cat]').val().trim();
                     var sub = $('[name=sub]').val().trim();
-                    
+
                     if (this.valid && (cat === 'geo' || cat === 'admin' || sub === 'marina') && polygon === null) {
                         this.valid = confirm('Do you wish to save this POI without a border?');
                     }
                     return this.valid;
+                });
+
+                $('#cancelButton').click(function() {
+                    window.location = '/';
                 });
 
                 $('#saveButton').click(function() {
@@ -300,7 +304,9 @@
                                 border: border
                             }) + '&' + attrs,
                             success: function(res) {
-                                console.log(res);
+                                if (res) {
+                                    window.location = '/';
+                                }
                             }
                         });
                     }
@@ -322,7 +328,7 @@
         <div id="head" style="z-index: 9999; width: 100%; height: 60px; background-color: #e9eaeb; position: fixed;">
             <div style="float: right; margin: 15px 20px 0 0;">
                 <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
-                <input class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+                <input id="cancelButton" class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
             </div>
             <img src="/application/images/logo.png" style="margin: 14px 0 0 16px;" />
         </div>

@@ -1,6 +1,7 @@
 function Marker(o) {
 
-    this.map = o.map;
+    this.psMap = o.map;
+    this.map = o.map.googleMap;
     this.label = o.label;
     this.id = this.label.id;
     this.text = o.label.text;
@@ -8,7 +9,7 @@ function Marker(o) {
     this.desc = o.label.getDescriptor();
 
     this.div_ = null;
-    this.setMap(this.map.googleMap);
+    this.setMap(this.map);
 }
 
 Marker.prototype = new google.maps.OverlayView();
@@ -28,12 +29,15 @@ Marker.prototype.onAdd = function() {
         this.buildIcon();
     }
 
+    // Closure
     var this_ = this;
+
     google.maps.event.addDomListener(this.div_, 'contextmenu', function(e) {
-        var left = e.clientX;
-        var top = e.clientY;
-        openMarkerMenu(left, top);
-        focusedMarker = this_;
+        var position = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        this_.psMap.markerClickFx(this_, position);
         e.preventDefault();
     });
 };

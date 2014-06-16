@@ -17,7 +17,15 @@ function Map(o) {
     this.ignoreZoomChange = false;
     this.init = true;
     this.markers = {};
+    this.newMarkers = {};
     this.googleMap = null;
+
+    this.markerClickFx = function(marker, pos) {
+        $('#editMenu').menu({
+            top: pos.y,
+            left: pos.x
+        });
+    };
 
     // Assign closure
     var this_ = this;
@@ -91,11 +99,22 @@ function Map(o) {
         this.markers.push(marker);
     };
 
+    this.addNewMarker = function(marker) {
+        this.newMarkers.push(marker);
+    };
+
     this.clearMarkers = function() {
         for (var i = 0; i < this.markers.length; i++) {
             this.markers[i].setMap(null);
         }
         this.markers = [];
+    };
+
+    this.clearNewMarkers = function() {
+        for (var i = 0; i < this.newMarkers.length; i++) {
+            this.newMarkers[i].setMap(null);
+        }
+        this.newMarkers = [];
     };
 
     this.loadData = function(flags) {
@@ -144,6 +163,7 @@ function Map(o) {
         }
 
         this.clearMarkers();
+        this.clearNewMarkers();
 
         for (var i = 0; i < labels.length; i++) {
             var marker = new Marker({
@@ -151,6 +171,20 @@ function Map(o) {
                 label: labels[i]
             });
             this.addMarker(marker);
+        }
+
+        // Display new markers
+        if (res.new !== undefined) {
+            for (var i = 0; i < res.new.length; i++) {
+                var poi = res.new[i];
+                var position = LatLng.fromWKT(poi.latLng).toGoogleLatLng();
+                console.log(poi);
+                marker = new google.maps.Marker({
+                    map: this.googleMap,
+                    position: position
+                });
+                this.addNewMarker(marker);
+            }
         }
     };
 
@@ -189,6 +223,27 @@ function Map(o) {
         // Initialise custom map style
         var styledMap = new google.maps.StyledMapType(mapStyle, {name: "PocketSail"});
 
+        // If no center or zoom given, try cookies or set fixed
+        if (center === undefined || zoom === undefined) {
+
+            var userLat = get_cookie('psMapLat');
+            var userLng = get_cookie('psMapLng');
+            var userZoom = get_cookie('psMapZoom');
+
+            if (userLat && userLng && userZoom) {
+                userLat = parseFloat(userLat);
+                userLng = parseFloat(userLng);
+                userZoom = parseInt(userZoom);
+                center = new LatLng(userLat, userLng);
+                zoom = userZoom;
+            } else {
+                center = new LatLng(44, 16);
+                zoom = 12;
+            }
+        }
+
+        var PS_MAPTYPE_ID = 'PocketSail';
+
         // Create new map
         this.googleMap = new google.maps.Map(document.getElementById(canvas), {
             zoom: zoom,
@@ -197,6 +252,9 @@ function Map(o) {
             streetViewControl: false,
             scaleControl: true,
             draggableCursor: cursor,
+            mapTypeControlOptions: {
+                mapTypeIds: [PS_MAPTYPE_ID, google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID]
+            },
             zoomControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_BOTTOM,
                 style: google.maps.ZoomControlStyle.SMALL
@@ -204,8 +262,8 @@ function Map(o) {
         });
 
         // Set map to custom style
-        this.googleMap.mapTypes.set('map_style', styledMap);
-        this.googleMap.setMapTypeId('map_style');
+        this.googleMap.mapTypes.set(PS_MAPTYPE_ID, styledMap);
+        this.googleMap.setMapTypeId(PS_MAPTYPE_ID);
 
         // Load data on the first idle
         google.maps.event.addListener(this.googleMap, 'idle', function() {
@@ -214,26 +272,30 @@ function Map(o) {
                 this_.init = false;
                 this_.loadData();
             }
+            var center = this.getCenter();
+            set_cookie('psMapLat', center.lat());
+            set_cookie('psMapLng', center.lng());
+            set_cookie('psMapZoom', this.getZoom());
         });
 
-        google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {
-            if (this.getMapTypeId() === 'hybrid') {
-                $('#mapStyle').attr('href', '/application/layout/map-satellite.css');
-                this_.googleMap.setOptions({
-                    styles: [{
-                            featureType: "all",
-                            elementType: "labels",
-                            stylers: [{visibility: "off"}]
-                        },
-                        {
-                            featureType: "road",
-                            stylers: [{visibility: "off"}]}
-                    ]
-                });
-            } else {
-                $('#mapStyle').attr('href', '/application/layout/map.css');
-            }
-        });
+//        google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {
+//            if (this.getMapTypeId() === 'hybrid') {
+//                $('#mapStyle').attr('href', '/application/layout/map-satellite.css');
+//                this_.googleMap.setOptions({
+//                    styles: [{
+//                            featureType: "all",
+//                            elementType: "labels",
+//                            stylers: [{visibility: "off"}]
+//                        },
+//                        {
+//                            featureType: "road",
+//                            stylers: [{visibility: "off"}]}
+//                    ]
+//                });
+//            } else {
+//                $('#mapStyle').attr('href', '/application/layout/map.css');
+//            }
+//        });
 
         // Load data on dragend
         google.maps.event.addListener(this.googleMap, 'dragend', function() {
