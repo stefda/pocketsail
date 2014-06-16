@@ -44,7 +44,7 @@
                 <option value="attimes"<?= @$attrs->opening->everyday->value === 'attimes' ? ' selected' : '' ?>>From-To</option>
             </select>
 
-            <span id="everydayTimes" style="display: none; margin-left: 10px;">
+            <span id="everydayTimes" style="<?= @$attrs->opening->everyday->value === 'attimes' ? '' : 'display: none; ' ?>margin-left: 10px;">
                 <input class="tpl-text-small attr" name="attrs[opening][everyday][from]" placeholder="From" value="<?= @$attrs->opening->everyday->from ?>" />
                 -
                 <input class="tpl-text-small attr" name="attrs[opening][everyday][to]" placeholder="To" value="<?= @$attrs->opening->everyday->to ?>" />

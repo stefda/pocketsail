@@ -31,7 +31,9 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="3">
-                    <textarea class="tpl-details-small <?= @$attrs->approach->drying->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][assistance][details]" placeholder="Provide any details..."><?= @$attrs->berthing->assistance->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->approach->drying->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[approach][drying][details]"
+                              placeholder="Provide any details..."><?= @$attrs->approach->drying->details ?></textarea>
                 </td>
             </tr>
         </table>

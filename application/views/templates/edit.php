@@ -11,7 +11,7 @@
         <script src="/application/js/jquery/utils.js"></script>
 
         <script src="/application/js/brokers/APIBroker.js"></script>
-        <script src="/application/js/brokers/PoiBroker.js"></script>
+        <script src="/application/js/brokers/POIBroker.js"></script>
 
         <script src="/application/js/geo/Geo.js"></script>
         <script src="/application/js/geo/Point.js"></script>
@@ -241,7 +241,7 @@
                 // Load subs for changed cat
                 $('#catSelectButton').change(function() {
 
-                    PoiBroker.getSubs({
+                    POIBroker.getSubs({
                         post: {
                             cat: $(this).val()
                         },
@@ -273,8 +273,9 @@
                     var name = $('[name=name]').val();
                     var label = $('[name=label]').val();
                     var attrs = $('.attr:visible,.attr-include').serialize();
+                    var border = polygon === null ? null : Polygon.fromGooglePath(polygon.getPath().getArray()).toWKT();
 
-                    PoiBroker.getTemplate({
+                    POIBroker.getTemplate({
                         post: $.param({
                             cat: $('#catSelectButton').val(),
                             sub: $(this).val(),

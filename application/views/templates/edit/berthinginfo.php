@@ -204,7 +204,9 @@
             </tr>
             <tr class="tpl-details">
                 <td colspan="3">
-                    <textarea class="tpl-details-small ?= @$attrs->berthing->soujourn->details === null ? '' : ' attr-include' ?>" name="attrs[berthing][soujourn][details]" placeholder="Provide any details..."><?= @$attrs->berthing->soujourn->details ?></textarea>
+                    <textarea class="tpl-details-small <?= @$attrs->berthing->soujourn->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[berthing][soujourn][details]"
+                              placeholder="Provide any details..."><?= @$attrs->berthing->soujourn->details ?></textarea>
                 </td>
             </tr>
 
