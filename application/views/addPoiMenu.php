@@ -4,6 +4,7 @@
     <li data-value="cove">Cove</li>
     <li data-value="anchorage">Anchorage</li>
     <li data-value="marina">Marina</li>
+    <li data-value="gasstation">Gas station</li>
 
     <!-- DIVIDER -->
     <div style="width: 100%; border-top: solid 1px #e0e1e2; margin: 4px 0;"></div>

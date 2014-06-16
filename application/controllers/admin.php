@@ -12,10 +12,6 @@ class Admin extends CL_Controller {
         $this->load->model('POIModel');
     }
 
-    function index() {
-        
-    }
-
     function add_poi() {
         $this->load->view('admin/add_poi');
     }
@@ -27,6 +23,19 @@ class Admin extends CL_Controller {
      */
     function label() {
         $pswCommand = $this->config->get_item('main', 'psw_labeling');
+        $output = null;
+        $return_var = null;
+        exec($pswCommand, $output, $return_var);
+        return $output;
+    }
+
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    function index() {
+        $pswCommand = $this->config->get_item('main', 'psw_indexing');
         $output = null;
         $return_var = null;
         exec($pswCommand, $output, $return_var);

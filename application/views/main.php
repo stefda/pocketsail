@@ -94,7 +94,18 @@
                     AdminBroker.label({
                         success: function(res) {
                             button.removeClass('loader');
-                            window.location.reload();
+//                            window.location.reload();
+                        }
+                    });
+                });
+
+                $('#indexingButton').click(function() {
+                    var button = $(this);
+                    button.addClass('loader');
+                    AdminBroker.index({
+                        success: function(res) {
+                            button.removeClass('loader');
+//                            window.location.reload();
                         }
                     });
                 });
@@ -107,6 +118,7 @@
         <div id="head" style="z-index: 9999; width: 100%; height: 60px; background-color: #e9eaeb; position: fixed; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
             <div style="float: right; margin: 15px 20px 0 0;">
                 <input id="labellingButton" class="tpl-button tpl-button-blue" type="button" value="Do labelling" style="margin-left: 10px;" />
+                <input id="indexingButton" class="tpl-button tpl-button-blue" type="button" value="Do indexing" style="margin-left: 10px;" />
             </div>
             <img src="/application/images/logo.png" style="margin: 14px 0 0 16px;" />
         </div>

@@ -116,7 +116,7 @@ class API extends CL_Controller {
 
             // Load poi info
             if (hasFlag($flags, 'poiInfo')) {
-                $res['poi']['info'] = $poi->info();
+                $res['poi']['info'] = $poi->toObject();
             }
 
             // Load poi card
