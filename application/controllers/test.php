@@ -8,12 +8,21 @@ class Test extends CL_Controller {
 
     function poi() {
 
-        $this->load->model('POIModel');
-        $this->load->model('LabelModel');
-        $this->load->library('geo/*');
+//        $o = [
+//            "int" => 4,
+//            "str" => "asd"
+//        ];
+//        
+//        $o = json_decode(json_encode($o));
+//        
+//        var_dump($o->int);
         
-        $labels = LabelModel::loadNew(new ViewBounds(new LatLng(40, 13), new LatLng(48, 19)), 1);        
-        print_r($labels);
+//        $this->load->model('POIModel');
+//        $this->load->model('LabelModel');
+//        $this->load->library('geo/*');
+//        
+//        $labels = LabelModel::loadNew(new ViewBounds(new LatLng(40, 13), new LatLng(48, 19)), 1);        
+//        print_r($labels);
     }
 
     function menu() {
@@ -180,9 +189,9 @@ class Test extends CL_Controller {
                     ]
                 ];
             }
-//            POIModel::add($o->userId, $o->nearId, $o->countryId, $o->name,
-//                    $o->label, $o->cat, $o->sub, LatLng::fromWKT($o->latLngWKT),
-//                    Polygon::fromWKT($o->boundaryWKT), $attrs);
+            POIModel::insert($o->id, $o->userId, $o->nearId, $o->countryId, $o->name,
+                    $o->label, $o->cat, $o->sub, LatLng::fromWKT($o->latLngWKT),
+                    Polygon::fromWKT($o->boundaryWKT), $attrs);
         }
 
         $old->close();

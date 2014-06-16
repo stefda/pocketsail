@@ -8,11 +8,7 @@ class Admin extends CL_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->load->library('Geo');
-        $this->load->library('geo/LatLng');
-        $this->load->library('geo/Polygon');
-        $this->load->library('geo/Point');
-        $this->load->library('geo/Bounds');
+        $this->load->library('geo/*');
         $this->load->model('POIModel');
     }
 
@@ -34,7 +30,6 @@ class Admin extends CL_Controller {
         $output = null;
         $return_var = null;
         exec($pswCommand, $output, $return_var);
-//        print_r($output);
         return $output;
     }
 

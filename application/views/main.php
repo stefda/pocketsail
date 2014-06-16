@@ -9,6 +9,7 @@
         <script src="/application/js/jquery/ajax.js"></script>
         <script src="/application/js/jquery/utils.js"></script>
         <script src="/application/js/brokers/APIBroker.js"></script>
+        <script src="/application/js/brokers/AdminBroker.js"></script>
         <script src="/application/js/geo/Geo.js"></script>
         <script src="/application/js/geo/Point.js"></script>
         <script src="/application/js/geo/LineString.js"></script>
@@ -27,7 +28,7 @@
         <script src="/application/js/labelling/Marker.js"></script>
         <script src="/application/js/geo/Projector.js"></script>
         <script src="/application/js/geo/Position.js"></script>
-        
+
         <link type="text/css" rel="stylesheet" href="/application/layout/template.css" />
         <link type="text/css" rel="stylesheet" href="/application/layout/map.css" />
         <link type="text/css" rel="stylesheet" href="/application/layout/ui.css" />
@@ -35,6 +36,7 @@
         <style>
             body, html { width: 100%; height: 100%; }
             body { margin: 0; padding: 0; }
+            .loader { background-color: #f0f1f2 !important; border-color: #e0e1e2 !important; color: #d0d1d2 !important; }
         </style>
 
         <script>
@@ -83,6 +85,17 @@
 
                 map.addListener('zoom_changed', function(e) {
                     $('.ps-ui-menu').menu('hide');
+                });
+
+                $('#labellingButton').click(function() {
+                    var button = $(this);
+                    button.addClass('loader');
+                    AdminBroker.label({
+                        success: function(res) {
+                            button.removeClass('loader');
+                            window.location.reload();
+                        }
+                    });
                 });
             });
 

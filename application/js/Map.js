@@ -9,6 +9,7 @@ function Map(o) {
     var zoom = o.zoom;
     var center = o.center;
     var cursor = o.cursor === undefined ? 'auto' : o.cursor;
+    var border = o.border;
 
     this.types = o.types !== undefined ? o.types : [];
     this.poiId = o.poiId !== undefined ? o.poiId : 0;
@@ -23,7 +24,12 @@ function Map(o) {
     this.markerClickFx = function(marker, pos) {
         $('#editMenu').menu({
             top: pos.y,
-            left: pos.x
+            left: pos.x,
+            select: function(e, ui) {
+                if (ui.item.value === 'edit') {
+                    window.location = '/poi/edit?poiId=' + marker.id
+                }
+            }
         });
     };
 
@@ -264,6 +270,12 @@ function Map(o) {
         // Set map to custom style
         this.googleMap.mapTypes.set(PS_MAPTYPE_ID, styledMap);
         this.googleMap.setMapTypeId(PS_MAPTYPE_ID);
+        
+        // Fit map to given border, if
+        if (border) {
+            var bounds = border.toGoogleBounds();
+            this.googleMap.fitBounds(bounds);
+        }
 
         // Load data on the first idle
         google.maps.event.addListener(this.googleMap, 'idle', function() {

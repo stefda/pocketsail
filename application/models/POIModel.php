@@ -35,7 +35,7 @@ class POIModel implements JsonSerializable {
         $this->subName = $o->subName;
         $this->lat = $o->lat;
         $this->lng = $o->lng;
-        $this->border = Polygon::fromWKT($o->border);
+        $this->border = Polygon::fromWKT($o->borderWKT);
         $this->attrs = json_decode($o->attrs);
         $this->rank = $o->rank;
         $this->timestamp = $o->timestamp;
@@ -58,8 +58,7 @@ class POIModel implements JsonSerializable {
      * @param string[] $attrs
      * @return int
      */
-    public static function add($userId, $nearId, $countryId, $name, $label,
-            $cat, $sub, $latLng, $border, $attrs) {
+    public static function add($userId, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
 
         $mysql = CL_MySQLi::get_instance();
         $query = insert($mysql)
@@ -93,8 +92,42 @@ class POIModel implements JsonSerializable {
      * @param string[] $attrs
      * @return int
      */
-    public static function addNew($userId, $nearId, $countryId, $name, $label,
-            $cat, $sub, $latLng, $border, $attrs) {
+    public static function insert($id, $userId, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
+
+        $mysql = CL_MySQLi::get_instance();
+        $query = insert($mysql)
+                ->into('poi')
+                ->value('id', $id)
+                ->value('userId', $userId)
+                ->value('countryId', $countryId)
+                ->value('nearId', $nearId)
+                ->value('name', $name)
+                ->value('label', $label)
+                ->value('cat', $cat)
+                ->value('sub', $sub)
+                ->value('lat', $latLng->lat())
+                ->value('lng', $latLng->lng())
+                ->value('border', $border === NULL ? 'NULL' : $border->toWKT())->op(GEOM_FROM_TEXT)
+                ->value('attrs', json_encode($attrs));
+
+        $mysql->query($query);
+        return $mysql->insertId();
+    }
+
+    /**
+     * @param int $userId
+     * @param int $nearId
+     * @param int $countryId
+     * @param string $name
+     * @param string $label
+     * @param string $cat
+     * @param string $sub
+     * @param LatLng $latLng
+     * @param Polygon $border
+     * @param string[] $attrs
+     * @return int
+     */
+    public static function addNew($userId, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
 
         $mysql = CL_MySQLi::get_instance();
         $query = insert($mysql)
@@ -129,8 +162,7 @@ class POIModel implements JsonSerializable {
      * @param string[] $attrs
      * @return int
      */
-    public static function addEdit($id, $nearId, $countryId, $userId, $name,
-            $label, $cat, $sub, $latLng, $border, $attrs) {
+    public static function addEdit($id, $nearId, $countryId, $userId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
 
         db()->insert()
                 ->into('poi_edit')
@@ -167,8 +199,7 @@ class POIModel implements JsonSerializable {
      * @param string $timestamp
      * @return int
      */
-    public static function addArchive($id, $nearId, $countryId, $userId, $name,
-            $label, $cat, $sub, $latLng, $border, $attrs, $rank, $timestamp) {
+    public static function addArchive($id, $nearId, $countryId, $userId, $name, $label, $cat, $sub, $latLng, $border, $attrs, $rank, $timestamp) {
 
         db()->insert()
                 ->into('poi_archive')
@@ -204,8 +235,7 @@ class POIModel implements JsonSerializable {
      * @param Polygon $border
      * @param string[] $attrs
      */
-    public static function update($id, $nearId, $countryId, $userId, $name,
-            $label, $cat, $sub, $latLng, $border, $attrs) {
+    public static function update($id, $nearId, $countryId, $userId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
 
         db()->update()
                 ->table('poi')
@@ -250,8 +280,7 @@ class POIModel implements JsonSerializable {
      * @param Polygon $border
      * @param string[] $attrs
      */
-    public static function updateEdit($id, $userId, $nearId, $countryId, $name,
-            $label, $cat, $sub, $latLng, $border, $attrs) {
+    public static function updateEdit($id, $userId, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
 
         db()->update()
                 ->table('poi_edit')
@@ -294,9 +323,10 @@ class POIModel implements JsonSerializable {
         if ($r->numRows() == 0) {
             return NULL;
         }
+
         return POIModel::fromObject($r->fetchObject());
     }
-    
+
     /**
      * @param int $id
      * @return \POIModel|null
@@ -353,8 +383,7 @@ class POIModel implements JsonSerializable {
         return $pois;
     }
 
-    public static function loadWithinBorder(Polygon $border, $types,
-            $exceptId = 0) {
+    public static function loadWithinBorder(Polygon $border, $types, $exceptId = 0) {
 
         $res = db()->select()
                 ->all('poi')
@@ -505,6 +534,7 @@ class POIModel implements JsonSerializable {
         $res->subName = $this->subName;
         $res->lat = $this->lat;
         $res->lng = $this->lng;
+        $res->latLng = $this->latLng();
         $res->border = $this->border;
         $res->attrs = $this->attrs;
         $res->rank = $this->rank;

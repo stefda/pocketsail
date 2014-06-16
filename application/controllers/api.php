@@ -238,4 +238,43 @@ class API extends CL_Controller {
         return TRUE;
     }
 
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    public function updatePoi() {
+
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+
+        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
+        $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
+        $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT);
+        $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT);
+        $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
+        $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
+        $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
+        $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+
+        $latLng = LatLng::fromWKT($latLngWKT);
+        $border = Polygon::fromWKT($borderWKT);
+
+        //POIModel::addNew(1, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs);
+        POIModel::update($id, $nearId, $countryId, 1, $name, $label, $cat, $sub, $latLng, $border, $attrs);
+
+        return TRUE;
+    }
+
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    public function doLabelling() {
+        
+    }
+
 }

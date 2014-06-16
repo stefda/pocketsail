@@ -11,6 +11,7 @@
         <script src="/application/js/jquery/utils.js"></script>
 
         <script src="/application/js/brokers/APIBroker.js"></script>
+        <script src="/application/js/brokers/PoiBroker.js"></script>
 
         <script src="/application/js/geo/Geo.js"></script>
         <script src="/application/js/geo/Point.js"></script>
@@ -44,187 +45,344 @@
         <script>
 
             var validator = new Validator();
-            var poiId = <?= $poi->id ?>;
-            var cat = '<?= $poi->cat ?>';
-            var sub = '<?= $poi->sub ?>';
-            var latLng = LatLng.fromWKT('<?= $poi->latLng->toWKT() ?>');
-            var border = Polygon.fromWKT('<?= $poi->border === null ? 'NULL' : $poi->border->toWKT() ?>');
 
             $(function() {
 
+                var id = <?= $poi->id ?>;
+                var cat = '<?= $poi->cat ?>';
+                var sub = '<?= $poi->sub ?>';
+                var latLng = LatLng.fromWKT('<?= $poi->latLng->toWKT() ?>');
+                var border = Polygon.fromWKT('<?= $poi->border !== null ? $poi->border->toWKT() : 'NULL' ?>');
+
+                // Initialise map
                 var map = new Map({
                     canvas: 'canvas',
                     center: latLng,
                     zoom: 16,
-                    flags: ['excludePoiLabel'],
-                    poiId: poiId
+                    border: border
                 });
 
-                $('#zoom').click(function() {
-                    map.setPoiIds([121]);
-                    map.loadData(['zoomToPois']);
-                });
-
-                //console.log(map.googleMap);
+                // Show latLng marker
                 var marker = new google.maps.Marker({
                     map: map.googleMap,
                     position: latLng.toGoogleLatLng(),
-                    draggable: true,
-                    crossOnDrag: false,
-                    icon: {
-                        anchor: new google.maps.Point(5, 23),
-                        url: '/application/layout/images/add-icon.png'
-                    }
+                    draggable: true
                 });
+
+                // Update latLng when marker is dropped
+                google.maps.event.addListener(marker, 'dragend', function(e) {
+                    latLng = LatLng.fromGoogleLatLng(e.latLng);
+                });
+
+                // Set-up border drawing facilities
+                var polyline = null;
+                var polygon = null;
+
+                if (border !== null) {
+
+                    var polygon = new google.maps.Polygon({
+                        map: map.googleMap,
+                        path: border.toGooglePath(),
+                        clickable: true,
+                        editable: true,
+                        strokeColor: 'red'
+                    });
+
+                    google.maps.event.addListener(polygon, 'rightclick', function(e) {
+
+                        if (e.vertex !== undefined) {
+                            this.getPath().removeAt(e.vertex);
+
+                            // Replace back to polyline when only one vertex
+                            if (this.getPath().length === 1) {
+                                polyline.setPath(this.getPath());
+                                polyline.setMap(map.googleMap);
+                                polygon.setMap(null);
+                                polygon = null;
+                            }
+                        }
+                    });
+                }
 
                 google.maps.event.addListener(map.googleMap, 'click', function(e) {
-                    marker.setPosition(e.latLng);
-                });
 
-                $('.tpl-select').select();
-                $('.tpl-select-button').selectButton();
+                    if (polyline === null) {
 
-                // Inputs outline
-                $('a,input,textarea').focus(function() {
-                    $(this).addClass('ps-ui-focus');
-                });
+                        // Create new polyline
+                        polyline = new google.maps.Polyline({
+                            map: map.googleMap,
+                            editable: true,
+                            clickable: true,
+                            strokeColor: 'red',
+                            path: [e.latLng]
+                        });
 
-                $('a,input,textarea').blur(function() {
-                    $(this).removeClass('ps-ui-focus');
-                });
+                        // Remove vertices on rightclick
+                        google.maps.event.addListener(polyline, 'rightclick', function(e) {
+                            if (e.vertex !== undefined) {
+                                this.getPath().removeAt(e.vertex);
+                            }
+                        });
 
-                $('textarea').autosize({
-                    append: false
-                });
+                        // Replace with polygon when click on first vertex
+                        google.maps.event.addListener(polyline, 'click', function(e) {
 
-                $('.tpl-delete-button').click(function() {
-                    $(this).closest('tr').remove();
-                });
+                            if (e.vertex === 0) {
 
-                // Hacky, but works
-                $('.tpl-details-button').click(function(e) {
-                    var elem = $(this).closest('.tpl-has-details-button');
-                    if ($(this).hasClass('tpl-stay-visible')) {
-                        $(this).removeClass('tpl-stay-visible');
-                        elem.next('.tpl-details').hide();
+                                // Create replacement polygon
+                                polygon = new google.maps.Polygon({
+                                    map: map.googleMap,
+                                    path: polyline.getPath(),
+                                    clickable: true,
+                                    editable: true,
+                                    strokeColor: 'red'
+                                });
+
+                                // Remove polyline from map
+                                polyline.setMap(null);
+
+                                // Rightclick removes vertex
+                                google.maps.event.addListener(polygon, 'rightclick', function(e) {
+
+                                    if (e.vertex !== undefined) {
+                                        this.getPath().removeAt(e.vertex);
+
+                                        // Replace back to polyline when only one vertex
+                                        if (this.getPath().length === 1) {
+                                            polyline.setPath(this.getPath());
+                                            polyline.setMap(map.googleMap);
+                                            polygon.setMap(null);
+                                            polygon = null;
+                                        }
+                                    }
+                                });
+                            }
+                        });
+                    } else if (polygon === null) {
+                        var path = polyline.getPath();
+                        path.push(e.latLng);
                     } else {
-                        $(this).addClass('tpl-stay-visible');
-                        var details = elem.next('.tpl-details').show();
-                        details.find('textarea').autosize().show().trigger('autosize.resize');
+                        var path = polygon.getPath();
+                        path.push(e.latLng);
                     }
-                    e.preventDefault();
                 });
 
-                $('.tpl-details textarea').keyup(function() {
-                    if ($(this).val() === '') {
-                        $(this).closest('.tpl-details').prev('.tpl-has-details-button').find('.tpl-details-button').removeClass('tpl-visible');
-                        $(this).removeClass('attr-include');
-                    } else {
-                        $(this).closest('.tpl-details').prev('.tpl-has-details-button').find('.tpl-details-button').addClass('tpl-visible');
-                        $(this).addClass('attr-include');
-                    }
-                });
+                function initUI() {
+
+                    // Style select inputs
+                    $('.tpl-select').select();
+
+                    // Style select-button inputs
+                    $('.tpl-select-button').selectButton();
+
+                    // Change border on focus
+                    $('.tpl-text-large,.tpl-details-small,.tpl-details-large').focus(function() {
+                        $(this).addClass('tpl-focus');
+                    });
+
+                    // Change border on blur
+                    $('.tpl-text-large,.tpl-text-small,.tpl-details-small,.tpl-details-large').blur(function() {
+                        $(this).removeClass('tpl-focus');
+                    });
+
+                    // Autosize all textareas
+                    $('textarea').autosize({
+                        append: false
+                    });
+
+                    // Contact delete button
+                    $('.tpl-delete-button').click(function() {
+                        $(this).closest('tr').remove();
+                    });
+
+                    // Details button
+                    $('.tpl-details-button').click(function(e) {
+                        var elem = $(this).closest('.tpl-has-details-button');
+                        if ($(this).hasClass('tpl-stay-visible')) {
+                            $(this).removeClass('tpl-stay-visible');
+                            elem.next('.tpl-details').hide();
+                        } else {
+                            $(this).addClass('tpl-stay-visible');
+                            var details = elem.next('.tpl-details').show();
+                            details.find('textarea').autosize().show().trigger('autosize.resize');
+                        }
+                        e.preventDefault();
+                    });
+
+                    $('.tpl-details textarea').keyup(function() {
+                        if ($(this).val() === '') {
+                            $(this).closest('.tpl-details').prev('.tpl-has-details-button').find('.tpl-details-button').removeClass('tpl-visible');
+                            $(this).removeClass('attr-include');
+                        } else {
+                            $(this).closest('.tpl-details').prev('.tpl-has-details-button').find('.tpl-details-button').addClass('tpl-visible');
+                            $(this).addClass('attr-include');
+                        }
+                    });
+                }
 
                 $('#canvasResizeButton').click(function() {
+
                     var center = map.getCenter();
-                    if ($('.tpl-canvas-wrapper').hasClass('tpl-canvas-wrapper-large')) {
-                        $('.tpl-canvas-wrapper').removeClass('tpl-canvas-wrapper-large');
+
+                    if ($('#header').hasClass('tpl-header-expanded')) {
+                        $('#header').removeClass('tpl-header-expanded');
+                        $('#canvasWrapper').css('width', '300px');
+                        $('#gallery').show();
                     } else {
-                        $('.tpl-canvas-wrapper').addClass('tpl-canvas-wrapper-large');
+                        $('#header').addClass('tpl-header-expanded');
+                        $('#gallery').hide();
+                        $('#canvasWrapper').css('width', '100%');
                     }
+
                     google.maps.event.trigger(map.googleMap, 'resize');
                     map.setCenter(center);
                 });
 
+                // Load subs for changed cat
+                $('#catSelectButton').change(function() {
+
+                    PoiBroker.getSubs({
+                        post: {
+                            cat: $(this).val()
+                        },
+                        success: function(subs) {
+                            var select = $('#subSelectButton');
+                            select.empty();
+                            for (var i = 0; i < subs.length; i++) {
+                                var sub = subs[i];
+                                select.append('<option value="' + sub.id + '">' + sub.name + '</option>');
+                            }
+                            initUI();
+                            select.trigger('change');
+                        }
+                    });
+                });
+
+                // TO IMPROVE!!!
+                $(window).scroll(function() {
+                    if ($(window).scrollTop() > 20) {
+                        $('#head').css('box-shadow', '0 1px 2px rgba(0, 0, 0, 0.2)');
+                    } else {
+                        $('#head').css('box-shadow', 'none');
+                    }
+                });
+
+                // Change template when sub is changed
+                $('#subSelectButton').change(function() {
+
+                    var name = $('[name=name]').val();
+                    var label = $('[name=label]').val();
+                    var attrs = $('.attr:visible,.attr-include').serialize();
+
+                    PoiBroker.getTemplate({
+                        post: $.param({
+                            cat: $('#catSelectButton').val(),
+                            sub: $(this).val(),
+                            name: name,
+                            label: label,
+                            latLng: latLng.toWKT(),
+                            border: border
+                        }) + '&' + attrs,
+                        success: function(html) {
+                            var data = $(html);
+                            var left = data.find('.tpl-column-left .replace');
+                            var right = data.find('.tpl-column-right .replace');
+                            $('body').find('.tpl-column-left .replace').html(left.html());
+                            $('body').find('.tpl-column-right .replace').html(right.html());
+                            initUI();
+                        }
+                    });
+                });
+
+                validator.add(function() {
+
+                    var cat = $('[name=cat]').val().trim();
+                    var sub = $('[name=sub]').val().trim();
+
+                    if (this.valid && (cat === 'geo' || cat === 'admin' || sub === 'marina') && polygon === null) {
+                        this.valid = confirm('Do you wish to save this POI without a border?');
+                    }
+                    return this.valid;
+                });
+
+                $('#cancelButton').click(function() {
+                    window.location = '/';
+                });
+
                 $('#saveButton').click(function() {
+
+                    var cat = $('[name=cat]').val().trim();
+                    var sub = $('[name=sub]').val().trim();
+                    var name = $('[name=name]').val().trim();
+                    var label = $('[name=label]').val().trim();
+                    var url = $('[name=url]').val().trim();
+                    var attrs = $('.attr:visible,.attr-include').serialize();
+                    var border = polygon === null ? null : Polygon.fromGooglePath(polygon.getPath().getArray()).toWKT();
+
                     if (validator.validate()) {
-                        var name = $('[name=name]').val();
-                        var attrs = $('.attr:visible,.attr-include').serialize();
-                        TestBroker.save_data({
+                        APIBroker.updatePoi({
                             post: $.param({
-                                id: poiId,
+                                id: id,
                                 name: name,
+                                label: label,
+                                nearId: 1,
+                                countryId: 1,
                                 cat: cat,
                                 sub: sub,
                                 latLng: latLng.toWKT(),
-                                border: border === null ? null : border.toWKT()
+                                border: border
                             }) + '&' + attrs,
                             success: function(res) {
-                                //console.log(res);
-                                location.reload();
+                                if (res) {
+                                    window.location = '/';
+                                }
                             }
                         });
-                    } else {
-                        alert('Error');
                     }
                 });
+
+                initUI();
             });
 
         </script>
 
-        <style>
-
-            html, body { font-family: Arial; background-color: #fff; }
-            body { overflow-y: scroll; }
-            a, input, textarea, select { outline: none; font-family: Arial; display: inline-block; margin: 0; }
-            h1 { font-size: 14px; margin: 0 0 7px 0; font-weight: bold; color: #555; }
-            h2 { font-size: 12px; margin: 0 2px 7px 0; font-weight: normal; color: #333; display: inline; }
-            input { font-size: 13px; border: solid 1px #d0d1d2; padding: 5px 7px; }
-            textarea { display: block; box-sizing: border-box; font-size: 13px; border: solid 1px #d0d1d2; padding: 5px 7px; line-height: 1.4em; }
-
-            .tpl-section { width: 600px; margin-bottom: 20px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2); }
-            .tpl-section-wrapper { padding: 10px 12px; }
-            .tpl-subsection { margin-top: 10px; padding-top: 10px; border-top: solid 1px #e0e1e2; padding-bottom: 5px; }
-
-            .tpl-details-large { width: 100%; height: 48px; resize: none; }
-            .tpl-details-small { width: 100%; height: 24px; resize: none; }
-
-            .tpl-table { border-collapse: collapse; }
-            .tpl-table td { padding-bottom: 3px; }
-            .tpl-table-item-label { text-align: right; width: 70px; font-size: 12px; }
-            .tpl-table-item-value { padding-left: 5px; }
-
-            .tpl-text-small { font-size: 12px; padding: 2px 3px; }
-            .tpl-note { font-size: 11px; color: #a0a1a2; }
-
-            .tpl-details-button { display: none; cursor: pointer; margin-left: 10px; padding-right: 20px; color: #a0a1a2; font-size: 12px; text-decoration: none; background-image: url('/application/layout/images/details-arrows.png'); background-repeat: no-repeat; background-position: 40px -10px; }
-            .tpl-details-button.tpl-stay-visible { display: inline; background-repeat: no-repeat; background-position-y: 6px; }
-            .tpl-details-button.tpl-visible { display: inline; color: #3079ed; background-position-y: -40px; }
-            .tpl-details-button.tpl-stay-visible.tpl-visible { background-position-y: -24px; }
-            .tpl-has-details-button:hover .tpl-details-button { display: inline; }
-            .tpl-details { display: none; margin-top: 8px; }
-            .tpl-details td { padding: 4px 0 8px; }
-
-            .tpl-delete-button { cursor: pointer; display: block; width: 10px; height: 10px; background-repeat: no-repeat; background-image: url('/application/layout/images/delete-cross.png'); }
-            .tpl-delete-button:hover { background-position-y: -10px; }
-
-            .tpl-canvas-wrapper { height: 200px; margin-bottom: 20px; border: solid 1px #d0d1d2; }
-            .tpl-canvas-wrapper-large { height: 500px; }
-            .tpl-canvas-resize-button { cursor: pointer; position: relative; top: -5px; left: 425px; background-color: #f7f8f9; border-radius: 3px; box-shadow: 0 0 3px rgba(0, 0, 0, 0.4); width: 49px; height: 10px; background-image: url('/application/layout/images/arrow-down.png'); background-repeat: no-repeat; background-position: 21px 3px; }
-            .tpl-canvas-wrapper-large .tpl-canvas-resize-button { background-image: url('/application/layout/images/arrow-up.png'); }
-
-
-
-        </style>
-
-        <link type="text/css" rel="stylesheet" id="mapStyle" href="/application/layout/map.css" />
+        <link type="text/css" rel="stylesheet" href="/application/layout/map.css" />
         <link type="text/css" rel="stylesheet" href="/application/layout/ui.css" />
+        <link type="text/css" rel="stylesheet" href="/application/layout/template.css" />
 
     </head>
-    <body>
 
-        <div style="position: fixed; top: 20px; left: 960px;">
-            <input type="button" id="saveButton" value="Save" />
+    <body style="background-color: #f6f7f8; margin: 0; padding: 0;">
+
+        <div id="head" style="z-index: 9999; width: 100%; height: 60px; background-color: #e9eaeb; position: fixed;">
+            <div style="float: right; margin: 15px 20px 0 0;">
+                <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
+                <input id="cancelButton" class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+            </div>
+            <img src="/application/images/logo.png" style="margin: 14px 0 0 16px;" />
         </div>
 
-        <div style="width: 900px; margin: 20px auto;">
-            
-            <div class="tpl-canvas-wrapper" id="canvasWrapper">
-                <div id="canvas" style="width: 100%; height: 100%;"></div>
-                <div class="tpl-canvas-resize-button" id="canvasResizeButton"></div>
+        <div style="width: 900px; margin: 0 auto;">
+
+            <div style="padding-top: 80px;">
+
+                <div id="header" class="tpl-header">
+                    <div id="canvasWrapper">
+                        <div id="canvasResizeButton"></div>
+                        <div id="canvas"></div>
+                    </div>
+                    <div id="gallery" class="tpl-gallery"></div>
+                </div>
+
             </div>
 
-            <? include_edit_template($poi->cat, $poi->sub); ?>
+            <div>
+                <?= include_edit_template($poi->cat, $poi->sub) ?>
+            </div>
+
+        </div>
+
+        <div style="clear: both; width: 100%; height: 100px; background-color: #e9eaeb; margin-top: 40px; padding-top: 20px;">
 
         </div>
 

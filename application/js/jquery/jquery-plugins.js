@@ -9,8 +9,10 @@ $.fn.menu = function() {
             switch (op) {
                 case 'hide':
                     {
+                        menu.unbind();
                         menu.hide();
                         menu.find('.ps-ui-menu').hide();
+                        menu.find('.ps-ui-menu li').unbind();
                         menu.find('li.ps-ui-menuitem-stayhover').removeClass('ps-ui-menuitem-stayhover');
                         break;
                     }
@@ -31,6 +33,10 @@ $.fn.menu = function() {
     var top = 0;
     var left = 0;
     var selectFx = null;
+
+    // Unbind any previously attached listeners
+    menu.unbind();
+    menu.find('.ps-ui-menu li').unbind();
 
     // Add ui menu class
     menu.find('ul').add(menu).addClass('ps-ui-menu');
@@ -205,10 +211,10 @@ $.fn.selectButton = function() {
             var label = option.text();
 
             if (label !== '') {
-                
+
                 var item = $('<a class="ps-ui-selectbutton-item' + (option.is(':selected') ? ' ps-ui-selected' : '') + '" selectValue="' + value + '" href="">' + label + '</a>');
                 list.append(item);
-                
+
                 item.click(function(e) {
 
                     var button = $(this);
@@ -231,7 +237,7 @@ $.fn.selectButton = function() {
                             select.val(value);
                         }
                     }
-                    
+
                     item.focus();
                     select.change();
                     e.preventDefault();

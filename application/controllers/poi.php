@@ -30,7 +30,7 @@ class POI extends CL_Controller {
 
         $cats = POITypeModel::loadCats();
         $subs = POITypeModel::loadSubs($catObject->id);
-        
+
         $nears = POIModel::loadNears($latLng);
         $countries = POIModel::loadCountries($latLng);
 
@@ -67,8 +67,7 @@ class POI extends CL_Controller {
         $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
         $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
-        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING,
-                FILTER_REQUIRE_ARRAY);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
         $poi = new stdClass();
         $poi->name = $name;
@@ -76,7 +75,7 @@ class POI extends CL_Controller {
 
         $this->assign('poi', $poi);
         $this->assign('attrs', json_decode(json_encode($attrs)));
-        
+
         return include_edit_template($cat, $sub);
     }
 
@@ -84,12 +83,9 @@ class POI extends CL_Controller {
 
         $this->load->library('geo/*');
         $this->load->model('POIModel');
+        $this->load->model('POITypeModel');
 
         $poiId = filter_input(INPUT_GET, 'poiId', FILTER_VALIDATE_INT);
-        $lat = filter_input(INPUT_GET, 'lat', FILTER_VALIDATE_FLOAT);
-        $lng = filter_input(INPUT_GET, 'lng', FILTER_VALIDATE_FLOAT);
-        $cat = filter_input(INPUT_GET, 'cat', FILTER_SANITIZE_STRING);
-        $sub = filter_input(INPUT_GET, 'sub', FILTER_SANITIZE_STRING);
 
         $poiObject = new stdClass();
         $attrsObject = new stdClass();
@@ -97,18 +93,22 @@ class POI extends CL_Controller {
         if ($poiId !== NULL) {
             $poi = POIModel::load($poiId);
             $poiObject = $poi->toObject();
-            $attrsObject = $poi->attributes();
-        } else {
-            $poiObject->id = 0;
-            $poiObject->name = '';
-            $poiObject->cat = $cat;
-            $poiObject->sub = $sub;
-            $poiObject->latLng = new LatLng($lat, $lng);
-            $poiObject->border = null;
+            $attrsObject = $poi->attrs();
         }
 
-        $this->assign('poi', $poiObject);
-        $this->assign('attrs', $attrsObject);
+        $cats = POITypeModel::loadCats();
+        $subs = POITypeModel::loadSubs($poi->cat());
+
+        $nears = POIModel::loadNears($poi->latLng());
+        $countries = POIModel::loadCountries($poi->latLng());
+        
+        $this->assign('poi', $poi->toObject());
+        $this->assign('nears', $nears);
+        $this->assign('countries', $countries);
+        $this->assign('cats', $cats);
+        $this->assign('subs', $subs);
+        $this->assign('attrs', $poi->attrs());
+
         $this->load->view('templates/edit');
     }
 
@@ -137,9 +137,7 @@ class POI extends CL_Controller {
         $vb = new ViewBounds($sw, $ne);
         $poiBorder = $vb->toPolygon();
 
-        $near = POIModel::loadByBorder($poiBorder,
-                        ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'],
-                        198);
+        $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
         $nearSorted = [];
         $nearSortedIds = [];
 
