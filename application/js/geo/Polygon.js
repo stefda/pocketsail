@@ -21,7 +21,7 @@ function Polygon(points) {
      */
     this.toGooglePath = function() {
         var path = [];
-        for (var i = 0; i < this.points.length; i++) {
+        for (var i = 0; i < this.points.length - 1; i++) {
             path.push(this.points[i].toLatLng().toGoogleLatLng());
         }
         return path;

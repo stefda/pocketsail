@@ -1,5 +1,7 @@
 <?php
 
+require_library('geo/Bounds');
+
 class ViewBounds extends Bounds implements JsonSerializable {
 
     public $s;

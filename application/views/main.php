@@ -51,7 +51,8 @@
 
                 var map = new Map({
                     canvas: 'canvas',
-                    cursor: 'crosshair'
+                    cursor: 'crosshair',
+                    cache: true
                 });
 
                 map.setFlags(['newPois']);

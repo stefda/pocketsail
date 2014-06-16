@@ -11,6 +11,7 @@ function Map(o) {
     var cursor = o.cursor === undefined ? 'auto' : o.cursor;
     var border = o.border;
 
+    this.cache = o.cache !== undefined ? o.cache : false;
     this.types = o.types !== undefined ? o.types : [];
     this.poiId = o.poiId !== undefined ? o.poiId : 0;
     this.poiIds = o.poiIds !== undefined ? o.poiIds : [];
@@ -270,7 +271,7 @@ function Map(o) {
         // Set map to custom style
         this.googleMap.mapTypes.set(PS_MAPTYPE_ID, styledMap);
         this.googleMap.setMapTypeId(PS_MAPTYPE_ID);
-        
+
         // Fit map to given border, if
         if (border) {
             var bounds = border.toGoogleBounds();
@@ -284,10 +285,13 @@ function Map(o) {
                 this_.init = false;
                 this_.loadData();
             }
-            var center = this.getCenter();
-            set_cookie('psMapLat', center.lat());
-            set_cookie('psMapLng', center.lng());
-            set_cookie('psMapZoom', this.getZoom());
+
+            if (this_.cache) {
+                var center = this.getCenter();
+                set_cookie('psMapLat', center.lat());
+                set_cookie('psMapLng', center.lng());
+                set_cookie('psMapZoom', this.getZoom());
+            }
         });
 
 //        google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {

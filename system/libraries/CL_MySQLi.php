@@ -31,6 +31,7 @@ class CL_MySQLi {
 
     public function __construct($host, $user, $password, $database) {
         $this->mysql = new mysqli($host, $user, $password, $database);
+        $this->mysql->set_charset("utf8");
     }
 
     /**

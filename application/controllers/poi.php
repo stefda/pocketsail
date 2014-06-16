@@ -95,7 +95,7 @@ class POI extends CL_Controller {
             $poiObject = $poi->toObject();
             $attrsObject = $poi->attrs();
         }
-
+        
         $cats = POITypeModel::loadCats();
         $subs = POITypeModel::loadSubs($poi->cat());
 

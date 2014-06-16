@@ -53,7 +53,7 @@
                 <td>
                     <select id="" class="tpl-select" name="cat">
                         <? foreach ($countries AS $country): ?>
-                            <option value="<?= $country->id() ?>"><?= $country->name() ?></option>
+                            <option value="<?= $country->id() ?>"<?= $country->id() === $poi->countryId ? ' selected' : '' ?>><?= $country->name() ?></option>
                         <? endforeach; ?>
                     </select>
                 </td>
@@ -67,7 +67,7 @@
                 <td>
                     <select class="tpl-select" name="cat">
                         <? foreach ($nears AS $near): ?>
-                            <option value="<?= $near->id() ?>"><?= $near->name() ?></option>
+                            <option value="<?= $near->id() ?>"<?= $near->id() === $poi->nearId ? ' selected' : '' ?>><?= $near->name() ?></option>
                         <? endforeach; ?>
                     </select>
                 </td>

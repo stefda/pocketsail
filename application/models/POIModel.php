@@ -21,7 +21,7 @@ class POIModel implements JsonSerializable {
     private $timestamp;
 
     public function __construct($o) {
-
+        
         $this->id = $o->id;
         $this->nearId = $o->nearId;
         $this->nearName = $o->nearName;
@@ -522,7 +522,7 @@ class POIModel implements JsonSerializable {
     public function toObject() {
         $res = new stdClass();
         $res->id = $this->id;
-        $res->nearId = $this->countryId;
+        $res->nearId = $this->nearId;
         $res->nearName = $this->nearName;
         $res->countryId = $this->countryId;
         $res->countryName = $this->countryName;

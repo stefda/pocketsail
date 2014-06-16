@@ -171,7 +171,7 @@ class Test extends CL_Controller {
         $this->load->model('POIModel');
 
         $new = CL_MySQLi::get_instance();
-        $old = new CL_MySQLi('localhost', 'root', '', 'ps_old');
+        $old = new CL_MySQLi('localhost', 'root', '', 'ps_backup');
 
         $res = $old->query("SELECT *, AsText(latLng) AS latLngWKT, AsText(boundary) AS boundaryWKT FROM `poi`");
         while ($o = $res->fetchObject()) {
