@@ -21,7 +21,7 @@
             <?= include_view('templates/edit/approach'); ?>
             <?= include_view('templates/edit/attractions'); ?>
             <?= include_view('templates/edit/exposure'); ?>
-            <?= include_view('templates/edit/anchoringinfo'); ?>
+            <?= include_view('templates/edit/mooringinfo'); ?>
             <?= include_view('templates/edit/facilitiesshort'); ?>
         </div>
     </div>
