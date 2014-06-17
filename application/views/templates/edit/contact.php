@@ -62,7 +62,7 @@
             <td class="tpl-table-item-label">
                 <select class="contactTypeInput" name="attrs[contact][types][]">
                     <option value="tel" selected>Tel</option>
-                    <option value="fax" selected>Fax</option>
+                    <option value="fax">Fax</option>
                     <option value="mob">Mob</option>
                     <option value="email">Email</option>
                     <option value="www">www</option>

@@ -10,6 +10,12 @@ class Test extends CL_Controller {
         $this->load->view('mobile');
     }
     
+    function area() {
+        
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+    }
+    
     function poi() {
 
 //        $o = [

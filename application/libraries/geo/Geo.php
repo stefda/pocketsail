@@ -142,4 +142,66 @@ class Geo {
         return new LatLng(rad2deg($lat), rad2deg($lng));
     }
 
+    public static function area(Polygon $polygon) {
+
+        $points = $polygon->points();
+        
+        $r = 6378;
+        $lam1 = 0;
+        $lam2 = 0;
+        $beta1 = 0;
+        $beta2 = 0;
+        $cosB1 = 0;
+        $cosB2 = 0;
+        $hav = 0;
+        $sum = 0;
+
+        $lat = [];
+        $lng = [];
+
+        for ($i = 0; $i < count($points); $i++) {
+            array_push($lat, $points[$i]->y() * pi() / 180);
+            array_push($lng, $points[$i]->x() * pi() / 180);
+        }
+
+        for ($j = 0; $j < count($lat); $j++) {
+            $k = $j + 1;
+            if ($j == 0) {
+                $lam1 = $lng[$j];
+                $beta1 = $lat[$j];
+                $lam2 = $lng[$j + 1];
+                $beta2 = $lat[$j + 1];
+                $cosB1 = cos($beta1);
+                $cosB2 = cos($beta2);
+            } else {
+                $k = ($j + 1) % count($lat);
+                $lam1 = $lam2;
+                $beta1 = $beta2;
+                $lam2 = $lng[$k];
+                $beta2 = $lat[$k];
+                $cosB1 = $cosB2;
+                $cosB2 = cos($beta2);
+            }
+
+            if ($lam1 != $lam2) {
+                $hav = ((1.0 - cos($beta2 - $beta1)) / 2.0) +
+                        $cosB1 * $cosB2 * ((1.0 - cos($lam2 - $lam1)) / 2.0);
+                $a = 2 * asin(sqrt($hav));
+                $b = pi() / 2 - $beta2;
+                $c = pi() / 2 - $beta1;
+                $s = 0.5 * ($a + $b + $c);
+                $t = tan($s / 2) * tan(($s - $a) / 2) *
+                        tan(($s - $b) / 2) * tan(($s - $c) / 2);
+
+                $excess = abs(4 * atan(sqrt(abs($t))));
+
+                if ($lam2 < $lam1) {
+                    $excess = -$excess;
+                }
+                $sum += $excess;
+            }
+        }
+        return abs($sum) * $r * $r;
+    }
+
 }

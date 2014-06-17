@@ -76,10 +76,10 @@ function point_in_polygon($path, $point) {
 /**
  * Calculate the area covered by a polygon specified by the given path.
  * 
- * @param array[array[float]] $path [[$lat0,$lng0],[$lat1,$lat2]...]
+ * @param array[array[float]] $points [[$lat0,$lng0],[$lat1,$lat2]...]
  * @return float
  */
-function spherical_polygon_area($path) {
+function spherical_polygon_area($points) {
 
     $r = 6378;
     $lam1 = 0;
@@ -94,9 +94,9 @@ function spherical_polygon_area($path) {
     $lat = [];
     $lng = [];
 
-    for ($i = 0; $i < count($path); $i++) {
-        array_push($lat, $path[$i][0] * pi() / 180);
-        array_push($lng, $path[$i][1] * pi() / 180);
+    for ($i = 0; $i < count($points); $i++) {
+        array_push($lat, $points[$i][0] * pi() / 180);
+        array_push($lng, $points[$i][1] * pi() / 180);
     }
 
     for ($j = 0; $j < count($lat); $j++) {

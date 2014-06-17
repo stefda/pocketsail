@@ -45,11 +45,15 @@
 //                });
 //
 //                google.maps.event.addListener(map, 'dragstart', function(e) {
-//                    console.log('start');
+//                    console.log('dragstart');
 //                });
 //
 //                google.maps.event.addListener(map, 'dragend', function(e) {
-//                    console.log('end');
+//                    console.log('dragend');
+//                });
+//                
+//                google.maps.event.addListener(map, 'drag', function(e) {
+//                    console.log('drag');
 //                });
 
                 var map = new Map({
