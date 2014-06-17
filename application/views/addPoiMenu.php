@@ -36,12 +36,21 @@
             <li data-value="buoys">Mooring Buoys</li>
         </ul>
     </li>
+    
+    <li>
+        Hazard
+        <ul>
+            <li data-value="rock">Rock</li>
+            <li data-value="hislet">Islet</li>
+        </ul>
+    </li>
 
     <li>
         Shopping
         <ul>
             <li data-value="supermarket">Supermarket</li>
             <li data-value="minimiarket">Minimiarket</li>
+            <li data-value="cashpoint">Cashpoint</li>
         </ul>
     </li>
 

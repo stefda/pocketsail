@@ -72,6 +72,10 @@
                         }
                     });
                 });
+                
+                map.addListener('zoom_changed', function(e) {
+                    $('#zoomOut').text(this.getZoom());
+                });
 
                 map.addListener('click', function(e) {
                     $('.ps-ui-menu').menu('hide');
@@ -91,7 +95,7 @@
                     AdminBroker.label({
                         success: function(res) {
                             button.removeClass('loader');
-//                            window.location.reload();
+                            window.location.reload();
                         }
                     });
                 });
@@ -102,7 +106,7 @@
                     AdminBroker.index({
                         success: function(res) {
                             button.removeClass('loader');
-//                            window.location.reload();
+                            window.location.reload();
                         }
                     });
                 });
@@ -121,6 +125,8 @@
         </div>
 
         <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0;"></div>
+        
+        <div id="zoomOut" style="font-family: Arial; font-size: 14px; position: absolute; bottom: 22px; right: 40px; background-color: #fff; border: solid 1px #bbb; border-radius: 2px; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3); padding: 3px 5px;">10</div>
 
         <?= include_view('addPoiMenu') ?>
         <?= include_view('editPoiMenu') ?>

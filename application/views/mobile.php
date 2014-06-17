@@ -31,18 +31,32 @@
         <script src="/application/js/geo/Position.js"></script>
         <script type="text/javascript">
             $(function() {
-//                var map = new google.maps.Map(document.getElementById('canvas'), {
-//                    zoom: 10,
-//                    center: new google.maps.LatLng(44, 16.5),
-//                    panControl: false,
-//                    streetViewControl: false,
-//                    scaleControl: true
-//                });
-                var map = new Map({
-                    canvas: 'canvas',
-                    cursor: 'crosshair',
-                    cache: true
+
+                var map = new google.maps.Map(document.getElementById('canvas'), {
+                    zoom: 10,
+                    center: new google.maps.LatLng(44, 16.5),
+                    panControl: false,
+                    streetViewControl: false,
+                    scaleControl: true
                 });
+
+                google.maps.event.addListener(map, 'idle', function(e) {
+                    console.log('idle');
+                });
+
+                google.maps.event.addListener(map, 'dragstart', function(e) {
+                    console.log('start');
+                });
+
+                google.maps.event.addListener(map, 'dragend', function(e) {
+                    console.log('end');
+                });
+
+//                var map = new Map({
+//                    canvas: 'canvas',
+//                    cursor: 'crosshair',
+//                    cache: true
+//                });
             });
         </script>
         <link type="text/css" rel="stylesheet" href="/application/layout/map-high.css" />
