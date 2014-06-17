@@ -41,10 +41,6 @@
 
         <script>
 
-            function openMarkerMenu(left, top) {
-                console.log(left, top);
-            }
-
             var focusedMarker = null;
 
             $(function() {
@@ -60,10 +56,11 @@
                 map.addListener('rightclick', function(e) {
 
                     var latLng = LatLng.fromGoogleLatLng(e.latLng);
+                    var canvasOffset = $('#canvas').offset();
 
                     $('#menu').menu({
-                        top: e.pixel.y,
-                        left: e.pixel.x,
+                        top: e.pixel.y + canvasOffset.top,
+                        left: e.pixel.x + canvasOffset.left,
                         select: function(e, ui) {
                             var sub = ui.item.value;
                             if (sub !== undefined) {

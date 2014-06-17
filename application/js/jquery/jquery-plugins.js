@@ -20,6 +20,8 @@ $.fn.menu = function() {
         });
         return;
     }
+    
+    $('.ps-ui-menu').menu('hide');
 
     // Assign params object
     var o = arguments[0];
@@ -110,9 +112,11 @@ $.fn.menu = function() {
                 }
 
                 item.addClass('ps-ui-menuitem-stayhover');
-                sm.css('top', item.position().top - 5);
+                
+                //sm.css('top', item.position().top - 5);
                 sm.css('left', item.width() + 45);
                 sm.css('top', smTop);
+                
                 sm.show();
             }, 300);
         }
