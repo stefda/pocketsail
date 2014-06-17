@@ -6,6 +6,10 @@ class Test extends CL_Controller {
         parent::__construct();
     }
 
+    function mobile() {
+        $this->load->view('mobile');
+    }
+    
     function poi() {
 
 //        $o = [
