@@ -5,6 +5,10 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
+    
+    function icons() {
+        $this->load->view('icons');
+    }
 
     function mobile() {
         $this->load->view('mobile');

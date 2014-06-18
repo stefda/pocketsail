@@ -23,7 +23,7 @@ function Map(o) {
     this.googleMap = null;
 
     this.markerClickFx = function(marker, pos) {
-        $('#editMenu').menu({
+        $('#editMenu').mapmenu({
             top: pos.y,
             left: pos.x,
             select: function(e, ui) {

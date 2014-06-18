@@ -334,6 +334,7 @@
                                 id: id,
                                 name: name,
                                 label: label,
+                                url: url,
                                 nearId: nearId,
                                 countryId: countryId,
                                 cat: cat,

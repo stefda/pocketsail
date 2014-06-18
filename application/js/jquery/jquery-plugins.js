@@ -1,6 +1,6 @@
 
 
-$.fn.menu = function() {
+$.fn.mapmenu = function() {
 
     if (arguments.length === 1 && typeof arguments[0] === 'string') {
         var op = arguments[0];

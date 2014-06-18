@@ -38,7 +38,9 @@ class API extends CL_Controller {
             'supermarkets' => ["supermarket"],
             'cashpoint' => ["cashpoint"],
             'cashpoints' => ["cashpoint"],
-            'shopping' => ["supermarket", "cashpoint"]
+            'shopping' => ["supermarket", "minimarket"],
+            'shop' => ["supermarket", "minimarket"],
+            'shops' => ["supermarket", "minimarket"]
         ];
 
         $solr = SolrService::get_instance();
@@ -222,6 +224,7 @@ class API extends CL_Controller {
 
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
         $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
+        $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_STRING);
         $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT);
         $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT);
         $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
@@ -233,7 +236,7 @@ class API extends CL_Controller {
         $latLng = LatLng::fromWKT($latLngWKT);
         $border = Polygon::fromWKT($borderWKT);
 
-        POIModel::addNew(1, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs);
+        POIModel::addNew($url, $nearId, $countryId, 1, $name, $label, $cat, $sub, $latLng, $border, $attrs);
 
         return TRUE;
     }
@@ -251,6 +254,7 @@ class API extends CL_Controller {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
         $label = filter_input(INPUT_POST, 'label', FILTER_SANITIZE_STRING);
+        $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_STRING);
         $nearId = filter_input(INPUT_POST, 'nearId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
         $countryId = filter_input(INPUT_POST, 'countryId', FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
         $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
@@ -263,7 +267,7 @@ class API extends CL_Controller {
         $border = Polygon::fromWKT($borderWKT);
 
         //POIModel::addNew(1, $nearId, $countryId, $name, $label, $cat, $sub, $latLng, $border, $attrs);
-        POIModel::update($id, $nearId, $countryId, 1, $name, $label, $cat, $sub, $latLng, $border, $attrs);
+        POIModel::update($id, $url, $nearId, $countryId, 1, $name, $label, $cat, $sub, $latLng, $border, $attrs);
 
         return TRUE;
     }
