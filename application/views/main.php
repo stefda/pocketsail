@@ -124,7 +124,7 @@
             <img src="/application/images/logo.png" style="margin: 14px 0 0 16px;" />
         </div>
 
-        <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0;"></div>
+        <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0; height: auto;"></div>
         
         <div id="zoomOut" style="font-family: Arial; font-size: 14px; position: absolute; bottom: 22px; right: 40px; background-color: #fff; border: solid 1px #bbb; border-radius: 2px; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3); padding: 3px 5px;">10</div>
 

@@ -49,7 +49,7 @@
         Shopping
         <ul>
             <li data-value="supermarket">Supermarket</li>
-            <li data-value="minimiarket">Minimiarket</li>
+            <li data-value="minimarket">Minimiarket</li>
             <li data-value="cashpoint">Cashpoint</li>
         </ul>
     </li>
