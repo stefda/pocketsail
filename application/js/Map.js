@@ -11,9 +11,6 @@ function Map(o) {
     var cursor = o.cursor === undefined ? 'auto' : o.cursor;
     var border = o.border;
 
-    this.loadOnIdle = false;
-    this.dragging = false;
-
     this.cache = o.cache !== undefined ? o.cache : false;
     this.types = o.types !== undefined ? o.types : [];
     this.poiId = o.poiId !== undefined ? o.poiId : 0;
@@ -157,7 +154,6 @@ function Map(o) {
         if (res.center !== undefined && res.zoom !== undefined) {
             var center = LatLng.fromWKT(res.center);
             var zoom = res.zoom;
-            this.ignoreIdle = true;
             this.panTo(center, zoom);
         }
 
@@ -182,20 +178,20 @@ function Map(o) {
             });
             this.addMarker(marker);
         }
-
-        // Display new markers
-        if (res.new !== undefined) {
-            for (var i = 0; i < res.new.length; i++) {
-                var poi = res.new[i];
-                var position = LatLng.fromWKT(poi.latLng).toGoogleLatLng();
-                console.log(poi);
-                marker = new google.maps.Marker({
-                    map: this.googleMap,
-                    position: position
-                });
-                this.addNewMarker(marker);
-            }
-        }
+//
+//        // Display new markers
+//        if (res.new !== undefined) {
+//            for (var i = 0; i < res.new.length; i++) {
+//                var poi = res.new[i];
+//                var position = LatLng.fromWKT(poi.latLng).toGoogleLatLng();
+//                console.log(poi);
+//                marker = new google.maps.Marker({
+//                    map: this.googleMap,
+//                    position: position
+//                });
+//                this.addNewMarker(marker);
+//            }
+//        }
     };
 
     /**
@@ -316,26 +312,8 @@ function Map(o) {
 //            }
 //        });
 
-
-        google.maps.event.addListener(this.googleMap, 'dragstart', function() {
-            this_.loadOnIdle = true;
-            this_.dragging = true;
-        });
-
         google.maps.event.addListener(this.googleMap, 'dragend', function() {
-            this_.dragging = false;
-//            this_.loadData();
-        });
-
-        google.maps.event.addListener(this.googleMap, 'idle', function() {
-            if (this_.loadOnIdle) {
-                this_.loadData();
-                this_.loadOnIdle = false;
-            }
-        });
-
-        google.maps.event.addListener(this.googleMap, 'bounds_changed', function() {
-            this_.loadOnIdle = true;
+            this_.loadData();
         });
 
         // Load data on zoom_change
