@@ -56,11 +56,21 @@
 //                    console.log('drag');
 //                });
 
-                var map = new Map({
-                    canvas: 'canvas',
-                    cursor: 'crosshair',
-                    cache: true
-                });
+                var geo = navigator.geolocation;
+
+                if (geo) {
+                    geo.getCurrentPosition(function(pos) {
+                        console.log(pos);
+                    }, function(e) {
+                        console.log(e);
+                    });
+                }
+
+//                var map = new Map({
+//                    canvas: 'canvas',
+//                    cursor: 'crosshair',
+//                    cache: true
+//                });
             });
         </script>
         <link type="text/css" rel="stylesheet" href="/application/layout/map-high.css" />
