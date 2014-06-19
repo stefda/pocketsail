@@ -63,6 +63,8 @@
                         console.log(pos);
                     }, function(e) {
                         console.log(e);
+                    }, {
+                        enableHighAccuracy: true
                     });
                 }
 
