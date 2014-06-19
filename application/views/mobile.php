@@ -59,13 +59,15 @@
                 var geo = navigator.geolocation;
 
                 if (geo) {
-                    geo.getCurrentPosition(function(pos) {
-                        console.log(pos);
-                    }, function(e) {
-                        console.log(e);
-                    }, {
-                        enableHighAccuracy: true
-                    });
+                    setInterval(function() {
+                        geo.getCurrentPosition(function(pos) {
+                            console.log(pos);
+                        }, function(e) {
+                            console.log(e);
+                        }, {
+                            enableHighAccuracy: true
+                        });
+                    }, 10000);
                 }
 
 //                var map = new Map({
