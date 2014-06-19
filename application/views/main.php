@@ -126,6 +126,10 @@
                     });
                 });
 
+                $('#signoutButton').click(function() {
+                    window.location = '/user/do_logout';
+                });
+
                 $('#clearButton').click(function() {
                     map.setPoiId(0);
                     map.setTypes([]);
@@ -219,6 +223,7 @@
             <div style="float: right; margin: 15px 20px 0 0;">
                 <input id="labellingButton" class="tpl-button tpl-button-blue" type="button" value="Do labelling" style="margin-left: 10px;" />
                 <input id="indexingButton" class="tpl-button tpl-button-blue" type="button" value="Do indexing" style="margin-left: 10px;" />
+                <input id="signoutButton" class="tpl-button" type="button" value="Sign out" style="margin-left: 10px;" />
             </div>
             <img src="/application/images/logo.png" style="float: left; margin: 14px 0 0 16px;" />
             <div style="position: relative; width: 400px; height: 30px; margin: 14px auto 0;">
