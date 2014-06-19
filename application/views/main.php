@@ -188,7 +188,7 @@
 
                     if (item.nores) {
                         return $('<li>')
-                                .append('<div style="text-align: center; padding: 10px; color: #d0d1d2;">No suggestions found</div>')
+                                .append('<div style="text-align: center; padding: 11px 0; color: #d0d1d2;">No suggestions found</div>')
                                 .appendTo(ul);
                     }
 
