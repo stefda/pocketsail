@@ -141,6 +141,14 @@
                     source: "/api/suggest",
                     appendTo: '#suggestList',
                     position: {my: "left top-1px"},
+                    // Response
+                    response: function(event, ui) {
+                        if (ui.content.length === 1) {
+                            ui.content.unshift({
+                                nores: true
+                            });
+                        }
+                    },
                     // Define action on user select
                     select: function(event, ui) {
 
@@ -178,9 +186,15 @@
 
                 function renderItem(ul, item) {
 
+                    if (item.nores) {
+                        return $('<li>')
+                                .append('<div style="text-align: center; padding: 10px; color: #d0d1d2;">No suggestions found</div>')
+                                .appendTo(ul);
+                    }
+
                     if (item.fulltext) {
                         return $('<li>')
-                                .append('<a href="/test/fulltext?term=' + item.label + '" class="fulltextButton"><div>See more results for <i>' + item.label + '</i> &raquo;</div></a>')
+                                .append('<a href="/test/fulltext?term=' + item.label + '" class="fulltextButton"><div>See fulltext search results for <i>' + item.label + '</i> &raquo;</div></a>')
                                 .appendTo(ul);
                     }
 

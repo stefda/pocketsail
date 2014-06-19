@@ -26,7 +26,12 @@ class SolrService {
     }
 
     public function query($query, $limit = 10, $offset = 0) {
-        $res = $this->solr->search($query, $offset, $limit, array())->getRawResponse();
+        $query .= " -subName:Anchorage";
+        $query .= " AND -subName:Supermarket";
+        $query .= " AND -subName:Minimarket";
+        $query .= " AND -subName:\"Mooring buoys\"";
+        $query .= " AND -subName:\"Shore mooring\"";
+        $res = $this->solr->search($query . " -subName:Anchorage ", $offset, $limit, array())->getRawResponse();
         return new SolrResponse($res);
     }
 

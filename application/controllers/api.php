@@ -19,16 +19,21 @@ class API extends CL_Controller {
 
         // Parse term from the input
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
+        $term = trim($term);
+        
+        $term = preg_replace("/^anchor (.*)/", "anchorage $1", $term);
+        $term = preg_replace("/^moor (.*)/", "mooring buoys $1", $term);
+        $term = preg_replace("/^berth (.*)/", "berthing $1", $term);
 
         $keywords = [
             'berthing' => ["marina", "mooring"],
-            'anchoring' => ["anchorage", "buoys"],
             'marina' => ["marina"],
             'marinas' => ["marina"],
             'anchorage' => ["anchorage"],
             'anchorages' => ["anchorage"],
             'mooring buoys' => ["buoys"],
             'buoys' => ["buoys"],
+            'anchoring' => ["anchorage", "buoys"],
             'restaurant' => ["restaurant"],
             'restaurants' => ["restaurant"],
             'bar' => ["bar"],

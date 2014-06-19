@@ -6,6 +6,11 @@ class Test extends CL_Controller {
         parent::__construct();
     }
     
+    function index($term) {
+        $term = preg_replace("/^anchor($|( .*))/", "anchorage $2", $term);
+        echo $term;
+    }
+    
     function icons() {
         $this->load->view('icons');
     }
