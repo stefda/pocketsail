@@ -60,6 +60,7 @@
         <ul>
             <li data-value="restaurant">Restaurant</li>
             <li data-value="bar">Bar</li>
+            <li data-value="cafe">Café</li>
         </ul>
     </li>
 </ul>

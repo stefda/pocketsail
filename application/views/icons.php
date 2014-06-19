@@ -3,31 +3,7 @@
     <head>
         <title>Menu</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
         <script src="/application/js/jquery/jquery.js"></script>
-        <script src="/application/js/jquery/jquery-plugins.js"></script>
-        <script src="/application/js/jquery/ajax.js"></script>
-        <script src="/application/js/jquery/utils.js"></script>
-        <script src="/application/js/brokers/APIBroker.js"></script>
-        <script src="/application/js/brokers/AdminBroker.js"></script>
-        <script src="/application/js/geo/Geo.js"></script>
-        <script src="/application/js/geo/Point.js"></script>
-        <script src="/application/js/geo/LineString.js"></script>
-        <script src="/application/js/geo/Polygon.js"></script>
-        <script src="/application/js/geo/LatLng.js"></script>
-        <script src="/application/js/geo/Bounds.js"></script>
-        <script src="/application/js/geo/ViewBounds.js"></script>
-        <script src="/application/js/Map.js"></script>
-        <script src="/application/js/MapStyle.js"></script>
-        <script src="/application/js/labelling/Label.js"></script>
-        <script src="/application/js/labelling/LabellerUtils.js"></script>
-        <script src="/application/js/labelling/LabelDescriptor.js"></script>
-        <script src="/application/js/labelling/LabelShape.js"></script>
-        <script src="/application/js/labelling/LabelBBox.js"></script>
-        <script src="/application/js/labelling/Labeller.js"></script>
-        <script src="/application/js/labelling/Marker.js"></script>
-        <script src="/application/js/geo/Projector.js"></script>
-        <script src="/application/js/geo/Position.js"></script>
 
         <link type="text/css" rel="stylesheet" href="/application/layout/template.css" />
         <link type="text/css" rel="stylesheet" href="/application/layout/map.css" />
@@ -41,15 +17,36 @@
 
         <script>
 
-            var focusedMarker = null;
+//            var focusedMarker = null;
 
             $(function() {
+                
+                var a = [];
+                
+                var o1 = {};
+                var o2 = {};
+                var o3 = {};
+                
+                for (var i = 0; i < 3000; i++) {
+                    a[i] = [];
+                }
+                
+                var start = new Date().getMilliseconds();
+                
+                for (var i = 0; i < 3000; i++) {
+                    for (var j = 0; j < 3000; j++) {
+                        a[i][j] = 234;
+                    }
+                }
+                
+                var end = new Date().getMilliseconds();
+                console.log(end - start);
 
-                var map = new Map({
-                    canvas: 'canvas',
-                    cursor: 'crosshair',
-                    cache: true
-                });
+//                var map = new Map({
+//                    canvas: 'canvas',
+//                    cursor: 'crosshair',
+//                    cache: true
+//                });
             });
 
         </script>
