@@ -46,6 +46,7 @@ class API extends CL_Controller {
             'supermarkets' => ["supermarket"],
             'cashpoint' => ["cashpoint"],
             'cashpoints' => ["cashpoint"],
+            'bakery' => ["bakery"],
             'shopping' => ["supermarket", "minimarket"],
             'shop' => ["supermarket", "minimarket"],
             'shops' => ["supermarket", "minimarket"]
@@ -192,7 +193,7 @@ class API extends CL_Controller {
                     $vBounds->zoomOut();
                     $bounds = $vBounds->toBounds();
                     $zoom--;
-                    in_array('panToCenter', $res['flags']) ? null : $res['flags'][] = 'panToCenter';
+                    addFlag($res, 'panToCenter');
                 }
             }
             addLabels($res, LabelModel::loadDynamicByBounds($bounds, $types, $poiId));

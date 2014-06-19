@@ -151,14 +151,16 @@ function Map(o) {
      */
     this.handleResult = function(res) {
 
-        if (res.center !== undefined && res.zoom !== undefined) {
-            var center = LatLng.fromWKT(res.center);
-            var zoom = res.zoom;
-            this.panTo(center, zoom);
-        }
-
         var labels = res.labels;
         var flags = res.flags;
+
+        if (flags.indexOf('panToCenter') !== -1) {
+            if (res.center !== undefined && res.zoom !== undefined) {
+                var center = LatLng.fromWKT(res.center);
+                var zoom = res.zoom;
+                this.panTo(center, zoom);
+            }
+        }
 
         for (var i = 0; i < labels.length; i++) {
             labels[i] = Label.deserialize(labels[i], this.getZoom());

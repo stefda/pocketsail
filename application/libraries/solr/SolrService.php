@@ -31,6 +31,7 @@ class SolrService {
         $query .= " AND -subName:Minimarket";
         $query .= " AND -subName:\"Mooring buoys\"";
         $query .= " AND -subName:\"Shore mooring\"";
+        $query .= " AND -subName:\"Cashpoint\"";
         $res = $this->solr->search($query . " -subName:Anchorage ", $offset, $limit, array())->getRawResponse();
         return new SolrResponse($res);
     }

@@ -163,9 +163,6 @@
                         var poiId = poiBrief === null ? 0 : poiBrief.id;
                         var types = types === null ? [] : types;
 
-                        // Do call Map.loadData
-                        console.log(poiId, types);
-
                         map.setTypes(types);
                         map.setPoiId(poiId);
 
