@@ -25,6 +25,7 @@ class API extends CL_Controller {
         $term = preg_replace("/^moor (.*)/", "mooring buoys $1", $term);
         $term = preg_replace("/^buoy (.*)/", "mooring buoys $1", $term);
         $term = preg_replace("/^berth (.*)/", "berthing $1", $term);
+        $term = preg_replace("/^gas (.*)/", "gas station $1", $term);
 
         $keywords = [
             'berthing' => ["marina", "mooring"],
