@@ -5,12 +5,90 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
-    
-    function index($term) {
-        $term = preg_replace("/^anchor($|( .*))/", "anchorage $2", $term);
-        echo $term;
+
+    function image() {
+        $this->load->model('ImageModel');
+        $path = ImageModel::id2path(9);
+        $this->assign('path', $path);
+        $this->load->view('image');
     }
-    
+
+    function save_image() {
+
+        $img = $_FILES['img'];
+
+        $imgTempPath = $img['tmp_name'];
+        $imgTempName = $img['name'];
+        $imgTempType = $img['type'];
+
+        $fp = fopen($imgTempPath, 'r');
+        $string = fread($fp, filesize($imgTempPath));
+        fclose($fp);
+
+        //$imSize = getimagesize($imgTempPath);
+//        $imWidth = $imSize[0];
+//        $imHeight = $imSize[1];
+
+        $width = 970;
+        $height = 720;
+        $ratio = $width / $height;
+
+        $im = imagecreatefromstring($string);
+        $imWidth = imagesx($im);
+        $imHeight = imagesy($im);
+        $imRatio = $imWidth / $imHeight;
+
+        if ($imWidth < $width && $imHeight < $height) {
+            $width = $imWidth;
+            $height = $imHeight;
+        } else {
+            if ($imRatio > $ratio) {
+                $rr = $width / $imWidth;
+                $height = $imHeight * $rr;
+            } else if ($imRatio < $ratio) {
+                $rr = $height / $imHeight;
+                $width = $imWidth * $rr;
+            }
+        }
+
+        $newIm = imagecreatetruecolor($width, $height);
+        imagecopyresampled($newIm, $im, 0, 0, 0, 0, $width, $height, $imWidth, $imHeight);
+        
+        $this->load->model('ImageModel');
+        
+        $imId = ImageModel::add(1, 1, 'Credits', 'Description');
+
+        $fldName = floor($imId / 100);
+        $newImName = ($imId % 100) . '.jpeg';
+        $path = BASEPATH . 'db/images/full/' . $fldName . '/';
+        
+        // Create dir if not exists
+        if(!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        
+        imagejpeg($newIm, $path . $newImName);
+        imagedestroy($newIm);
+        imagedestroy($im);
+        exit();
+
+        header('Content-Type: image/jpeg');
+        imagejpeg($newIm);
+        imagedestroy($newIm);
+        imagedestroy($im);
+        exit();
+
+//        header('Content-Type: image/png');
+//        imagepng($im);
+//        imagedestroy($im);
+//        exit();
+//        header('Content-Type: ' . $imgTempType);
+//        echo $string;
+//        exit();
+//        $credits = filter_input(INPUT_POST, 'credits', FILTER_SANITIZE_STRING);
+//        $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
+    }
+
     function icons() {
         $this->load->view('icons');
     }
@@ -18,13 +96,13 @@ class Test extends CL_Controller {
     function mobile() {
         $this->load->view('mobile');
     }
-    
+
     function area() {
-        
+
         $this->load->library('geo/*');
         $this->load->model('POIModel');
     }
-    
+
     function poi() {
 
 //        $o = [
@@ -35,7 +113,6 @@ class Test extends CL_Controller {
 //        $o = json_decode(json_encode($o));
 //        
 //        var_dump($o->int);
-        
 //        $this->load->model('POIModel');
 //        $this->load->model('LabelModel');
 //        $this->load->library('geo/*');
@@ -105,9 +182,7 @@ class Test extends CL_Controller {
         $vb = new ViewBounds($sw, $ne);
         $poiBorder = $vb->toPolygon();
 
-        $near = POIModel::loadByBorder($poiBorder,
-                        ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'],
-                        198);
+        $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
         $nearSorted = [];
         $nearSortedIds = [];
 
@@ -174,14 +249,12 @@ class Test extends CL_Controller {
         $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
         $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
         $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
-        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING,
-                FILTER_REQUIRE_ARRAY);
+        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
         $latLng = LatLng::fromWKT($latLngWKT);
         $border = Polygon::fromWKT($borderWKT);
 
-        POIModel::update($id, 1, 1, $name, $name, $cat, $sub, $latLng, $border,
-                $attrs);
+        POIModel::update($id, 1, 1, $name, $name, $cat, $sub, $latLng, $border, $attrs);
     }
 
     function transfer_poi() {
@@ -208,9 +281,7 @@ class Test extends CL_Controller {
                     ]
                 ];
             }
-            POIModel::insert($o->id, $o->userId, $o->nearId, $o->countryId, $o->name,
-                    $o->label, $o->cat, $o->sub, LatLng::fromWKT($o->latLngWKT),
-                    Polygon::fromWKT($o->boundaryWKT), $attrs);
+            POIModel::insert($o->id, $o->userId, $o->nearId, $o->countryId, $o->name, $o->label, $o->cat, $o->sub, LatLng::fromWKT($o->latLngWKT), Polygon::fromWKT($o->boundaryWKT), $attrs);
         }
 
         $old->close();

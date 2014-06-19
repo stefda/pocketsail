@@ -45,7 +45,7 @@
                         <option value="alongiside"<?= @$attrs->berthing->type->values !== null && in_array('alongiside', @$attrs->berthing->type->values) ? ' selected' : '' ?>>Alongside</option>
                         <option value="sternto"<?= @$attrs->berthing->type->values !== null && in_array('sternto', @$attrs->berthing->type->values) ? ' selected' : '' ?>>Stern-to</option>
                         <option value="bowto"<?= @$attrs->berthing->type->values !== null && in_array('bowto', @$attrs->berthing->type->values) ? ' selected' : '' ?>>Bow-to</option>
-                        <option value="lazyline"<?= @$attrs->berthing->type->values !== null && in_array('lazyline', @$attrs->berthing->type->values) ? ' selected' : '' ?>>Lazyline</option>
+                        <option value="lazyline"<?= @$attrs->berthing->type->values !== null && in_array('lazyline', @$attrs->berthing->type->values) ? ' selected' : '' ?>>Mooring line</option>
                     </select>
                 </td>
                 <td>

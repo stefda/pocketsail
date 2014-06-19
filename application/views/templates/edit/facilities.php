@@ -196,7 +196,7 @@
             <!-- ENQUIRIES -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
-                    Enquiries
+                    Tourist info
                 </td>
                 <td class="tpl-table-item-value">
                     <select class="tpl-select-button attr" name="attrs[facilities][enquiries][value]">

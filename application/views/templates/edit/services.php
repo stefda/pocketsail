@@ -93,7 +93,7 @@
             <!-- TRAVELIFT -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
-                    Travelift
+                    Crane
                 </td>
                 <td class="tpl-table-item-value">
                     <select class="attr" id="travelift" name="attrs[services][travelift][value]">
