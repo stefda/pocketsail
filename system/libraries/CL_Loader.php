@@ -1,7 +1,8 @@
 <?php
 
-if (!defined('SYSPATH'))
+if (!defined('SYSPATH')) {
     exit("No direct script access allowed!");
+}
 
 class CL_Loader {
 
@@ -21,9 +22,9 @@ class CL_Loader {
         }
         return self::$instance;
     }
-    
+
     public function library($library) {
-        
+
         // Enable including all libraries in a folder
         if (substr($library, -1) === '*') {
             $dirPath = APPPATH . 'libraries/' . rtrim($library, '*');
@@ -35,7 +36,7 @@ class CL_Loader {
             }
             return;
         }
-        
+
         if (!file_exists(APPPATH . 'libraries/' . $library . '.php')) {
             show_error("Requested library does not exist.", "Loader Error");
         }
@@ -83,8 +84,9 @@ class CL_Loader {
         ob_start();
         include $viewPath;
         $contents = ob_get_contents();
-        if ($out)
+        if ($out) {
             $this->out->append(ob_get_contents());
+        }
         ob_end_clean();
 
         return $contents;

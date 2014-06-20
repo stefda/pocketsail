@@ -6,6 +6,150 @@ class Test extends CL_Controller {
         parent::__construct();
     }
 
+    function tpl() {
+
+        $attrs = [
+            "approach" => [
+                "val" => "Approach lightly.",
+                "details" => [
+                    "val" => "Detaily."
+                ]
+            ],
+            "contact" => [
+                "type" => [
+                    "tel",
+                    "fax",
+                    "http"
+                ],
+                "val" => [
+                    213,
+                    "02087888818",
+                    "http://www.ps.com"
+                ]
+            ],
+            "berthing" => [
+                "type" => [
+                    "val" => ["sternto", "bowto"],
+                    "details" => [
+                        "val" => "Berthing type details."
+                    ]
+                ],
+                "assistance" => [
+                    "val" => "yes",
+                    "details" => [
+                        "val" => ""
+                    ]
+                ]
+            ]
+        ];
+
+        $attrs = json_decode(json_encode($attrs));
+
+        $this->load->helper('tpl');
+        $this->assign('attrs', $attrs);
+        $this->load->view('tpl/add');
+    }
+
+    function attr() {
+
+        $attrs = [
+            "approach" => [
+                "val" => "Approach lightly.",
+                "details" => [
+                    "val" => "Detaily"
+                ]
+            ],
+            "contact" => [
+                "type" => [
+                    "tel",
+                    "fax",
+                    "http"
+                ],
+                "val" => [
+                    213,
+                    "02087888818",
+                    "http://www.ps.com"
+                ]
+            ],
+            "berthing" => [
+                "type" => [
+                    "val" => ["sternto", "bowto"],
+                    "details" => [
+                        "val" => "Berthing type details."
+                    ]
+                ],
+                "assistance" => [
+                    "val" => "yes",
+                    "details" => [
+                        "val" => ""
+                    ]
+                ]
+            ]
+        ];
+
+        $attrs = json_decode(json_encode($attrs));
+
+        global $attr;
+        $attr = $attrs;
+
+        function a() {
+            global $attr;
+            $args = func_get_args();
+            $temp = &$attr;
+            foreach ($args AS $arg) {
+                if (is_object($temp) && property_exists($temp, $arg)) {
+                    $temp = &$temp->{$arg};
+                } else {
+                    return NULL;
+                }
+            }
+            if (is_object($temp) && property_exists($temp, 'val')) {
+                return $temp->val;
+            } elseif (is_array($temp)) {
+                return $temp;
+            } else {
+                return NULL;
+            }
+        }
+
+        function v($attr) {
+            $args = func_get_args();
+            array_shift($args);
+            $temp = &$attr;
+            foreach ($args AS $arg) {
+                if (is_object($temp) && property_exists($temp, $arg)) {
+                    $temp = &$temp->{$arg};
+                } else {
+                    return NULL;
+                }
+            }
+            if (is_object($temp) && property_exists($temp, 'val')) {
+                return $temp->val;
+            } elseif (is_array($temp)) {
+                return $temp;
+            } else {
+                return NULL;
+            }
+        }
+
+        function attr_edit_tpl($attrName, $attribute) {
+            global $attr;
+            $attr = $attribute;
+            echo CL_Loader::get_instance()->view('templates/edit/' . $attrName, FALSE);
+        }
+
+        function attr_view_tpl($attrName, $attribute) {
+            global $attr;
+            $attr = $attribute;
+            return CL_Loader::get_instance()->view('templates/view/' . $attrName, FALSE);
+        }
+
+        echo attr_edit_tpl('test', @$attrs->approach);
+
+        //attrs[contact][type][]
+        //attrs[contact][val][]
+    }
+
     function image() {
         $this->load->model('ImageModel');
         $path = ImageModel::id2path(9);
@@ -53,20 +197,20 @@ class Test extends CL_Controller {
 
         $newIm = imagecreatetruecolor($width, $height);
         imagecopyresampled($newIm, $im, 0, 0, 0, 0, $width, $height, $imWidth, $imHeight);
-        
+
         $this->load->model('ImageModel');
-        
+
         $imId = ImageModel::add(1, 1, 'Credits', 'Description');
 
         $fldName = floor($imId / 100);
         $newImName = ($imId % 100) . '.jpeg';
         $path = BASEPATH . 'db/images/full/' . $fldName . '/';
-        
+
         // Create dir if not exists
-        if(!file_exists($path)) {
+        if (!file_exists($path)) {
             mkdir($path, 0777, true);
         }
-        
+
         imagejpeg($newIm, $path . $newImName);
         imagedestroy($newIm);
         imagedestroy($im);
