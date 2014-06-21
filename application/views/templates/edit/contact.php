@@ -12,7 +12,7 @@
 
         <h1>Contact</h1>
 
-        <table class="tpl-table" id="contactTable">
+        <table id="contactTable" class="tpl-table" id="contactTable">
             <? for ($i = 0; $i < count(@$attrs->contact->types); $i++): ?>
                 <tr>
                     <td class="tpl-table-item-label">

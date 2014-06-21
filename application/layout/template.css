@@ -61,9 +61,6 @@ textarea { display: block; box-sizing: border-box; font-size: 13px; border: soli
 .tpl-details { display: none; }
 .tpl-details td {  }
 
-.tpl-delete-button { cursor: pointer; display: block; width: 10px; height: 10px; background-repeat: no-repeat; background-image: url('/application/layout/images/ui.png'); background-position-y: -18px; }
-.tpl-delete-button:hover { background-position-y: -28px; }
-
 .tpl-header { height: 200px; margin-bottom: 20px; }
 .tpl-header-expanded { height: 500px; margin-bottom: 20px; }
 

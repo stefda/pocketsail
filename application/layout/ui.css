@@ -89,12 +89,14 @@ a.ps-ui-selectbutton-item.ps-ui-focus {
  * Select styles
  */
 a.ps-ui-select {
+    outline: none;
     position: relative;
-    text-align: left;
-    line-height: 19px;
     height: 19px;
-    display: inline-block;
+    text-align: left;
+    font-family: Arial;
     font-size: 12px;
+    line-height: 19px;
+    display: inline-block;
     text-decoration: none;
     color: #333;
     padding: 0 17px 0 4px;
@@ -120,6 +122,7 @@ a.ps-ui-select:hover { border-color: #c0c1c2; background-color: #f0f1f2; }
 a.ps-ui-select.ps-ui-focus { border-color: #3079ed; background-color: #f0f1f2; }
 
 ul.ps-ui-select-list {
+    font-family: Arial;
     text-align: left;
     position: absolute;
     z-index: 9999;
@@ -133,6 +136,7 @@ ul.ps-ui-select-list {
 }
 
 a.ps-ui-select-list-item {
+    outline: none;
     text-decoration: none;
     color: #333;
     font-size: 12px;
@@ -144,3 +148,18 @@ a.ps-ui-select-list-item {
 
 a.ps-ui-select-list-item:hover { background-color: #f0f1f2; }
 a.ps-ui-select-list-item.ps-ui-hover { background-color: #f0f1f2; }
+
+/**
+ * Delete button styles
+ */
+.ps-ui-delete-button {
+    cursor: pointer;
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    background-repeat: no-repeat;
+    background-image: url('/application/layout/images/ui.png');
+    background-position-y: -18px;
+}
+
+.ps-ui-delete-button:hover { background-position-y: -28px; }
