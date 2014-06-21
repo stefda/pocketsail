@@ -21,7 +21,7 @@ $.fn.mapmenu = function() {
         return;
     }
     
-    $('.ps-ui-menu').menu('hide');
+    $('.ps-ui-menu').mapmenu('hide');
 
     // Assign params object
     var o = arguments[0];

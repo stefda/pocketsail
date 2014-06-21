@@ -14,7 +14,10 @@
         <ul>
             <li data-value="cove">Cove</li>
             <li data-value="bay">Bay</li>
+            <li data-value="gulf">Gulf</li>
             <li data-value="island">Island</li>
+            <li data-value="islet">Islet</li>
+            <li data-value="channel">Channel</li>
         </ul>
     </li>
 

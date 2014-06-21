@@ -9,32 +9,12 @@ class Test extends CL_Controller {
     function tpl() {
 
         $attrs = [
+            "description" => [
+                "val" => "Desckriptorwe."
+            ],
             "approach" => [
                 "val" => "Approach lightly.",
-                "details" => [
-                    "val" => "Detaily."
-                ]
-            ],
-            "contact" => [
-                "type" => [
-                    "tel",
-                    "fax",
-                    "http"
-                ],
-                "val" => [
-                    213,
-                    "02087888818",
-                    "http://www.ps.com"
-                ]
-            ],
-            "berthing" => [
-                "type" => [
-                    "val" => ["sternto", "bowto"],
-                    "details" => [
-                        "val" => "Berthing type details."
-                    ]
-                ],
-                "assistance" => [
+                "drying" => [
                     "val" => "yes",
                     "details" => [
                         "val" => ""

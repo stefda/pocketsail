@@ -31,7 +31,7 @@
             <!-- Drying details -->
             <tr class="tpl-details">
                 <td colspan="3">
-                    <textarea class="tpl-textarea-details" name="attrs[approach][details][val]"><?= a('details') ?></textarea>
+                    <textarea class="tpl-textarea-details" name="attrs[approach][drying][details][val]"><?= a('drying', 'details') ?></textarea>
                 </td>
             </tr>
 
