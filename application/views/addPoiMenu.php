@@ -26,6 +26,8 @@
         <ul>
             <li data-value="region">Region</li>
             <li data-value="town">Town</li>
+            <li data-value="village">Village</li>
+            <li data-value="harbour">Harbour</li>
         </ul>
     </li>
 

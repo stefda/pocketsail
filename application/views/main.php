@@ -110,7 +110,7 @@
                     AdminBroker.label({
                         success: function(res) {
                             button.removeClass('loader');
-                            window.location.reload();
+                            //window.location.reload();
                         }
                     });
                 });
