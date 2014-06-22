@@ -15,8 +15,6 @@
         <link type="text/css" rel="stylesheet" href="/application/layout/template.css" />
 
         <style type="text/css">
-            h1 { font-size: 18px; font-weight: bold; margin: 0; padding: 0; }
-            h3 { font-size: 16px; font-weight: bold; margin: 0; padding: 0; display: inline; }
         </style>
 
         <script>
@@ -25,15 +23,13 @@
 
             $(function() {
                 $('.tpl-select').select();
+                $('.tpl-select-button').selectButton();
             });
 
         </script>
 
     </head>
     <body>
-        
-        <h1>Berthing</h1>
-        Takze berthing je tady.<br /><br /><h3>Nadpis</h3><br />Toto je nadpis. Dalsi pod tim.
 
         <?= tpl_edit('marina') ?>
 

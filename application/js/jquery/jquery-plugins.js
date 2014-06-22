@@ -203,6 +203,9 @@ $.fn.selectButton = function() {
         var multiple = select.prop('multiple');
         var options = select.find('option');
         var list = $('<ul class="ps-ui-selectbutton"></ul>');
+        
+        var hasDefaultOption = select.find('option:empty').length > 0;
+        var defaultOption = select.find('option:empty').val();
 
         select.css('visibility', 'hidden');
         select.css('position', 'absolute');
@@ -219,6 +222,7 @@ $.fn.selectButton = function() {
                 var item = $('<a class="ps-ui-selectbutton-item' + (option.is(':selected') ? ' ps-ui-selected' : '') + '" selectValue="' + value + '" href="">' + label + '</a>');
                 list.append(item);
 
+                // Button is clicked
                 item.click(function(e) {
 
                     var button = $(this);
@@ -239,6 +243,9 @@ $.fn.selectButton = function() {
                             button.addClass('ps-ui-selected');
                             selectedButton.removeClass('ps-ui-selected');
                             select.val(value);
+                        } else if (hasDefaultOption) {
+                            button.removeClass('ps-ui-selected');
+                            select.val(defaultOption);
                         }
                     }
 
