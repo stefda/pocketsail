@@ -6,6 +6,7 @@
         <?= isset($cats) ? include_view('templates/edit/type') : ''; ?>
 
         <div class="replace">
+            <?= include_view('templates/edit/contact'); ?>
             <?= include_view('templates/edit/opening'); ?>
             <?= include_view('templates/edit/charts'); ?>
             <?= include_view('templates/edit/sources'); ?>
