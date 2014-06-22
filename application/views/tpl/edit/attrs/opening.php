@@ -1,7 +1,7 @@
 
 <style type="text/css">
 
-    #opening h2 { display: inline-block; width: 78px; text-align: right; }
+    #opening h2 { display: inline-block; width: 70px; text-align: right; }
     .tpl-list-row { margin-bottom: 3px; }
     .tpl-details-section { margin: 10px 0; padding: 6px 0 8px; border-top: solid 1px #e0e1e2; background-color: #f5f6f7; }
     .tpl-text-small { width: 30px; }
@@ -63,19 +63,20 @@
 
             </div>
 
-            <!-- Which days -->
+            <!-- Opening -->
             <div style="margin-top: 5px;">
-                <h2>Days of week</h2>
+                <h2>Opening</h2>
                 <select class="daysOfWeekSelect attr">
                     <option value="na"></option>
+                    <option value="closed">Closed</option>
                     <option value="sameeachday">Same each day</option>
-                    <option value="varies">Different each day</option>
+                    <option value="varies">Varies</option>
                 </select>
             </div>
 
             <!-- Opening days same -->
             <div class="tpl-details-section openingSame" style="display: none;">
-                <h2>Open</h2>
+                <h2>Each day</h2>
                 <select class="fromtoTimesSelect attr">
                     <option value="na"></option>
                     <option value="24h">&nbsp;&nbsp;24h&nbsp;&nbsp;</option>
@@ -92,7 +93,7 @@
             <div class="tpl-details-section openingVeries" style="display: none; position: relative;">
 
                 <!-- Brief opening times -->
-                <div id="openingVariesBrief">
+                <div class="openingVariesBrief">
                     <span class="toggleDaysButton" style="cursor: pointer; position: absolute; left: 10px;">&#8595;</span>
                     <div class="tpl-list-row">
                         <h2>Mon-Fri</h2>
@@ -111,7 +112,7 @@
                 </div>
 
                 <!-- Detailed opening times -->
-                <div id="openingVariesFull" style="display: none;">
+                <div class="openingVariesFull" style="display: none;">
                     <span class="toggleDaysButton" style="cursor: pointer; position: absolute; left: 10px;">&#8593;</span>
                     <div class="tpl-list-row">
                         <h2>Monday</h2>
