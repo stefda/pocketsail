@@ -3,7 +3,7 @@
 
     #opening h2 { display: inline-block; width: 70px; text-align: right; }
     .tpl-list-row { margin-bottom: 3px; }
-    .tpl-details-section { margin: 10px 0; padding: 6px 0 8px; border-top: solid 1px #e0e1e2; background-color: #f5f6f7; }
+    .tpl-details-section { margin: 10px 0; padding: 6px 0 8px; border-top: solid 1px #e0e1e2; background-color: #f8f9fa; }
     .tpl-text-small { width: 30px; }
     .fromtoTimes { margin-left: 10px; display: none; }
 
@@ -13,12 +13,13 @@
     <div class="tpl-section-wrapper">
 
         <div>
-            <span id="addOpeningRowButton" style="float: right;">add</span>
+            <input type="button" id="addOpeningRowButton" style="float: right; border: solid 1px #e0e1e2; background-color: #fff; color: #666; padding: 3px 5px; font-size: 11px; border-radius: 2px; box-shadow: 0 1px 0px rgba(0, 0, 0, 0.1); cursor: pointer;" value="Add opening period">
             <h1>Opening</h1>
         </div>
 
         <div class="openingRow">
-            
+
+            <span class="ps-ui-delete-button" style="float: right;"></span>
             <h2>For period</h2>
 
             <select class="periodSelect attr">
@@ -199,61 +200,89 @@
 
     $(function() {
 
-        $('.periodSelect').selectButton({
-            select: function(e, ui) {
+        function initUI(wrapper) {
 
-                if (ui.item.value === 'season') {
-                    $('.seasonType').show();
-                } else {
-                    $('.seasonType').hide();
-                }
+            // Show season options
+            wrapper.find('.periodSelect').selectButton({
+                select: function(e, ui) {
 
-                if (ui.item.value === 'season' || ui.item.value === 'offseason') {
-                    $('.seasonDetails').show();
-                } else {
-                    $('.seasonDetails').hide();
+                    var wrapper = $(this).closest('.openingRow');
+
+                    if (ui.item.value === 'season') {
+                        wrapper.find('.seasonType').show();
+                    } else {
+                        wrapper.find('.seasonType').hide();
+                    }
+
+                    if (ui.item.value === 'season' || ui.item.value === 'offseason') {
+                        wrapper.find('.seasonDetails').show();
+                    } else {
+                        wrapper.find('.seasonDetails').hide();
+                    }
                 }
-            }
+            });
+
+            wrapper.find('.daysOfWeekSelect').selectButton({
+                select: function(e, ui) {
+
+                    var wrapper = $(this).closest('.openingRow');
+
+                    if (ui.item.value === 'sameeachday') {
+                        wrapper.find('.openingSame').show();
+                    } else {
+                        wrapper.find('.openingSame').hide();
+                    }
+
+                    if (ui.item.value === 'varies') {
+                        wrapper.find('.openingVeries').show();
+                    } else {
+                        wrapper.find('.openingVeries').hide();
+                    }
+                }
+            });
+
+            wrapper.find('.fromtoTimesSelect').selectButton({
+                select: function(e, ui) {
+                    if (ui.item.value === 'fromto') {
+                        $(this).closest('div').find('.fromtoTimes').show();
+                    } else {
+                        $(this).closest('div').find('.fromtoTimes').hide();
+                    }
+                }
+            });
+
+            wrapper.find('.toggleDaysButton').click(function() {
+
+                var wrapper = $(this).closest('.openingRow');
+
+                if (wrapper.find('.openingVariesBrief').is(':visible')) {
+                    wrapper.find('.openingVariesBrief').hide();
+                    wrapper.find('.openingVariesFull').show();
+                } else {
+                    wrapper.find('.openingVariesFull').hide();
+                    wrapper.find('.openingVariesBrief').show();
+                }
+            });
+
+            wrapper.find('.tpl-select').select();
+            wrapper.find('.tpl-select-button').selectButton();
+        }
+
+        initUI($('.openingRow'));
+
+        $('#addOpeningRowButton').click(function() {
+
+            var openingRow = $('.openingRow:last');
+            var newOpeningRow = openingRow.clone();
+
+            newOpeningRow.css('border-top', 'solid 1px #f0f1f2');
+            newOpeningRow.css('margin-top', '20px');
+            newOpeningRow.css('padding-top', '10px');
+
+            openingRow.after(newOpeningRow);
+            initUI(newOpeningRow);
         });
 
-        $('.daysOfWeekSelect').selectButton({
-            select: function(e, ui) {
-
-                if (ui.item.value === 'sameeachday') {
-                    $('.openingSame').show();
-                } else {
-                    $('.openingSame').hide();
-                }
-
-                if (ui.item.value === 'varies') {
-                    $('.openingVeries').show();
-                } else {
-                    $('.openingVeries').hide();
-                }
-            }
-        });
-
-        $('.fromtoTimesSelect').selectButton({
-            select: function(e, ui) {
-                if (ui.item.value === 'fromto') {
-                    $(this).closest('div').find('.fromtoTimes').show();
-                } else {
-                    $(this).closest('div').find('.fromtoTimes').hide();
-                }
-            }
-        });
-
-        $('.toggleDaysButton').click(function() {
-
-            if ($('.openingVariesBrief').is(':visible')) {
-                $('.openingVariesBrief').hide();
-                $('.openingVariesFull').show();
-            } else {
-                $('.openingVariesFull').hide();
-                $('.openingVariesBrief').show();
-            }
-        });
-        
     });
 
 </script>

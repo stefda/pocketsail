@@ -20,7 +20,7 @@ $.fn.mapmenu = function() {
         });
         return;
     }
-    
+
     $('.ps-ui-menu').mapmenu('hide');
 
     // Assign params object
@@ -112,11 +112,11 @@ $.fn.mapmenu = function() {
                 }
 
                 item.addClass('ps-ui-menuitem-stayhover');
-                
+
                 //sm.css('top', item.position().top - 5);
                 sm.css('left', item.width() + 45);
                 sm.css('top', smTop);
-                
+
                 sm.show();
             }, 300);
         }
@@ -189,6 +189,11 @@ $.fn.selectButton = function() {
         return;
     }
 
+    // If called more than once...
+    if ($(this).next().hasClass('ps-ui-selectbutton')) {
+        $(this).next().remove();
+    }
+
     // Assign params object with the first argument
     var o = arguments[0];
 
@@ -203,7 +208,7 @@ $.fn.selectButton = function() {
         var multiple = select.prop('multiple');
         var options = select.find('option');
         var list = $('<ul class="ps-ui-selectbutton"></ul>');
-        
+
         var hasDefaultOption = select.find('option:empty').length > 0;
         var defaultOption = select.find('option:empty').val();
 
