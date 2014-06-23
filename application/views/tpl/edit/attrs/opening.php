@@ -3,7 +3,7 @@
 
     #opening h2 { display: inline-block; width: 70px; text-align: right; }
     .tpl-list-row { margin-bottom: 3px; }
-    .tpl-details-section { margin: 10px 0; padding: 6px 0 8px; border-top: solid 1px #e0e1e2; background-color: #f8f9fa; }
+    .tpl-details-section { margin: 10px 0; padding: 6px 0 8px; border-top: solid 1px #e0e1e2; background-color: #f4f5f6; }
     .tpl-text-small { width: 30px; }
     .fromtoTimes { margin-left: 10px; display: none; }
 
@@ -19,8 +19,7 @@
 
         <div class="openingRow">
 
-            <span class="ps-ui-delete-button" style="float: right;"></span>
-            <h2>For period</h2>
+            <h2>Period</h2>
 
             <select class="periodSelect attr">
                 <option value="na"></option>
@@ -70,7 +69,7 @@
                 <select class="daysOfWeekSelect attr">
                     <option value="na"></option>
                     <option value="closed">Closed</option>
-                    <option value="sameeachday">Same each day</option>
+                    <option value="sameeachday">Open daily</option>
                     <option value="varies">Varies</option>
                 </select>
             </div>
@@ -275,9 +274,9 @@
             var openingRow = $('.openingRow:last');
             var newOpeningRow = openingRow.clone();
 
-            newOpeningRow.css('border-top', 'solid 1px #f0f1f2');
-            newOpeningRow.css('margin-top', '20px');
-            newOpeningRow.css('padding-top', '10px');
+            newOpeningRow.css('margin', '10px -5px -5px -5px');
+            newOpeningRow.css('padding', '10px');
+            newOpeningRow.css('background-color', '#fafbfc');
 
             openingRow.after(newOpeningRow);
             initUI(newOpeningRow);
