@@ -18,6 +18,8 @@
             <li data-value="island">Island</li>
             <li data-value="islet">Islet</li>
             <li data-value="channel">Channel</li>
+            <li data-value="sea">Sea</li>
+            <li data-value="lake">Lake</li>
         </ul>
     </li>
 
@@ -37,6 +39,7 @@
             <li data-value="marina">Marina</li>
             <li data-value="berths">Berths</li>
             <li data-value="jetty">Jetty</li>
+            <li data-value="quay">Quay</li>
             <li data-value="anchorage">Anchorage</li>
             <li data-value="buoys">Mooring Buoys</li>
         </ul>
