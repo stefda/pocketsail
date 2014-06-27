@@ -225,6 +225,25 @@ class LabelModel implements JsonSerializable {
         }
         return count($types) === count($rows);
     }
+    
+    public static function oneOfTypesWithinBounds(Bounds $bounds, $types, $exceptId = 0) {
+
+        $res = db()->select()
+                ->all()
+                ->from('label_dynamic')
+                ->where(self::buildBoundsClause($bounds))
+                ->andCond('sub', IN, $types)
+                ->andCond('id', NE, $exceptId)
+//                ->groupBy('sub')
+                ->exec();
+
+        return $res->numRows() > 0;
+//        $rows = [];
+//        while ($o = $res->fetchObject()) {
+//            $rows[] = $o;
+//        }
+//        return count($types) === count($rows);
+    }
 
     //Helper method
     private static function buildBoundsClause(Bounds $bounds) {

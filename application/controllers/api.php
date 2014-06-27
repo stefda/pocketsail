@@ -190,7 +190,8 @@ class API extends CL_Controller {
             $bounds = $vBounds->toBounds();
             if (in_array('zoomToTypes', $flags)) {
                 $guard = 18;
-                while (!LabelModel::typesWithinBounds($bounds, $types, $poiId) && --$guard > 0) {
+//                while (!LabelModel::typesWithinBounds($bounds, $types, $poiId) && --$guard > 0) {
+                while (!LabelModel::oneOfTypesWithinBounds($bounds, $types, $poiId) && --$guard > 0) {
                     $vBounds->zoomOut();
                     $bounds = $vBounds->toBounds();
                     $zoom--;

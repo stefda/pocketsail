@@ -209,7 +209,7 @@
     </head>
 
     <body oncontextmenu="return false;" style="overflow: hidden;">
-
+        
         <div id="canvas" style="width: 100%; height: 100%;"></div>
 
         <div id="markerHoverInfo"></div>
