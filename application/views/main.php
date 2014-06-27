@@ -224,18 +224,6 @@
                         }
                     }
                 }
-
-                var canvas = document.getElementById('drawingCanvas');
-                var context = canvas.getContext('2d');
-
-                context.beginPath();
-                context.moveTo(100, 100);
-                context.bezierCurveTo(140, 10, 388, 10, 388, 170);
-                context.lineWidth = 10;
-
-                // line color
-                context.strokeStyle = 'black';
-                context.stroke();
             });
 
         </script>
@@ -257,8 +245,6 @@
                 <div id="suggestList"></div>
             </div>
         </div>
-
-        <canvas id="drawingCanvas" width="578" height="200" style="top: 200px; left: 150px; position: absolute; z-index: 999; pointer-events: none;"></canvas>
 
         <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0; height: auto;"></div>
 
