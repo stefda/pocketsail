@@ -17,11 +17,12 @@
 
         <div class="replace">
             <?= include_view('templates/edit/description'); ?>
-            <?= include_view('templates/edit/exposure'); ?>
             <?= include_view('templates/edit/approach'); ?>
+            <?= include_view('templates/edit/hazards'); ?>
+            <?= include_view('templates/edit/exposure'); ?>
             <?= include_view('templates/edit/bma'); ?>
             <?= include_view('templates/edit/attractions'); ?>
-            <?= include_view('templates/edit/hazards'); ?>
+            <?= include_view('templates/edit/nightlife'); ?>
         </div>
     </div>
 
