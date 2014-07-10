@@ -46,6 +46,8 @@
                         <option value="sand"<?= @$attrs->anchoring->holding->values !== null && in_array('sand', @$attrs->anchoring->holding->values) ? ' selected' : '' ?>>Sand</option>
                         <option value="mud"<?= @$attrs->anchoring->holding->values !== null && in_array('mud', @$attrs->anchoring->holding->values) ? ' selected' : '' ?>>Mud</option>
                         <option value="gravel"<?= @$attrs->anchoring->holding->values !== null && in_array('gravel', @$attrs->anchoring->holding->values) ? ' selected' : '' ?>>Gravel</option>
+                        <option value="weed"<?= @$attrs->anchoring->holding->values !== null && in_array('weed', @$attrs->anchoring->holding->values) ? ' selected' : '' ?>>Weed</option>
+                        <option value="rocks"<?= @$attrs->anchoring->holding->values !== null && in_array('rocks', @$attrs->anchoring->holding->values) ? ' selected' : '' ?>>Rocks</option>
                     </select>
                 </td>
                 <td>

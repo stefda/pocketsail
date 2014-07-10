@@ -71,6 +71,12 @@ class Geo {
 
         return new Point($x, $y);
     }
+    
+    public static function latlng2meters(LatLng $latLng) {
+        $p = self::mercator($latLng);
+        $m = 20037508.34;
+        return new Point($p->x() / pi() * $m, $p->y() / pi() * $m);
+    }
 
     public static function mercatorLat($lat) {
         $lat = $lat > 90 ? 90 : ($lat < -90 ? -90 : $lat);

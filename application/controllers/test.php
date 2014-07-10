@@ -6,6 +6,23 @@ class Test extends CL_Controller {
         parent::__construct();
     }
 
+    function index() {
+
+        $coords = [[43.8644045, 15.3425008], [43.8642458, 15.3424979], [43.8641542, 15.3426165], [43.8641440, 15.3427266], [43.8642112, 15.3428451], [43.8643394, 15.3428931], [43.8645022, 15.3428874], [43.8645937, 15.3427745], [43.8645978, 15.3426673], [43.8645144, 15.3425403], [43.8644045, 15.3425008]];
+
+        $this->load->library('geo/*');
+
+        $p = Geo::latlng2meters(new LatLng(43.86435, 15.34273));
+        
+        echo $p->x() . "," . $p->y();
+
+//        foreach ($coords AS $coord) {
+//            $latLng = new LatLng($coord[0], $coord[1]);
+//            $met = Geo::latlng2meters($latLng);
+//            echo $met->x() . " " . $met->y() . "<br />";
+//        }
+    }
+
     function tpl() {
 
         $attrs = [
