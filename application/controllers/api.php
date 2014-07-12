@@ -50,7 +50,8 @@ class API extends CL_Controller {
             'bakery' => ["bakery"],
             'shopping' => ["supermarket", "minimarket"],
             'shop' => ["supermarket", "minimarket"],
-            'shops' => ["supermarket", "minimarket"]
+            'shops' => ["supermarket", "minimarket"],
+            'beach' => ["beach"]
         ];
 
         $solr = SolrService::get_instance();
