@@ -58,6 +58,7 @@
         <ul>
             <li data-value="supermarket">Supermarket</li>
             <li data-value="minimarket">Minimiarket</li>
+            <li data-value="localmarket">Local market</li>
             <li data-value="bakery">Bakery</li>
             <li data-value="cashpoint">Cashpoint</li>
         </ul>
@@ -69,6 +70,17 @@
             <li data-value="restaurant">Restaurant</li>
             <li data-value="bar">Bar</li>
             <li data-value="cafe">Café</li>
+        </ul>
+    </li>
+    
+    <li>
+        Attraction
+        <ul>
+            <li data-value="beach">Beach</li>
+            <li data-value="view">View</li>
+            <li data-value="cave">Cave</li>
+            <li data-value="ruins">Ruins</li>
+            <li data-value="museum">Museum</li>
         </ul>
     </li>
 </ul>
