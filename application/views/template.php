@@ -42,17 +42,17 @@
             var validator = new Validator();
 
             $(function() {
-                
+
                 $('a,input,textarea').focus(function() {
                     $(this).addClass('ps-ui-focus');
                 });
-                
+
                 $('a,input,textarea').blur(function() {
                     $(this).removeClass('ps-ui-focus');
                 });
-                
+
                 $('.text,.detailsText').autosize();
-                
+
                 $('#saveButton').click(function() {
                     console.log(validator.validate());
 //                    var name = $('input[name=name]').val();
@@ -81,6 +81,10 @@
             .tpl-section { margin-bottom: 20px; }
             .tpl-details-large { width: 600px; height: 36px; resize: none; padding: 5px 7px; line-height: 1.4em; }
             .detailsText { width: 600px; height: 18px; resize: none; padding: 5px 7px; line-height: 1.4em; }
+            ::selection {
+                background: #fff8b4;
+                color: #000;
+            }
         </style>
 
         <link type="text/css" rel="stylesheet" href="/application/layout/ui.css" />
