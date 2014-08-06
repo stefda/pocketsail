@@ -28,7 +28,7 @@
             <tr class="tpl-details">
                 <td colspan="3">
                     <textarea class="tpl-details-small<?= @$attrs->opening->details === null ? '' : ' attr-include' ?>"
-                              name="attrs[facilities][water][details]"
+                              name="attrs[opening][details]"
                               placeholder="Provide any details..."><?= @$attrs->opening->details ?></textarea>
                 </td>
             </tr>

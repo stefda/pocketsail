@@ -6,21 +6,21 @@ class Test extends CL_Controller {
         parent::__construct();
     }
 
-    function index() {
-
-        $coords = [[43.8644045, 15.3425008], [43.8642458, 15.3424979], [43.8641542, 15.3426165], [43.8641440, 15.3427266], [43.8642112, 15.3428451], [43.8643394, 15.3428931], [43.8645022, 15.3428874], [43.8645937, 15.3427745], [43.8645978, 15.3426673], [43.8645144, 15.3425403], [43.8644045, 15.3425008]];
-
-        $this->load->library('geo/*');
-
-        $p = Geo::latlng2meters(new LatLng(43.86435, 15.34273));
+    function obj() {
+//        $anchoring = [];
+        $anchoring['depth']['from'] = 234;
         
-        echo $p->x() . "," . $p->y();
+        print_r($anchoring);
+    }
 
-//        foreach ($coords AS $coord) {
-//            $latLng = new LatLng($coord[0], $coord[1]);
-//            $met = Geo::latlng2meters($latLng);
-//            echo $met->x() . " " . $met->y() . "<br />";
-//        }
+    function mongo() {
+        $m = new MongoClient();
+        $db = $m->selectDB('ps');
+        $m->close();
+    }
+
+    function canvas() {
+        $this->load->view('canvas');
     }
 
     function tpl() {
@@ -58,15 +58,22 @@ class Test extends CL_Controller {
             ],
             "contact" => [
                 "type" => [
-                    "tel",
-                    "fax",
-                    "http"
+                    "val" => [
+                        "tel",
+                        "fax",
+                        "http"
+                    ],
+                    "details" => [
+                        "val" => "Daisy y Jordani"
+                    ]
                 ],
-                "val" => [
-                    213,
-                    "02087888818",
-                    "http://www.ps.com"
-                ]
+                "value" => [
+                    "val" => [
+                        213,
+                        "02087888818",
+                        "http://www.ps.com"
+                    ],
+                ],
             ],
             "berthing" => [
                 "type" => [
@@ -84,46 +91,47 @@ class Test extends CL_Controller {
             ]
         ];
 
-        $attrs = json_decode(json_encode($attrs));
+        $attrs = json_decode(json_encode($attrs), TRUE);
 
         global $attr;
         $attr = $attrs;
 
-        function a() {
-            global $attr;
+        function n() {
+
+            global $attrName;
             $args = func_get_args();
-            $temp = &$attr;
+            $str = "attrs[" . $attrName . "]";
+
             foreach ($args AS $arg) {
-                if (is_object($temp) && property_exists($temp, $arg)) {
-                    $temp = &$temp->{$arg};
-                } else {
-                    return NULL;
-                }
+                $str .= "[" . $arg . "]";
             }
-            if (is_object($temp) && property_exists($temp, 'val')) {
-                return $temp->val;
-            } elseif (is_array($temp)) {
-                return $temp;
-            } else {
-                return NULL;
-            }
+
+            $str .= "[val]";
+            return $str;
         }
 
-        function v($attr) {
+        function r() {
+            return call_user_func_array("v", func_get_args()) . "[]";
+        }
+
+        function v() {
+
+            global $attr;
+            global $attrName;
+
             $args = func_get_args();
-            array_shift($args);
-            $temp = &$attr;
+            $temp = &$attr[$attrName];
+
             foreach ($args AS $arg) {
-                if (is_object($temp) && property_exists($temp, $arg)) {
-                    $temp = &$temp->{$arg};
+                if (is_array($temp) && key_exists($arg, $temp)) {
+                    $temp = &$temp[$arg];
                 } else {
                     return NULL;
                 }
             }
-            if (is_object($temp) && property_exists($temp, 'val')) {
-                return $temp->val;
-            } elseif (is_array($temp)) {
-                return $temp;
+
+            if (is_array($temp) && key_exists('val', $temp)) {
+                return $temp['val'];
             } else {
                 return NULL;
             }
@@ -132,19 +140,26 @@ class Test extends CL_Controller {
         function attr_edit_tpl($attrName, $attribute) {
             global $attr;
             $attr = $attribute;
-            echo CL_Loader::get_instance()->view('templates/edit/' . $attrName, FALSE);
+            echo CL_Loader::get_instance()->view('tpl/edit/' . $attrName, FALSE);
         }
 
         function attr_view_tpl($attrName, $attribute) {
             global $attr;
             $attr = $attribute;
-            return CL_Loader::get_instance()->view('templates/view/' . $attrName, FALSE);
+            return CL_Loader::get_instance()->view('tpl/view/' . $attrName, FALSE);
         }
 
-        echo attr_edit_tpl('test', @$attrs->approach);
+        function test($name) {
+            global $attrName;
+            $attrName = $name;
+        }
 
-        //attrs[contact][type][]
-        //attrs[contact][val][]
+        global $attrName;
+        $attrName = "contact";
+
+        var_dump(v("type", "details"));
+        var_dump(n("type", "details"));
+        var_dump(r("type", "details"));
     }
 
     function image() {

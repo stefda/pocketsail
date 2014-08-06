@@ -332,6 +332,32 @@ class POIModel implements JsonSerializable {
 
         return POIModel::fromObject($r->fetchObject());
     }
+    
+    /**
+     * @param int $id
+     * @return \POIModel|null
+     */
+    public static function loadAll() {
+
+        $r = db()->select()
+                ->all('poi')
+                ->col('border', 'poi')->op(AS_TEXT)->alias('borderWKT')
+                ->col('name', 'poiNear')->alias('nearName')
+                ->col('name', 'poiCountry')->alias('countryName')
+                ->col('name', 'poiType')->alias('subName')
+                ->from('poi')
+                ->leftJoin('poi')->alias('poiNear')->on('id', 'nearId')
+                ->leftJoin('poi')->alias('poiCountry')->on('id', 'countryId')
+                ->leftJoin('poi_type')->alias('poiType')->on('id', 'sub')
+                ->exec();
+        
+        $pois = [];
+        
+        while ($o = $r->fetchObject()) {
+            $pois[] = POIModel::fromObject($o);
+        }
+        return $pois;
+    }
 
     /**
      * @param int $id

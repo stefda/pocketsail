@@ -178,7 +178,7 @@ class CL_MySQLiSelectQuery {
         $this->order = $col;
         return $this;
     }
-    
+
     public function groupBy($col) {
         $this->group = $col;
         return $this;
@@ -221,7 +221,9 @@ class CL_MySQLiSelectQuery {
                 $query .= " " . $this->joinTypesBuffer[$counter++] . " $join";
             }
         }
-        $query .= " WHERE " . implode(" ", $this->condsBuffer);
+        if (count($this->condsBuffer) > 0) {
+            $query .= " WHERE " . implode(" ", $this->condsBuffer);
+        }
         if ($this->order !== "") {
             $query .= " ORDER BY `$this->order`";
         }
