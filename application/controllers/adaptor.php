@@ -483,7 +483,7 @@ class Adaptor extends CL_Controller {
             //$new = json_decode(json_encode($new), TRUE);
             $attributes = POI::fromPostData($new);
 //            print_r($attributes->toDoc());
-            var_dump($tbl->insert($attributes->toDoc()));
+//            var_dump($tbl->insert($attributes->toDoc()));
 //            print_r($new);
 //            echo "<br /><br />";
         }

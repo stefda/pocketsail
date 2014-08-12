@@ -43,7 +43,7 @@ function &get_config($file = 'main') {
 
     require_once APPPATH . '/config/' . $file . '.php';
 
-    if (!isset($config) OR !is_array($config)) {
+    if (!isset($config) OR ! is_array($config)) {
         show_error("The configuration file $file.php does not appear to be formatted correctly.", "Config Error");
     }
 
@@ -112,6 +112,27 @@ function include_view_template($sub, $cat) {
 //
 // TO BE REMOVED UNTIL HERE
 //
+
+function throwErrorAndExit($message, $header = 'error', $type = 'default') {
+
+    if ($header == 'error') {
+        $trace = debug_backtrace();
+        if (count($trace) > 1 && key_exists('function', $trace[1]) && key_exists('class', $trace[1])) {
+            $header = $trace[1]['class'] . '::' . $trace[1]['function'];
+        }
+    }
+
+    $err = CL_Error::get_instance();
+
+    if (key_exists('ajax', $_GET)) {
+        echo $err->show_ajax_error($message, $type);
+    } else {
+        echo $err->show_error($message, $header, $type);
+    }
+
+    log_message($message);
+    exit(-1);
+}
 
 function show_error($message, $header = 'error', $type = 'default') {
 

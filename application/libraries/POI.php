@@ -19,6 +19,8 @@ class POI {
     public $nightlife;
 
     public static function fromPostData($data) {
+        
+        CL_Loader::get_instance()->library('PostDataFormatException');
 
         $poi = new POI();
 
@@ -35,17 +37,21 @@ class POI {
         }
 
         // Approach
-        if (key_exists("approach", $data)) {
-            $poi->approach = [];
+        if (isset($data['approach'])) {
+            if (!isset($data['approach']['text'])
+                    || !isset($data['approach']['drying']['value'])
+                    || !isset($data['approach']['drying']['details'])) {
+                throw new PostDataFormatException("Approach");
+            }
             $poi->approach['text'] = (string) $data['approach']['text'];
             $poi->approach['drying']['value'] = (string) $data['approach']['drying']['value'];
             $poi->approach['drying']['details'] = (string) $data['approach']['drying']['details'];
         }
 
         // Contact
-        if (key_exists("contact", $data)) {
-            $poi->contact = [];
-            if (key_exists("type", $data['contact']) && key_exists("value", $data['contact'])) {
+        if (isset($data['contact']['type']) && isset($data['contact']['value'])) {
+            // Make sure all attributes have the same length
+            if (count($data['contact']['type']) === count($data['contact']['value'])) {
                 for ($i = 0; $i < count($data['contact']['type']); $i++) {
                     $poi->contact[] = [
                         'type' => (string) $data['contact']['type'][$i],
@@ -96,7 +102,7 @@ class POI {
 
         // Exposure
         if (key_exists("exposure", $data)) {
-            
+
             // Wind
             $poi->exposure['wind']['value'] = (string) $data['exposure']['wind']['value'];
             foreach ((array) @$data['exposure']['wind']['dir'] AS $wind) {
@@ -104,7 +110,7 @@ class POI {
                     $poi->exposure['wind']['dir'][] = (string) $wind;
                 }
             }
-            
+
             // Swell
             $poi->exposure['swell']['value'] = (string) $data['exposure']['swell']['value'];
             foreach ((array) @$data['exposure']['swell']['dir'] AS $swell) {
@@ -113,12 +119,12 @@ class POI {
                 }
             }
         }
-        
+
         // Attractions
         if (key_exists("attractions", $data)) {
             $poi->attractions = (string) $data['attractions'];
         }
-        
+
         // Nightlife
         if (key_exists("nightlife", $data)) {
             $poi->nightlife = (string) $data['nightlife'];

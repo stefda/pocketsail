@@ -1,188 +1,340 @@
 <?php
 
-if (!defined('SYSPATH'))
-    exit("No direct script access allowed!");
-
+/**
+ * @author David Stefan
+ */
 class CL_MySQL {
 
     private static $instance = NULL;
-    private $config;
+    private $db = NULL;
+    private $qb = NULL;
+    private $res = NULL;
+    private $query = '';
 
-    /**
-     * @var mysqli
-     */
-    private $connection;
+    public function __construct() {
 
-    private function CL_MySQL() {
-        $this->config = CL_Config::get_instance();
-        $this->connection = NULL;
+        $config = CL_Config::get_instance();
+
+        // Retrieve mysql config
+        $host = $config->get_item('database', 'mysql_host');
+        $user = $config->get_item('database', 'mysql_user');
+        $password = $config->get_item('database', 'mysql_password');
+        $database = $config->get_item('database', 'mysql_database');
+
+        // Connect to db through mysqli
+        $this->db = new mysqli($host, $user, $password, $database);
+
+        // Hardcoded utf8 charset
+        $this->db->set_charset('utf8');
+
+        // Initialise fragment builder
+        $this->qb = new CL_MySQL_QueryBuilder($this);
     }
 
     /**
      * @return CL_MySQL
      */
-    public static function get_instance() {
+    public static function getInstance() {
+
         if (self::$instance === NULL) {
             self::$instance = new CL_MySQL();
         }
+
         return self::$instance;
     }
 
-    public function connect() {
+    /**
+     * @param string $query
+     * @return bool
+     */
+    public function query($query) {
 
-        if ($this->connection == NULL) {
-            $server = $this->config->get_item('database', 'server');
-            $username = $this->config->get_item('database', 'username');
-            $password = $this->config->get_item('database', 'password');
-            $database = $this->config->get_item('database', 'database');
-            //$this->connection = mysql_connect($server, $username, $password);
-            //$this->connection = mysql_pconnect($server, $username, $password);
-            $this->connection = new mysqli($server, $username, $password, $database);
-            $this->connection->set_charset('utf8');
-            //mysql_set_charset('utf8');
-            //mysql_select_db($database);
+        // Store query
+        $this->query = $query;
+
+        // Save query result
+        $this->res = $this->db->query($query);
+
+        // Result may be FALSE
+        if ($this->res === FALSE) {
+            $this->res = NULL;
+            return FALSE;
         }
+
+        return TRUE;
     }
 
-    public function close() {
-        if ($this->connection !== NULL) {
-//            mysql_close($this->connection);
-            $this->connection->close();
-            $this->connection = NULL;
+    public function select($tbl, $what, $where) {
+        $query = $this->qb->buildSelect($tbl, $what, $where);
+        return $this->query($query);
+    }
+
+    public function update($tbl, $set, $where) {
+        $query = $this->qb->buildUpdate($tbl, $set, $where);
+        return $this->query($query);
+    }
+
+    public function insert($tbl, $insert) {
+        $query = $this->qb->buildInsert($tbl, $insert);
+        return $this->query($query);
+    }
+
+    public function exists($tbl, $where) {
+        $query = $this->qb->buildExists($tbl, $where);
+        $this->query($query);
+        $o = $this->res->fetch_object();
+        return $o->numRows > 0;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function fetchObject() {
+
+        // Return NULL is no viable result exists
+        if ($this->res === NULL) {
+            return NULL;
         }
+
+        // Otherwise redirect to native result's method
+        return $this->res->fetch_object();
     }
 
-    public function __destruct() {
-        $this->close();
-    }
+    public function fetchAll() {
 
-    public function query($q) {
-        if ($this->connection === NULL) {
-            $this->connect();
+        // Return NULL is no viable result exists
+        if ($this->res === NULL) {
+            return NULL;
         }
-        $result = $this->connection->query($q);
-        //$result = mysql_query($q);
-        //$result = $this->connection->query;
-        if (!$result) {
-            $trace = debug_backtrace();
-            $file = $trace[0]['file'];
-            $line = $trace[0]['line'];
-            throw new CL_Exception($this->connection->error . ", called in $file on line $line. $q");
+
+        // Otherwise redirect to native result's method
+        return $this->res->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function fetchAllSimplify() {
+
+        // Return NULL is no viable result exists
+        if ($this->res === NULL) {
+            return NULL;
         }
-        return $result;
+
+        // Simplify resulting array
+        return array_map(function ($elem) {
+            return $elem[0];
+        }, $this->res->fetch_all(MYSQLI_NUM));
     }
 
-    public function insert($table, $data) {
-
-        $keysSQL = '(';
-        $valuesSQL = 'VALUES(';
-
-        $i = 0;
-        $len = count($data);
-        foreach ($data AS $key => $value) {
-            $keysSQL .= "`$key`";
-            $valuesSQL .= $this->to_sql($value);
-            if ($i++ !== $len - 1) {
-                $keysSQL .= ',';
-                $valuesSQL .= ',';
-            } else {
-                $keysSQL .= ')';
-                $valuesSQL .= ')';
-            }
-        }
-        return $this->connection->query("INSERT INTO `$table` $keysSQL $valuesSQL");
+    /**
+     * @return string Last error
+     */
+    public function getError() {
+        return $this->db->error;
     }
 
-    public function update($table, $whereSQL, $data) {
-
-        $setSQL = 'SET ';
-
-        $i = 0;
-        $len = count($data);
-        foreach ($data AS $key => $item) {
-            $setSQL .= $this->to_sql_set_item($key, $item);
-            if ($i++ !== $len - 1) {
-                $setSQL .= ',';
-            }
-        }
-        return $this->connection->query("UPDATE `$table` $setSQL WHERE $whereSQL");
+    /**
+     * @return string Last query
+     */
+    public function getQuery() {
+        return $this->query;
     }
 
-    private function to_sql($item) {
-        if ($this->connection === null) {
-            $this->connect();
-        }
-        switch (gettype($item)) {
-            case 'string': {
-                    $val = mysqli_escape_string($this->connection, $item);
-                    return "'$val'";
-                }
-            case 'double':
-            case 'integer': {
-                    return "$item";
-                }
-            case 'NULL': {
-                    return "NULL";
-                }
-            case 'array': {
-                    return "'" . mysqli_escape_string($this->connection, json_encode($item)) . "'";
-                }
-            case 'object': {
-                    if (get_class($item) === 'stdClass') {
-                        return "'" . mysqli_escape_string($this->connection, json_encode($item)) . "'";
-                    }
-                    if (!method_exists($item, 'toSQL')) {
-                        $trace = debug_backtrace();
-                        $file = $trace[1]['file'];
-                        $line = $trace[1]['line'];
-                        throw new CL_Exception("Item object doesn't have method toSQL(). Called in $file on line $line.");
-                    }
-                    return $item->toSQL();
-                }
-        }
-    }
-
-    private function to_sql_set_item($key, $item) {
-        return "`$key` = " . $this->to_sql($item);
-    }
-
-    public function num_rows(mysqli_result $r) {
-        //return mysql_num_rows($r);
-        return $r->num_rows;
-    }
-
-    public function affected_rows() {
-        return mysql_affected_rows();
-    }
-
-    public function fetch_object($r) {
-        return $r->fetch_object();
-        //return mysql_fetch_object($r);
-    }
-
-    public function fetch_array(mysqli_result $r) {
-        //return mysql_fetch_array($r);
-        return $r->fetch_array();
-    }
-
-    public function insert_id() {
-        //return mysql_insert_id();
-        return $this->connection->insert_id;
-    }
-
-    public function begin() {
-        $this->query('START TRANSACTION');
-    }
-
-    public function rollback() {
-        $this->query('ROLLBACK');
-    }
-
-    public function commit() {
-        $this->query('COMMIT');
+    public function escapeString($str) {
+        return mysqli_escape_string($this->db, $str);
     }
 
 }
 
-/* End of file CL_MySQL.php */
-/* Location: /system/libraries/CL_MySQL.php */
+class CL_MySQL_QueryBuilder {
+
+    private $mysql;
+
+    public function __construct($mysql) {
+        $this->mysql = $mysql;
+    }
+
+    public function buildSelect($tbl, $what, $where) {
+
+        $tbl = $this->accentuateString($tbl);
+        $what = $this->buildWhatFragment($what);
+        $where = $this->buildWhereFragment($where);
+
+        return 'SELECT ' . $what . ' FROM ' . $tbl . ' WHERE ' . $where;
+    }
+
+    public function buildUpdate($tbl, $set, $where) {
+
+        $tbl = $this->accentuateString($tbl);
+        $set = $this->buildSetFragment($set);
+        $where = $this->buildWhereFragment($where);
+
+        return 'UPDATE ' . $tbl . ' SET ' . $set . ' WHERE ' . $where;
+    }
+
+    public function buildInsert($tbl, $insert) {
+
+        $tbl = $this->accentuateString($tbl);
+        $cols = $this->buildColsFragment($insert);
+        $values = $this->buildValuesFragment($insert);
+
+        return 'INSERT INTO ' . $tbl . ' (' . $cols . ') VALUES (' . $values . ')';
+    }
+
+    public function buildExists($tbl, $where) {
+
+        $tbl = $this->accentuateString($tbl);
+        $where = $this->buildWhereFragment($where);
+
+        return 'SELECT COUNT(*) AS `numRows` FROM ' . $tbl . ' WHERE ' . $where;
+    }
+
+    private function buildColsFragment($insert) {
+        return '`' . implode('`, `', array_keys($insert)) . '`';
+    }
+
+    private function buildValuesFragment($insert) {
+
+        $values = [];
+
+        foreach ($insert AS $value) {
+            $values[] = $this->prepareValue($value);
+        }
+
+        return implode(', ', $values);
+    }
+
+    private function buildSetFragment($set) {
+
+        $assign = [];
+
+        foreach ($set AS $col => $value) {
+            $col = $this->accentuateCol($col);
+            $value = $this->prepareValue($value);
+            $assign[] = $col . ' = ' . $value;
+        }
+
+        return implode(', ', $assign);
+    }
+
+    private function buildWhatFragment($what) {
+
+        if (gettype($what) !== 'array') {
+
+            // Explode by comma
+            $what = explode(',', trim($what));
+
+            // If result has only one element
+            if (count($what) === 1) {
+                if ($what[0] === '*') {
+                    return '*';
+                } else {
+                    //return $this->accentuateCol($what[0]);
+                    return $this->canonizeCol($what[0]);
+                }
+            }
+        }
+
+        $cols = [];
+
+        // Else iterate over all cols to canonize them
+        foreach ($what AS $col) {
+            $cols[] = $this->canonizeCol($col);
+        }
+        
+        // And rebuild where clause from the resulting array
+        return implode(', ', $cols);
+    }
+
+    private function buildWhereFragment($where) {
+        $res = $this->buildWhereFragments($where);
+        return $res[0];
+    }
+
+    private function buildWhereFragments($where) {
+
+        foreach ($where AS $key => $value) {
+
+            if ($key === 'AND') {
+                $res = $this->buildWhereFragments($value);
+                $fragments[] = '(' . implode(' AND ', $res) . ')';
+            } else if ($key === 'OR') {
+                $res = $this->buildWhereFragments($value);
+                $fragments[] = '(' . implode(' OR ', $res) . ')';
+            } else {
+                $fragments[] = $this->buildColCondFragment($key) . $this->prepareValue($value);
+            }
+        }
+
+        return $fragments;
+    }
+
+    private function buildColCondFragment($str) {
+
+        $cond = '';
+        $col = '';
+        $match = []; // Initialise to shut NatBeans up
+        // Try matching condition in brackets
+        $res = preg_match('/\[([=,<,>]|<>|\!=)\]/', $str, $match);
+
+        // If match fails, try 'equal' condition
+        if (!$res) {
+            $cond = '=';
+            $col = $str;
+        } else {
+            // Otherwise, condition will be in an array with matches
+            $cond = $match[1];
+            // Now, remove the matched condition together with the brackets
+            $col = preg_replace('/\[([=,<,>]|<>|\!=)\]/', '', $str);
+        }
+
+        return $this->accentuateCol($col) . ' ' . $cond . ' ';
+    }
+
+    private function accentuateCol($str) {
+        $pieces = explode('.', $str);
+        return '`' . implode('`.`', $pieces) . '`';
+    }
+    
+    private function accentuateString($str) {
+        return '`' . $str . '`';
+    }
+    
+    private function canonizeCol($col) {
+        
+        $alias = NULL;
+        $matches = NULL;
+        
+        // See if col contains alias in parentheses
+        preg_match('/\((.*)\)/', $col, $matches);
+        
+        // If it does, extract it and remove from string
+        if (count($matches) > 0) {
+            $alias = $matches[1];
+            $col = preg_replace('/\(.*\)/', '', $col);
+            // Rebuild col reference together with alias
+            return $this->accentuateCol($col) . ' AS ' . $this->accentuateString($alias);
+        }
+        
+        // Accentuate col
+        return $this->accentuateCol($col);
+    }
+
+    private function prepareValue($value) {
+
+        switch (gettype($value)) {
+            case 'string': {
+                    $str = $this->mysql->escapeString($value);
+                    return '\'' . $str . '\'';
+                }
+            case 'boolean': {
+                    return $value ? 1 : 0;
+                }
+            case 'NULL': {
+                    return 'NULL';
+                }
+            default: {
+                    return $value;
+                }
+        }
+    }
+
+}

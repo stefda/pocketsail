@@ -434,3 +434,52 @@ jQuery.fn.select = function() {
         });
     });
 };
+
+jQuery.fn.increaseIndex = function(signature) {
+
+    // Search through the document to find all inputs matching
+    // given signature.
+    var searchSig = signature;
+
+    searchSig = searchSig.replace('$i', '(\\d+)');
+    searchSig = searchSig.replace(/\[/g, '\\[');
+    searchSig = searchSig.replace(/\]/g, '\\]');
+
+    var searchIndexRegex = new RegExp(searchSig);
+    var index = -1;
+
+    $('body input,select').filter(function() {
+        var name = $(this).attr('name');
+        if (name !== undefined) {
+            var match = name.match(searchIndexRegex);
+            if (match !== null) {
+                var curIndex = parseInt(match[1]);
+                index = Math.max(index, curIndex);
+            }
+        }
+    });
+
+    // Increase index
+    index++;
+
+    // Replace
+    var replaceSig = signature;
+
+    replaceSig = replaceSig.replace(/(.*)\$i\]/, '($1)' + '$i]');
+    replaceSig = replaceSig.replace('$i', '\\d+');
+    replaceSig = replaceSig.replace(/\[/g, '\\[');
+    replaceSig = replaceSig.replace(/\]/g, '\\]');
+
+    var replaceRegex = new RegExp(replaceSig);
+    var repl = '$1' + index + ']';
+
+    $(this).find('input, select').each(function() {
+        var name = $(this).attr('name');
+        if (name !== undefined) {
+            var newName = name.replace(replaceRegex, repl);
+            $(this).attr('name', newName);
+        }
+    });
+    
+    return $(this);
+};

@@ -6,11 +6,24 @@ class Test extends CL_Controller {
         parent::__construct();
     }
 
-    function obj() {
-//        $anchoring = [];
-        $anchoring['depth']['from'] = 234;
+    function arrays() {
+        $this->load->view('arrays');
+    }
+
+    /**
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=POST
+     * @AjaxAsync=TRUE
+     */
+    function post() {
         
-        print_r($anchoring);
+        $this->load->helper('tpl');
+        
+        // Fetch attr array from post
+        //$attr = $_POST['attr'];
+        $attr = filter_input(INPUT_POST, 'attr', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
+        
+        return json_encode(array_reset_indices($attr));
     }
 
     function mongo() {
@@ -102,11 +115,16 @@ class Test extends CL_Controller {
             $args = func_get_args();
             $str = "attrs[" . $attrName . "]";
 
-            foreach ($args AS $arg) {
-                $str .= "[" . $arg . "]";
+            for ($i = 0; $i < count($args); $i++) {
+                $str .= "[" . $args[$i] . "]";
+                $str .= $i != count($args) - 1 && is_numeric($args[$i + 1]) ?
+                        "[" . $args[++$i] . "]" : "";
             }
 
-            $str .= "[val]";
+//            foreach ($args AS $arg) {
+//                $str .= "[" . $arg . "]";
+//            }
+//            $str .= "[val]";
             return $str;
         }
 
@@ -157,9 +175,10 @@ class Test extends CL_Controller {
         global $attrName;
         $attrName = "contact";
 
-        var_dump(v("type", "details"));
-        var_dump(n("type", "details"));
-        var_dump(r("type", "details"));
+        var_dump(n(12, "type"));
+//        var_dump(v("type", "details"));
+//        var_dump(n("type", "details"));
+//        var_dump(r("type", "details"));
     }
 
     function image() {
