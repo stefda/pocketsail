@@ -37,6 +37,32 @@
                               placeholder="Provide any details..."><?= @$attrs->services->slipway->details ?></textarea>
                 </td>
             </tr>
+            
+            <!-- TRAVELIFT -->
+            <tr class="tpl-has-details-button">
+                <td class="tpl-table-item-label">
+                    Travelift
+                </td>
+                <td class="tpl-table-item-value">
+                    <select class="tpl-select-button attr" name="attrs[services][travelift][value]">
+                        <option value="na"<?= @$attrs->services->travelift->value === 'na' ? ' selected' : '' ?>>?</option>
+                        <option value="yes"<?= @$attrs->services->travelift->value === 'yes' ? ' selected' : '' ?>>Yes</option>
+                        <option value="no"<?= @$attrs->services->travelift->value === 'no' ? ' selected' : '' ?>>No</option>
+                    </select>
+                </td>
+                <td>
+                    <span class="tpl-details-button<?= @$attrs->services->travelift->details === null ? '' : ' tpl-visible' ?>">
+                        details<span class="tpl-details-button-arrow"></span>
+                    </span>
+                </td>
+            </tr>
+            <tr class="tpl-details">
+                <td colspan="3">
+                    <textarea class="tpl-details-small<?= @$attrs->services->travelift->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][travelift][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->travelift->details ?></textarea>
+                </td>
+            </tr>
 
             <!-- PUMP OUT -->
             <tr class="tpl-has-details-button">
@@ -90,33 +116,33 @@
                 </td>
             </tr>
 
-            <!-- TRAVELIFT -->
+            <!-- Crane -->
             <tr class="tpl-has-details-button">
                 <td class="tpl-table-item-label">
                     Crane
                 </td>
                 <td class="tpl-table-item-value">
-                    <select class="attr" id="travelift" name="attrs[services][travelift][value]">
-                        <option value="na"<?= @$attrs->services->travelift->value === 'na' ? ' selected' : '' ?>>?</option>
-                        <option value="yes"<?= @$attrs->services->travelift->value === 'yes' ? ' selected' : '' ?>>Yes</option>
-                        <option value="no"<?= @$attrs->services->travelift->value === 'no' ? ' selected' : '' ?>>No</option>
+                    <select class="attr" id="travelift" name="attrs[services][crane][value]">
+                        <option value="na"<?= @$attrs->services->crane->value === 'na' ? ' selected' : '' ?>>?</option>
+                        <option value="yes"<?= @$attrs->services->crane->value === 'yes' ? ' selected' : '' ?>>Yes</option>
+                        <option value="no"<?= @$attrs->services->crane->value === 'no' ? ' selected' : '' ?>>No</option>
                     </select>
-                    <span id="maxtonnage" style="<?= @$attrs->services->travelift->value === 'yes' ? '' : 'display: none;' ?>">
-                        <h2>Max tonnage</h2> <input class="tpl-text-small attr" name="attrs[services][travelift][maxtonnage]" type="text" value="<?= @$attrs->services->travelift->maxtonnage ?>" />
+                    <span id="maxtonnage" style="<?= @$attrs->services->crane->value === 'yes' ? '' : 'display: none;' ?>">
+                        <h2>Max tonnage</h2> <input class="tpl-text-small attr" name="attrs[services][crane][maxtonnage]" type="text" value="<?= @$attrs->services->crane->maxtonnage ?>" />
                         <span class="tpl-note">tonnes</span>
                     </span>
                 </td>
                 <td>
-                    <span class="tpl-details-button<?= @$attrs->services->travelift->details === null ? '' : ' tpl-visible' ?>">
+                    <span class="tpl-details-button<?= @$attrs->services->crane->details === null ? '' : ' tpl-visible' ?>">
                         details<span class="tpl-details-button-arrow"></span>
                     </span>
                 </td>
             </tr>
             <tr class="tpl-details">
                 <td colspan="3">
-                    <textarea class="tpl-details-small<?= @$attrs->services->travelift->details === null ? '' : ' attr-include' ?>"
-                              name="attrs[services][travelift][details]"
-                              placeholder="Provide any details..."><?= @$attrs->services->travelift->details ?></textarea>
+                    <textarea class="tpl-details-small<?= @$attrs->services->crane->details === null ? '' : ' attr-include' ?>"
+                              name="attrs[services][crane][details]"
+                              placeholder="Provide any details..."><?= @$attrs->services->crane->details ?></textarea>
                 </td>
             </tr>
 
