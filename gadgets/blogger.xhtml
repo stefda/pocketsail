@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?> 
 <Module>
-  <ModulePrefs title="hello world example" /> 
-  <Content type="html">
-     <![CDATA[ 
-       Hello, world!
-     ]]>
-  </Content> 
+    <ModulePrefs title="hello world example" /> 
+    <Content type="html">
+        <![CDATA[ 
+        <div>PocketSail</div>
+        <script type="text/javascript">
+            
+            function start() {
+                console.log('here');
+            }
+            gadgets.util.registerOnLoadHandler(start);
+
+        </script>
+        ]]>
+    </Content> 
 </Module>
