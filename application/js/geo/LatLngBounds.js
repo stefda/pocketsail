@@ -112,7 +112,7 @@ function LatLngBounds(sw, ne) {
         if (!left) {
             if (!bottom) {
                 if (!right) {
-                    left = bottom = right = !top ? 0 : top;
+                    left = bottom = right = top = !top ? 0 : top;
                 } else {
                     bottom = top;
                     left = right;
@@ -131,17 +131,14 @@ function LatLngBounds(sw, ne) {
         var B = Proj.latlng2merc(this.ne);
 
         // Compute the zoom for both directions
-        var z_x = Math.log((Proj.DOUBLEPI * height) / (Proj.TILESIZE * Math.abs(A.x - B.x))) / Math.log(2);
-        var z_y = Math.log((Proj.DOUBLEYLIM * width) / (Proj.TILESIZE * Math.abs(A.y - B.y))) / Math.log(2);
+        var z_x = Math.log((Proj.DOUBLEPI * width) / (Proj.TILESIZE * Math.abs(A.x - B.x))) / Math.log(2);
+        var z_y = Math.log((Proj.DOUBLEYLIM * height) / (Proj.TILESIZE * Math.abs(A.y - B.y))) / Math.log(2);
 
         var zf = Math.pow(10, Proj.ZOOMPREC);
         z_x = Math.round(z_x * zf) / zf;
         z_y = Math.round(z_y * zf) / zf;
 
-        console.log(A, B);
-        console.log(z_x, z_y);
-
-        console.log(Math.floor(Math.min(z_x, z_y)));
+        return Math.floor(Math.min(z_x, z_y));
     };
 
     /**

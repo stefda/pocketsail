@@ -10,6 +10,10 @@ class Test extends CL_Controller {
         $this->load->view('addPoi');
     }
     
+    function leaflet() {
+        $this->load->view('leaflet');
+    }
+    
     function geo() {
         $this->load->view('geo');
     }
