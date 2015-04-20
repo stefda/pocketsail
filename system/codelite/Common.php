@@ -1,7 +1,37 @@
 <?php
 
-if (!defined('SYSPATH')) {
-    exit("No direct script access allowed!");
+function array_remove_empty($array) {
+    
+    foreach ($array as $key => $value) {
+        if (is_array($value)) {
+            $array[$key] = array_remove_empty($array[$key]);
+        }
+        if (empty($array[$key])) {
+            unset($array[$key]);
+        }
+    }
+    return $array;
+}
+
+/**
+ * @return CL_Database
+ */
+function get_mysql() {
+    return CL_MySQL::get_instance();
+}
+
+/**
+ * @return CL_Database
+ */
+function get_pgsql() {
+    return CL_PgSQL::get_instance();
+}
+
+/**
+ * @return CL_Mongo
+ */
+function get_mongo() {
+    return CL_Mongo::get_instance();
 }
 
 function aasort(&$array, $key) {
@@ -16,10 +46,6 @@ function aasort(&$array, $key) {
         $res[$ii] = $array[$ii];
     }
     $array = $res;
-}
-
-function db() {
-    return CL_MySQLi::get_instance();
 }
 
 function require_library($library) {
@@ -69,6 +95,9 @@ function controller_is_callable($class, $method) {
     return true;
 }
 
+/**
+ * View helper functions
+ */
 function view_exists($view) {
     $viewPath = APPPATH . 'views/' . $view . '.php';
     return file_exists($viewPath);
@@ -78,81 +107,82 @@ function view_get_html($view) {
     return CL_Loader::get_instance()->view($view, FALSE);
 }
 
-//
-// TO BE REMOVED
-//
-function include_view($view) {
-    return CL_Loader::get_instance()->view($view, FALSE);
+/**
+ * Config helpe functions
+ */
+function get_config_value($file, $key) {
+    return CL_Config::get_instance()->get_value($file, $key);
 }
 
-function include_edit_template($cat, $sub) {
+/**
+ * Flow controll functions.
+ */
+function error($o) {
 
-    $subPath = APPPATH . 'views/templates/edit/' . $sub . '.php';
-    $catPath = APPPATH . 'views/templates/edit/' . $cat . '.php';
+    $message = "";
+    $trace = NULL;
 
-    if (file_exists($subPath)) {
-        return CL_Loader::get_instance()->view('templates/edit/' . $sub, FALSE);
-    } else if (file_exists($catPath)) {
-        return CL_Loader::get_instance()->view('templates/edit/' . $cat, FALSE);
-    }
-
-    // If neither sub- or cat-specific template exists, use default
-    return CL_Loader::get_instance()->view('templates/edit/default', FALSE);
-}
-
-function include_view_template($sub, $cat) {
-    $viewPath = APPPATH . 'views/templates/view/' . $sub . '.php';
-    if (file_exists($viewPath)) {
-        echo CL_Loader::get_instance()->view('templates/view/' . $sub, FALSE);
-        return;
-    }
-    echo CL_Loader::get_instance()->view('templates/view/' . $cat, FALSE);
-}
-
-//
-// TO BE REMOVED UNTIL HERE
-//
-
-function throwErrorAndExit($message, $header = 'error', $type = 'default') {
-
-    if ($header == 'error') {
-        $trace = debug_backtrace();
-        if (count($trace) > 1 && key_exists('function', $trace[1]) && key_exists('class', $trace[1])) {
-            $header = $trace[1]['class'] . '::' . $trace[1]['function'];
-        }
-    }
-
-    $err = CL_Error::get_instance();
-
-    if (key_exists('ajax', $_GET)) {
-        echo $err->show_ajax_error($message, $type);
+    if (is_a($o, "Exception")) {
+        $message = $o->getMessage();
+        $trace = $o->getTrace();
     } else {
-        echo $err->show_error($message, $header, $type);
+        $message = $o;
+        $trace = $trace = debug_backtrace();
     }
+    handle_error($message, $trace);
+}
 
-    log_message($message);
+function handle_error($message, $trace) {
+
+    log_message($message . " " . json_encode($trace));
+
+    if (DEBUG) {
+        show_error($message, 'error', $trace);
+    } else {
+        location('/oops');
+    }
     exit(-1);
 }
 
-function show_error($message, $header = 'error', $type = 'default') {
+function show_error($message, $type, $trace) {
 
-    if ($header == 'error') {
-        $trace = debug_backtrace();
-        if (count($trace) > 1 && key_exists('function', $trace[1]) && key_exists('class', $trace[1])) {
-            $header = $trace[1]['class'] . '::' . $trace[1]['function'];
-        }
+    $details = [];
+
+//    $max = 2;
+    foreach ($trace AS $record) {
+        array_push($details, $record);
+//        if (--$max == 0) break;
     }
-
-    $err = CL_Error::get_instance();
 
     if (key_exists('ajax', $_GET)) {
-        echo $err->show_ajax_error($message, $type);
+        show_ajax_error($message, $type, $details);
     } else {
-        echo $err->show_error($message, $header, $type);
+        show_html_error($message, $type, $details);
     }
+}
 
-    log_message($message);
-    exit(-1);
+function show_html_error($message, $type, $details) {
+
+    ob_start();
+    include APPPATH . 'views/error/error.php';
+    $buffer = ob_get_contents();
+    ob_clean();
+
+    header("HTTP/1.0 404 Not Found");
+    echo $buffer;
+}
+
+function show_ajax_error($message, $type, $details) {
+
+    header('Content-type: application/json');
+
+    echo json_encode(array(
+        'type' => $type,
+        'value' => [
+            'message' => strip_tags($message),
+            'details' => $details
+        ]
+    ));
 }
 
 function log_message($message) {
@@ -164,7 +194,11 @@ function error_handler($errno, $errstr, $errfile, $errline) {
     if (error_reporting() == 0) {
         return;
     }
-    show_error("$errstr in $errfile on line $errline.", "PHP Error");
+    show_error("$errstr in $errfile on line $errline.", 'error', debug_backtrace());
+}
+
+function exception_handler(Exception $e) {
+    show_error($e->getMessage(), 'uncaught_exception', $e->getTrace());
 }
 
 function return_json($value) {

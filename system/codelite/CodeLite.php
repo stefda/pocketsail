@@ -1,8 +1,5 @@
 <?php
 
-if (!defined('SYSPATH'))
-    exit("No direct script access allowed!");
-
 /* * ***************************************************************
  * Define autoload function to load the CL core libraries
  */
@@ -17,6 +14,7 @@ function __autoload($name) {
 require_once SYSPATH . 'codelite/Common.php';
 
 set_error_handler('error_handler');
+set_exception_handler('exception_handler');
 
 /* * ***************************************************************
  * Load some classes

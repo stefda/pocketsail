@@ -1,15 +1,11 @@
 <?php
 
-if (!defined('SYSPATH')) {
-    exit("No direct script access allowed!");
-}
-
 class CL_Loader {
 
     private static $instance = NULL;
     private $out;
 
-    private function CL_Loader() {
+    private function __construct() {
         $this->out = CL_Output::get_instance();
     }
 
@@ -93,6 +89,3 @@ class CL_Loader {
     }
 
 }
-
-/* End of file CL_Loader.php */
-/* Location: /system/libraries/CL_Loader.php */

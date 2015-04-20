@@ -1,44 +1,53 @@
 
+/**
+ * A representation of a point in the Cartesian coordinate system.
+ * 
+ * @example
+ * var point = new Point(0, 0) // Point representing the origin in the x-y plane
+ * 
+ * @constructor
+ * @param {Number} x
+ * @param {Number} y
+ * @property {Number} x X coordinate
+ * @property {Number} y Y coordinate
+ */
 function Point(x, y) {
 
     this.x = x;
     this.y = y;
 
     /**
-     * @param {Point} point
-     * @returns {Boolean}
+     * Convert the coordinates into a valid GeoJSON Point object.
+     * @returns {Object}
      */
-    this.equals = function(point) {
-        return this.x === point.x && this.y === point.y;
+    this.toGeoJson = function () {
+        return {
+            'type': "Point",
+            'coordinates': [this.x, this.y]
+        };
     };
 
     /**
-     * @returns {LatLng}
+     * Get the coordinates as an array of points on the x-y plane.
+     * @returns {Array}
      */
-    this.toLatLng = function() {
-        return new LatLng(this.y, this.x);
-    };
-
-    /**
-     * @returns {String}
-     */
-    this.toWKT = function() {
-        return "POINT(" + this.x + " " + this.y + ")";
+    this.getCoordinates = function () {
+        return [this.x, this.y];
     };
 }
 
-Point.fromWKT = function(wkt) {
+/**
+ * Create Point from a GeoJSON Point object.
+ * @param {Object} geoJson GeoJSON Point object
+ * @returns {Point}
+ */
+Point.fromGeoJson = function (geoJson) {
 
-    var pattern = /POINT *\( *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) *\)/i;
-    var matches = pattern.exec(wkt);
-
-    if (matches === null) {
-        return null;
+    if (typeof geoJson.type === "undefined"
+            || geoJson.type !== "Point"
+            || typeof geoJson.coordinates === "undefined") {
+        throw new Error("fromGeoJson(): First argument must be a valid GeoJSON Point object.");
     }
 
-    // Extract point coordinates from matches
-    var x = parseFloat(matches[1]);
-    var y = parseFloat(matches[3]);
-
-    return new Point(x, y);
+    return new Point(geoJson.coordinates[0], geoJson.coordinates[1]);
 };

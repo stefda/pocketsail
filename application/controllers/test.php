@@ -6,463 +6,58 @@ class Test extends CL_Controller {
         parent::__construct();
     }
 
-    function arrays() {
-        $this->load->view('arrays');
+    function index() {
+        $this->load->view('addPoi');
+    }
+    
+    function geo() {
+        $this->load->view('geo');
     }
 
-    /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
-     */
-    function post() {
-        
-        $this->load->helper('tpl');
-        
-        // Fetch attr array from post
-        //$attr = $_POST['attr'];
-        $attr = filter_input(INPUT_POST, 'attr', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-        
-        return json_encode(array_reset_indices($attr));
+    function add() {
+        $data = $_POST['data'];
+        $mongo = get_mongo();
+        $mongo->insert_inc('poi', json_decode($data, TRUE));
+//        $mongo->find('poi', []);
+//        while ($doc = $mongo->next()) {
+//            print_R($doc['_id']);
+//        }
     }
 
-    function mongo() {
-        $m = new MongoClient();
-        $db = $m->selectDB('ps');
-        $m->close();
-    }
+    function fill() {
 
-    function canvas() {
-        $this->load->view('canvas');
-    }
+        $this->load->library('geo/Point');
 
-    function tpl() {
+        $mongo = get_mongo();
 
-        $attrs = [
-            "description" => [
-                "val" => "Desckriptorwe."
-            ],
-            "approach" => [
-                "val" => "Approach lightly.",
-                "drying" => [
-                    "val" => "yes",
-                    "details" => [
-                        "val" => ""
-                    ]
+        $doc = [
+            'name' => "Palmizana Marina",
+            'url' => "hvar_marina",
+            'latLng' => (new Point([16.4, 43.17]))->toGeoJson(),
+            'description' => "Popis mariny netreba. Busy.",
+            'berthing' => (object) [
+                'assistance' => (object) [
+                    'value' => 'yes',
+                    'details' => 'Guy with a blue hat and a torch at nitgh.'
+                ],
+                'type' => (object) [
+                    'value' => ['alongside', 'stem-to'],
+                    'details' => 'No comment'
+                ],
+                'sea_berths' => (object) [
+                    'total' => 23,
+                    'visitors' => 0,
+                    'details' => ''
                 ]
             ]
         ];
 
-        $attrs = json_decode(json_encode($attrs));
-
-        $this->load->helper('tpl');
-        $this->assign('attrs', $attrs);
-        $this->load->view('tpl/add');
-    }
-
-    function attr() {
-
-        $attrs = [
-            "approach" => [
-                "val" => "Approach lightly.",
-                "details" => [
-                    "val" => "Detaily"
-                ]
-            ],
-            "contact" => [
-                "type" => [
-                    "val" => [
-                        "tel",
-                        "fax",
-                        "http"
-                    ],
-                    "details" => [
-                        "val" => "Daisy y Jordani"
-                    ]
-                ],
-                "value" => [
-                    "val" => [
-                        213,
-                        "02087888818",
-                        "http://www.ps.com"
-                    ],
-                ],
-            ],
-            "berthing" => [
-                "type" => [
-                    "val" => ["sternto", "bowto"],
-                    "details" => [
-                        "val" => "Berthing type details."
-                    ]
-                ],
-                "assistance" => [
-                    "val" => "yes",
-                    "details" => [
-                        "val" => ""
-                    ]
-                ]
-            ]
-        ];
-
-        $attrs = json_decode(json_encode($attrs), TRUE);
-
-        global $attr;
-        $attr = $attrs;
-
-        function n() {
-
-            global $attrName;
-            $args = func_get_args();
-            $str = "attrs[" . $attrName . "]";
-
-            for ($i = 0; $i < count($args); $i++) {
-                $str .= "[" . $args[$i] . "]";
-                $str .= $i != count($args) - 1 && is_numeric($args[$i + 1]) ?
-                        "[" . $args[++$i] . "]" : "";
-            }
-
-//            foreach ($args AS $arg) {
-//                $str .= "[" . $arg . "]";
-//            }
-//            $str .= "[val]";
-            return $str;
-        }
-
-        function r() {
-            return call_user_func_array("v", func_get_args()) . "[]";
-        }
-
-        function v() {
-
-            global $attr;
-            global $attrName;
-
-            $args = func_get_args();
-            $temp = &$attr[$attrName];
-
-            foreach ($args AS $arg) {
-                if (is_array($temp) && key_exists($arg, $temp)) {
-                    $temp = &$temp[$arg];
-                } else {
-                    return NULL;
-                }
-            }
-
-            if (is_array($temp) && key_exists('val', $temp)) {
-                return $temp['val'];
-            } else {
-                return NULL;
-            }
-        }
-
-        function attr_edit_tpl($attrName, $attribute) {
-            global $attr;
-            $attr = $attribute;
-            echo CL_Loader::get_instance()->view('tpl/edit/' . $attrName, FALSE);
-        }
-
-        function attr_view_tpl($attrName, $attribute) {
-            global $attr;
-            $attr = $attribute;
-            return CL_Loader::get_instance()->view('tpl/view/' . $attrName, FALSE);
-        }
-
-        function test($name) {
-            global $attrName;
-            $attrName = $name;
-        }
-
-        global $attrName;
-        $attrName = "contact";
-
-        var_dump(n(12, "type"));
-//        var_dump(v("type", "details"));
-//        var_dump(n("type", "details"));
-//        var_dump(r("type", "details"));
-    }
-
-    function image() {
-        $this->load->model('ImageModel');
-        $path = ImageModel::id2path(9);
-        $this->assign('path', $path);
-        $this->load->view('image');
-    }
-
-    function save_image() {
-
-        $img = $_FILES['img'];
-
-        $imgTempPath = $img['tmp_name'];
-        $imgTempName = $img['name'];
-        $imgTempType = $img['type'];
-
-        $fp = fopen($imgTempPath, 'r');
-        $string = fread($fp, filesize($imgTempPath));
-        fclose($fp);
-
-        //$imSize = getimagesize($imgTempPath);
-//        $imWidth = $imSize[0];
-//        $imHeight = $imSize[1];
-
-        $width = 970;
-        $height = 720;
-        $ratio = $width / $height;
-
-        $im = imagecreatefromstring($string);
-        $imWidth = imagesx($im);
-        $imHeight = imagesy($im);
-        $imRatio = $imWidth / $imHeight;
-
-        if ($imWidth < $width && $imHeight < $height) {
-            $width = $imWidth;
-            $height = $imHeight;
-        } else {
-            if ($imRatio > $ratio) {
-                $rr = $width / $imWidth;
-                $height = $imHeight * $rr;
-            } else if ($imRatio < $ratio) {
-                $rr = $height / $imHeight;
-                $width = $imWidth * $rr;
-            }
-        }
-
-        $newIm = imagecreatetruecolor($width, $height);
-        imagecopyresampled($newIm, $im, 0, 0, 0, 0, $width, $height, $imWidth, $imHeight);
-
-        $this->load->model('ImageModel');
-
-        $imId = ImageModel::add(1, 1, 'Credits', 'Description');
-
-        $fldName = floor($imId / 100);
-        $newImName = ($imId % 100) . '.jpeg';
-        $path = BASEPATH . 'db/images/full/' . $fldName . '/';
-
-        // Create dir if not exists
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
-        }
-
-        imagejpeg($newIm, $path . $newImName);
-        imagedestroy($newIm);
-        imagedestroy($im);
-        exit();
-
-        header('Content-Type: image/jpeg');
-        imagejpeg($newIm);
-        imagedestroy($newIm);
-        imagedestroy($im);
-        exit();
-
-//        header('Content-Type: image/png');
-//        imagepng($im);
-//        imagedestroy($im);
-//        exit();
-//        header('Content-Type: ' . $imgTempType);
-//        echo $string;
-//        exit();
-//        $credits = filter_input(INPUT_POST, 'credits', FILTER_SANITIZE_STRING);
-//        $description = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-    }
-
-    function icons() {
-        $this->load->view('icons');
-    }
-
-    function mobile() {
-        $this->load->view('mobile');
-    }
-
-    function area() {
-
-        $this->load->library('geo/*');
-        $this->load->model('POIModel');
-    }
-
-    function poi() {
-
-//        $o = [
-//            "int" => 4,
-//            "str" => "asd"
-//        ];
-//        
-//        $o = json_decode(json_encode($o));
-//        
-//        var_dump($o->int);
-//        $this->load->model('POIModel');
-//        $this->load->model('LabelModel');
-//        $this->load->library('geo/*');
-//        
-//        $labels = LabelModel::loadNew(new ViewBounds(new LatLng(40, 13), new LatLng(48, 19)), 1);        
-//        print_r($labels);
-    }
-
-    function menu() {
-        $this->load->view('menu');
-    }
-
-    function edit() {
-
-        $this->load->library('geo/*');
-        $this->load->model('POIModel');
-
-        $poiId = filter_input(INPUT_GET, 'poiId', FILTER_VALIDATE_INT);
-        $lat = filter_input(INPUT_GET, 'lat', FILTER_VALIDATE_FLOAT);
-        $lng = filter_input(INPUT_GET, 'lng', FILTER_VALIDATE_FLOAT);
-        $cat = filter_input(INPUT_GET, 'cat', FILTER_SANITIZE_STRING);
-        $sub = filter_input(INPUT_GET, 'sub', FILTER_SANITIZE_STRING);
-
-        $poiObject = new stdClass();
-        $attrsObject = new stdClass();
-
-        if ($poiId !== NULL) {
-            $poi = POIModel::load($poiId);
-            $poiObject = $poi->toObject();
-            $attrsObject = $poi->attributes();
-        } else {
-            $poiObject->id = 0;
-            $poiObject->name = '';
-            $poiObject->cat = $cat;
-            $poiObject->sub = $sub;
-            $poiObject->latLng = new LatLng($lat, $lng);
-            $poiObject->border = null;
-        }
-
-        $this->assign('poi', $poiObject);
-        $this->assign('attrs', $attrsObject);
-        $this->load->view('templates/edit');
-    }
-
-    function view() {
-
-        $this->load->library('geo/*');
-        $this->load->model('POIModel');
-
-        $poiId = filter_input(INPUT_GET, 'poiId', FILTER_VALIDATE_INT);
-
-        $poiObject = new stdClass();
-        $attrsObject = new stdClass();
-
-        $poi = POIModel::load($poiId);
-        $poiObject->id = $poi->id();
-        $poiObject->name = $poi->name();
-        $poiObject->cat = $poi->cat();
-        $poiObject->sub = $poi->sub();
-        $poiObject->latLng = $poi->latLng();
-        $poiObject->border = $poi->border();
-        $attrsObject = $poi->attributes();
-
-        $r = sqrt(2 * pow(9, 2));
-        $sw = Geo::proximity($poi->latLng(), $r, 215);
-        $ne = Geo::proximity($poi->latLng(), $r, 45);
-        $vb = new ViewBounds($sw, $ne);
-        $poiBorder = $vb->toPolygon();
-
-        $near = POIModel::loadByBorder($poiBorder, ['restaurant', 'supermarket', 'gasstation', 'anchorage', 'buoys'], 198);
-        $nearSorted = [];
-        $nearSortedIds = [];
-
-        // Separate into subcategories
-        foreach ($near AS $poiTo) {
-            $sub = $poiTo->sub();
-            if (!array_key_exists($sub, $nearSorted)) {
-                $nearSorted[$sub] = [];
-                $nearSortedIds[$sub] = [];
-            }
-            $nearSorted[$sub][] = [
-                'poi' => $poiTo->toObject(),
-                'dist' => Geo::haversine($poi->latLng(), $poiTo->latLng())
-            ];
-            $nearSortedIds[$sub][] = $poiTo->id();
-        }
-
-        // Sort each subcategory by disance
-        foreach ($nearSorted AS &$near) {
-            aasort($near, 'dist');
-        }
-
-        $this->assign('poi', $poiObject);
-        $this->assign('attrs', $attrsObject);
-        $this->assign('near', (object) $nearSorted);
-        $this->assign('nearIds', $nearSortedIds);
-        $this->load->view('templates/view');
-    }
-
-    function pages() {
-        $this->load->view('pages');
-    }
-
-    function suggest() {
-        $this->load->view('suggest');
-    }
-
-    function fulltext() {
-        $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
-        $term = strtolower(trim($term));
-        $this->load->library('solr/SolrService');
-        $solr = SolrService::get_instance();
-        $res = $solr->query("fulltext:($term)", 10);
-        $this->assign('term', $term);
-        $this->assign('numFound', $res->num_found());
-        $this->assign('numDocs', $res->num_docs());
-        $this->assign('docs', $res->docs());
-        $this->load->view('fulltext');
-    }
-
-    /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
-     */
-    function save_data() {
-
-        $this->load->library('geo/*');
-        $this->load->model('POIModel');
-
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_STRING);
-        $cat = filter_input(INPUT_POST, 'cat', FILTER_SANITIZE_STRING);
-        $sub = filter_input(INPUT_POST, 'sub', FILTER_SANITIZE_STRING);
-        $latLngWKT = filter_input(INPUT_POST, 'latLng', FILTER_SANITIZE_STRING);
-        $borderWKT = filter_input(INPUT_POST, 'border', FILTER_SANITIZE_STRING);
-        $attrs = filter_input(INPUT_POST, 'attrs', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
-
-        $latLng = LatLng::fromWKT($latLngWKT);
-        $border = Polygon::fromWKT($borderWKT);
-
-        POIModel::update($id, 1, 1, $name, $name, $cat, $sub, $latLng, $border, $attrs);
-    }
-
-    function transfer_poi() {
-
-        $this->load->library('geo/*');
-        $this->load->model('POIModel');
-
-        $new = CL_MySQLi::get_instance();
-        $old = new CL_MySQLi('localhost', 'root', '', 'ps_backup');
-
-        $res = $old->query("SELECT *, AsText(latLng) AS latLngWKT, AsText(boundary) AS boundaryWKT FROM `poi`");
-        while ($o = $res->fetchObject()) {
-            $features = json_decode($o->features);
-            if ($features === NULL) {
-                echo $o->id . "<br />";
-                $attrs = [];
-            } else {
-                $attrs = [
-                    "description" => [
-                        "details" => $features->description
-                    ],
-                    "sources" => [
-                        "details" => $features->references
-                    ]
-                ];
-            }
-            POIModel::insert($o->id, $o->userId, $o->nearId, $o->countryId, $o->name, $o->label, $o->cat, $o->sub, LatLng::fromWKT($o->latLngWKT), Polygon::fromWKT($o->boundaryWKT), $attrs);
-        }
-
-        $old->close();
-        $new->close();
-
-        //print_r(POIModel::loadNearbys(new LatLng(44.044967, 15.106567)));
+        $mongo->insert_inc('poi', $doc);
+        
+//        $mongo->find('poi', []);
+//        while ($doc = $mongo->next()) {
+//            print_r($doc);
+//        }
     }
 
 }

@@ -31,10 +31,10 @@ class CL_MySQL {
     public function connect() {
 
         if ($this->connection == NULL) {
-            $server = $this->config->get_item('database', 'server');
-            $username = $this->config->get_item('database', 'username');
-            $password = $this->config->get_item('database', 'password');
-            $database = $this->config->get_item('database', 'database');
+            $server = $this->config->get_value('database', 'server');
+            $username = $this->config->get_value('database', 'username');
+            $password = $this->config->get_value('database', 'password');
+            $database = $this->config->get_value('database', 'database');
             //$this->connection = mysql_connect($server, $username, $password);
             //$this->connection = mysql_pconnect($server, $username, $password);
             $this->connection = new mysqli($server, $username, $password, $database);

@@ -31,12 +31,12 @@ class CL_Mail {
         $config = CL_Config::get_instance();
         $mail = new PHPMailer();
         $mail->isSMTP();
-        $mail->Mailer = $config->get_item('mail', 'mailer');
-        $mail->Host = $config->get_item('mail', 'host');
-        $mail->Port = $config->get_item('mail', 'port');
-        $mail->SMTPAuth = $config->get_item('mail', 'smtpauth');
-        $mail->Username = $config->get_item('mail', 'username');
-        $mail->Password = $config->get_item('mail', 'password');
+        $mail->Mailer = $config->get_value('mail', 'mailer');
+        $mail->Host = $config->get_value('mail', 'host');
+        $mail->Port = $config->get_value('mail', 'port');
+        $mail->SMTPAuth = $config->get_value('mail', 'smtpauth');
+        $mail->Username = $config->get_value('mail', 'username');
+        $mail->Password = $config->get_value('mail', 'password');
         return $mail;
     }
     

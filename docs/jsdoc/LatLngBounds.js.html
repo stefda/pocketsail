@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: LatLngBounds.js</title>
+    
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+    
+    <h1 class="page-title">Source: LatLngBounds.js</h1>
+    
+    
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source"><code>
+/**
+ * A representation of a bounding box on earth defined by its southwest and
+ * northeast corners. If parameters are omitted the corners remain undefined.
+ * 
+ * @example
+ * var sw = new LatLng(0, 0);
+ * var ne = new LatLng(10, 10);
+ * var bounds = new LatLngBounds(sw, ne);
+ * 
+ * @constructor
+ * @param {LatLng} [sw]
+ * @param {LatLng} [ne]
+ * @property {LatLng} sw The southwest corner
+ * @property {LatLng} ne The northeast corner
+ */
+function LatLngBounds(sw, ne) {
+
+    if (typeof sw === "undefined") {
+        sw = ne = null;
+    }
+
+    if (typeof ne === "undefined") {
+        ne = new LatLng(sw.lat, sw.lng);
+    }
+
+    this.sw = sw;
+    this.ne = ne;
+
+    /**
+     * Extends the bounds by the given coordinates. If the coordinates are
+     * within the existing bounding box the corners remain unchanged.
+     * @param {LatLng} latLng Coordinates to extend the bounds
+     */
+    this.extend = function (latLng) {
+
+        if (this.sw === null) {
+            this.sw = new LatLng(latLng.lat, latLng.lng);
+            this.ne = new LatLng(latLng.lat, latLng.lng);
+            return;
+        }
+
+        var sw = this.sw;
+        var ne = this.ne;
+
+        this.sw.lat = Math.min(latLng.lat, this.sw.lat);
+        this.sw.lng = Math.min(latLng.lng, this.sw.lng);
+        this.ne.lat = Math.max(latLng.lat, this.ne.lat);
+        this.ne.lng = Math.max(latLng.lng, this.ne.lng);
+    };
+
+    /**
+     * Get north edge latitude.
+     * @returns {Number}
+     */
+    this.getNorth = function () {
+        return this.ne !== null ? this.ne.lat : undefined;
+    };
+
+    /**
+     * Get east edge latitude.
+     * @returns {Number}
+     */
+    this.getEast = function () {
+        return this.ne !== null ? this.ne.lng : undefined;
+    };
+
+    /**
+     * Get south edge latitude.
+     * @returns {Number}
+     */
+    this.getSouth = function () {
+        return this.sw !== null ? this.sw.lat : undefined;
+    };
+
+    /**
+     * Get west edge longitude.
+     * @returns {Number}
+     */
+    this.getWest = function () {
+        return this.sw !== null ? this.sw.lng : undefined;
+    };
+
+    /**
+     * Compute the center of the bounds.
+     * @returns {LatLng}
+     */
+    this.getCenter = function () {
+        return new LatLng((this.sw.lat + this.ne.lat) / 2, (this.sw.lng + this.ne.lng) / 2);
+    };
+
+    /**
+     * Computes the maximum integer zoom that will accomodate the bounds within
+     * the given mercator map dimensions. Optionally, padding values can be
+     * provided.
+     * 
+     * @example
+     * var bounds = new LatLngBounds(new LatLng(0, 0), new LatLng(1, 1));
+     * var zoom = bounds.getMaxZoom(800, 600, 10, 20);
+     * 
+     * @param {Number} width Map width in pixels
+     * @param {Number} height Map height in pixels
+     * @param {Number} [top] Top padding (0 padding used if ommited)
+     * @param {Number} [right] Right padding (top padding used if ommited)
+     * @param {Number} [bottom] Bottom padding (top padding used if ommited)
+     * @param {Number} [left] Left padding (right padding used if ommited)
+     * @returns {Number}
+     */
+    this.getMaxZoom = function (width, height, top, right, bottom, left) {
+
+        // Compute padding
+        if (!left) {
+            if (!bottom) {
+                if (!right) {
+                    left = bottom = right = !top ? 0 : top;
+                } else {
+                    bottom = top;
+                    left = right;
+                }
+            } else {
+                left = right;
+            }
+        }
+
+        // Subtract padding
+        width -= right + left;
+        height -= top + bottom;
+
+        // Project onto the mercator plane
+        var A = Proj.latlng2merc(this.sw);
+        var B = Proj.latlng2merc(this.ne);
+
+        // Compute the zoom for both directions
+        var z_x = Math.log((Proj.DOUBLEPI * height) / (Proj.TILESIZE * Math.abs(A.x - B.x))) / Math.log(2);
+        var z_y = Math.log((Proj.DOUBLEYLIM * width) / (Proj.TILESIZE * Math.abs(A.y - B.y))) / Math.log(2);
+
+        var zf = Math.pow(10, Proj.ZOOMPREC);
+        z_x = Math.round(z_x * zf) / zf;
+        z_y = Math.round(z_y * zf) / zf;
+
+        console.log(A, B);
+        console.log(z_x, z_y);
+
+        console.log(Math.floor(Math.min(z_x, z_y)));
+    };
+
+    /**
+     * Complete the bounds into a valid polygon.
+     * @returns {Polygon}
+     */
+    this.toPolygon = function () {
+        return new Polygon([
+            this.sw.getCoordinates(),
+            [this.ne.getCoordinates()[0], this.sw.getCoordinates()[1]],
+            this.ne.getCoordinates(),
+            [this.sw.getCoordinates()[0], this.ne.getCoordinates()[1]],
+            this.sw.getCoordinates()
+        ]);
+    };
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Index</a></h2><h3>Classes</h3><ul><li><a href="LatLng.html">LatLng</a></li><li><a href="LatLngBounds.html">LatLngBounds</a></li><li><a href="Point.html">Point</a></li><li><a href="Polygon.html">Polygon</a></li><li><a href="Proj.html">Proj</a></li></ul>
+</nav>
+
+<br clear="both">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.2.2</a> on Mon Apr 20 2015 11:26:19 GMT+0100 (BST)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

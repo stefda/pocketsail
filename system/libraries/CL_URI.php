@@ -1,21 +1,12 @@
 <?php
 
-if (!defined('SYSPATH'))
-    exit("No direct script access allowed!");
-
 class CL_URI {
 
     private static $instance = null;
-
-    /**
-     * @var CL_Config
-     */
-    private $config = NULL;
     public $string = '';
     public $segments = array();
 
-    private function CL_URI() {
-        $this->config = CL_Config::get_instance();
+    private function __construct() {
         $this->fetch_uri_string();
         $this->parse_uri_segments();
     }
@@ -36,12 +27,12 @@ class CL_URI {
         $this->segments = array();
         $this->parse_uri_segments();
     }
-    
+
     public function replace($string) {
         $this->segments[0] = $string;
         $this->string = implode('/', $this->segments);
     }
-    
+
     public function shift() {
         array_shift($this->segments);
         $this->string = implode('/', $this->segments);
@@ -74,6 +65,3 @@ class CL_URI {
     }
 
 }
-
-/* End of file CL_URI.php */
-/* Location: /system/libraries/CL_URI.php */

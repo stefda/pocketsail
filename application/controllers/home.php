@@ -14,4 +14,8 @@ class Home extends CL_Controller {
     function index() {
         $this->load->view('main');
     }
+    
+    function oops() {
+        $this->load->view('error/oops');
+    }
 }

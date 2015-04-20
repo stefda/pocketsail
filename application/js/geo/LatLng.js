@@ -1,55 +1,61 @@
 
-var LatLng = function(lat, lng) {
+/**
+ * A representation of a point on eart in the starndard coordinate system.
+ * 
+ * @example
+ * var latLng = new LatLng(51.524940, -0.138332); // Location of the Warren Street tube station
+ * 
+ * @constructor
+ * @param {Number} lat Latitude
+ * @param {Number} lng Longitude
+ * @property {Number} lat Latitude
+ * @property {Number} lng Longitude
+ */
+function LatLng(lat, lng) {
 
     this.lat = lat;
     this.lng = lng;
 
     /**
-     * @param {LatLng} latLng
-     * @returns {Boolean}
+     * Convert the coordinates into a valid GeoJSON Point object.
+     * @returns {Object}
      */
-    this.equals = function(latLng) {
-        return this.lat === latLng.lat && this.lng === latLng.lng;
+    this.toGeoJson = function () {
+        return {
+            'type': "Point",
+            'coordinates': [this.lng, this.lat]
+        };
     };
 
     /**
-     * @returns {google.maps.LatLng}
+     * Get the coordinates as an array of points on the x-y plane.
+     * @returns {Array}
      */
-    this.toGoogleLatLng = function() {
-        return new google.maps.LatLng(this.lat, this.lng);
+    this.getCoordinates = function () {
+        return [this.lng, this.lat];
     };
 
     /**
+     * Get the coordinates are a point in the x-y plane.
      * @returns {Point}
      */
-    this.toPoint = function() {
-        return new Point(this.lng, this.lat);
+    this.getPoint = function () {
+        return new Point([this.lng, this.lat]);
     };
-
-    /**
-     * @returns {String}
-     */
-    this.toWKT = function() {
-        return this.toPoint().toWKT();
-    };
-};
+}
 
 /**
- * @param {google.maps.LatLng} gLatLng
+ * Create coordinates from a GeoJSON Point object.
+ * @param {Object} geoJson GeoJSON Point object
  * @returns {LatLng}
  */
-LatLng.fromGoogleLatLng = function(gLatLng) {
-    return new LatLng(gLatLng.lat(), gLatLng.lng());
-};
+LatLng.fromGeoJson = function (geoJson) {
 
-/**
- * @param {String} wkt
- * @returns {LatLng}
- */
-LatLng.fromWKT = function(wkt) {
-    var point = Point.fromWKT(wkt);
-    if (point === null) {
-        return null;
+    if (typeof geoJson.type === "undefined"
+            || geoJson.type !== "Point"
+            || typeof geoJson.coordinates === "undefined") {
+        throw new Error("fromGeoJson(): First argument must be a valid GeoJSON Point object.");
     }
-    return new LatLng(point.y, point.x);
+
+    return new LatLng(geoJson.coordinates[1], geoJson.coordinates[0]);
 };

@@ -22,7 +22,7 @@ class Admin extends CL_Controller {
      * @AjaxAsync=TRUE
      */
     function label() {
-        $pswCommand = $this->config->get_item('main', 'psw_labeling');
+        $pswCommand = $this->config->get_value('main', 'psw_labeling');
         $output = null;
         $return_var = null;
         exec($pswCommand, $output, $return_var);
@@ -35,7 +35,7 @@ class Admin extends CL_Controller {
      * @AjaxAsync=TRUE
      */
     function index() {
-        $pswCommand = $this->config->get_item('main', 'psw_indexing');
+        $pswCommand = $this->config->get_value('main', 'psw_indexing');
         $output = null;
         $return_var = null;
         exec($pswCommand, $output, $return_var);

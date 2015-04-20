@@ -40,10 +40,10 @@ class CL_MySQLi {
     public static function get_instance() {
         if (self::$instance === null) {
             $config = CL_Config::get_instance();
-            $host = $config->get_item('database', 'host');
-            $user = $config->get_item('database', 'user');
-            $password = $config->get_item('database', 'password');
-            $database = $config->get_item('database', 'database');
+            $host = $config->get_value('database', 'host');
+            $user = $config->get_value('database', 'user');
+            $password = $config->get_value('database', 'password');
+            $database = $config->get_value('database', 'database');
             self::$instance = new CL_MySQLi($host, $user, $password, $database);
         }
         return self::$instance;

@@ -13,13 +13,11 @@ define('DOMAIN',  'pocketsail');
 define('MAINURL',  'http://' . DOMAIN . '/');
 define('CODEBASE',  '');
 define('SELF',      'index.php');
-define('BASEPATH',  'C:/Users/David/Dev/pocketsail/web/');
+define('BASEPATH',  'c:/dev/projects/pocketsail/web/');
 define('SYSPATH',   BASEPATH . 'system/');
 define('APPPATH',   BASEPATH . 'application/');
 define('BASEURL',   'http://' . $_SERVER['HTTP_HOST'] . '/' . (defined('CODEBASE') ? CODEBASE : '/'));
-define('TEMP', 'C:/Temp/');
+define('TEMP', 'c:/dev/temp/');
+define('DEBUG',  TRUE);
 
 require_once SYSPATH . 'codelite/CodeLite.php';
-
-/* End of file index.php */
-/* Location: /index.php */

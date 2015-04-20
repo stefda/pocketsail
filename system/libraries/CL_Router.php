@@ -1,21 +1,14 @@
 <?php
 
-if (!defined('SYSPATH'))
-    exit("No direct script access allowed!");
-
 class CL_Router {
 
     private static $instance = NULL;
-    private $config;
     private $uri;
     private $class = null;
     private $method = null;
-    private $section = null;
-    private $page = null;
     private $parameters = NULL;
 
     private function __construct() {
-        $this->config = CL_Config::get_instance();
         $this->uri = CL_URI::get_instance();
     }
 
@@ -38,16 +31,24 @@ class CL_Router {
             return $this->class;
         }
 
-        // In case uri segments array is empty, try to fetch controller name
-        // from the config object...
+        // Get default class if not provided
         if (count($this->uri->segments) == 0) {
-            if (trim($this->config->get_item('main', 'default_controller')) == '') {
-                show_error("Default controller is not defined.", "Router Error");
+            if (trim(get_config_value('main', 'default_controller')) == '') {
+                error("Default controller is not defined.");
             }
-            return strtolower($this->config->get_item('main', 'default_controller'));
+            return strtolower(get_config_value('main', 'default_controller'));
         }
 
-        // ...otherwise return first segment of the uri segments array
+        // Do routing
+        $class = strtolower($this->uri->segments[0]);
+        $route = get_config_value('routes', $class);
+
+        if ($route !== NULL) {
+            array_shift($this->uri->segments);
+            $routeSegments = explode("/", $route);
+            array_unshift($this->uri->segments, $routeSegments[0], $routeSegments[1]);
+        }
+
         $this->class = strtolower($this->uri->segments[0]);
         return $this->class;
     }
@@ -80,6 +81,3 @@ class CL_Router {
     }
 
 }
-
-/* End of file CL_Router.php */
-/* Location: /system/libraries/CL_Router.php */
