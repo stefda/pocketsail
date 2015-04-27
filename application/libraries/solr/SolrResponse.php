@@ -27,5 +27,17 @@ class SolrResponse {
     public function num_docs() {
         return count($this->rawResponse->response->docs);
     }
+    
+    public function is_spelled_correctly() {
+        return @$this->rawResponse->spellcheck->suggestions->collation == NULL;
+    }
+    
+    public function get_collation() {
+        return @$this->rawResponse->spellcheck->suggestions->collation;
+    }
+    
+    public function get_highlights() {
+        return @$this->rawResponse->highlighting;
+    }
 
 }
