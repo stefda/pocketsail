@@ -52,13 +52,14 @@
             #suggestList .sub { float: right; font-size: 10px; color: #aaa; padding-top: 2px; }
             a.fulltextButton { background-color: #f6f6f6; border-top: solid 1px #aaa; }
             a.fulltextButton div { padding: 3px 0; font-size: 11px; color: #666; font-weight: bold; text-align: center; }
+            div#card { display: none; }
         </style>
 
         <script>
 
             var focusedMarker = null;
 
-            $(function() {
+            $(function () {
 
                 var map = new Map({
                     canvas: 'canvas',
@@ -68,7 +69,7 @@
 
                 map.setFlags(['newPois']);
 
-                map.addListener('rightclick', function(e) {
+                map.addListener('rightclick', function (e) {
 
                     var latLng = LatLng.fromGoogleLatLng(e.latLng);
                     var canvasOffset = $('#canvas').offset();
@@ -76,7 +77,7 @@
                     $('#menu').mapmenu({
                         top: e.pixel.y + canvasOffset.top,
                         left: e.pixel.x + canvasOffset.left,
-                        select: function(e, ui) {
+                        select: function (e, ui) {
                             var sub = ui.item.value;
                             if (sub !== undefined) {
                                 $('#menu').mapmenu('hide');
@@ -88,51 +89,57 @@
                     });
                 });
 
-                map.addListener('zoom_changed', function(e) {
+                map.addListener('zoom_changed', function (e) {
                     $('#zoomOut').text(this.getZoom());
                 });
 
-                map.addListener('click', function(e) {
+                map.addListener('click', function (e) {
+                    $('.ps-ui-menu').mapmenu('hide');
+                    map.setPoiId(0);
+                    map.setTypes([]);
+                    map.hideCard();
+                    map.loadData();
+                    $('#searchInput').val('');
+                });
+
+                map.addListener('drag', function (e) {
                     $('.ps-ui-menu').mapmenu('hide');
                 });
 
-                map.addListener('drag', function(e) {
+                map.addListener('zoom_changed', function (e) {
                     $('.ps-ui-menu').mapmenu('hide');
                 });
 
-                map.addListener('zoom_changed', function(e) {
-                    $('.ps-ui-menu').mapmenu('hide');
-                });
-
-                $('#labellingButton').click(function() {
+                $('#labellingButton').click(function () {
                     var button = $(this);
                     button.addClass('loader');
                     AdminBroker.label({
-                        success: function(res) {
+                        success: function (res) {
                             button.removeClass('loader');
                             window.location.reload();
                         }
                     });
                 });
 
-                $('#indexingButton').click(function() {
+                $('#indexingButton').click(function () {
                     var button = $(this);
                     button.addClass('loader');
                     AdminBroker.index({
-                        success: function(res) {
+                        success: function (res) {
                             button.removeClass('loader');
                             window.location.reload();
                         }
                     });
                 });
 
-                $('#signoutButton').click(function() {
+                $('#signoutButton').click(function () {
                     window.location = '/user/do_logout';
                 });
 
-                $('#clearButton').click(function() {
+                $('#clearButton').click(function () {
                     map.setPoiId(0);
                     map.setTypes([]);
+                    map.hideCard();
                     map.loadData();
                     $('#searchInput').val("");
                 });
@@ -142,7 +149,7 @@
                     appendTo: '#suggestList',
                     position: {my: "left top-1px"},
                     // Response
-                    response: function(event, ui) {
+                    response: function (event, ui) {
                         if (ui.content.length === 1) {
                             ui.content.unshift({
                                 nores: true
@@ -150,7 +157,7 @@
                         }
                     },
                     // Define action on user select
-                    select: function(event, ui) {
+                    select: function (event, ui) {
 
                         if (ui.item.fulltext) {
                             window.location = "/test/fulltext?term=" + ui.item.value;
@@ -174,7 +181,7 @@
                                 types: types,
                                 flags: ['panToPoi', 'zoomToTypes', 'poiInfo', 'poiCard']
                             },
-                            success: function(res) {
+                            success: function (res) {
                                 map.handleResult(res);
                             }
                         });
@@ -246,7 +253,10 @@
             </div>
         </div>
 
-        <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0; height: auto;"></div>
+        <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0; height: auto;">
+        </div>
+        
+        <div id="card" style="position: absolute; left: 20px; top: 80px; width: 350px; height: 180px; background-color: #fff; border-radius: 3px; box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.3);"></div>
 
         <div id="zoomOut" style="font-family: Arial; font-size: 14px; position: absolute; bottom: 22px; right: 40px; background-color: #fff; border: solid 1px #bbb; border-radius: 2px; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3); padding: 3px 5px;">10</div>
 

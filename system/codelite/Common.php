@@ -100,6 +100,21 @@ function include_edit_template($cat, $sub) {
     return CL_Loader::get_instance()->view('templates/edit/default', FALSE);
 }
 
+function include_card_template($cat, $sub) {
+
+    $subPath = APPPATH . 'views/templates/card/' . $sub . '.php';
+    $catPath = APPPATH . 'views/templates/card/' . $cat . '.php';
+
+    if (file_exists($subPath)) {
+        return CL_Loader::get_instance()->view('templates/card/' . $sub, FALSE);
+    } else if (file_exists($catPath)) {
+        return CL_Loader::get_instance()->view('templates/card/' . $cat, FALSE);
+    }
+
+    // If neither sub- or cat-specific template exists, use default
+    return CL_Loader::get_instance()->view('templates/card/default', FALSE);
+}
+
 function include_view_template($sub, $cat) {
     $viewPath = APPPATH . 'views/templates/view/' . $sub . '.php';
     if (file_exists($viewPath)) {

@@ -20,7 +20,7 @@ class API extends CL_Controller {
         // Parse term from the input
         $term = filter_input(INPUT_GET, 'term', FILTER_SANITIZE_STRING);
         $term = trim($term);
-        
+
         $term = preg_replace("/^anchor (.*)/", "anchorage $1", $term);
         $term = preg_replace("/^moor (.*)/", "mooring buoys $1", $term);
         $term = preg_replace("/^buoy (.*)/", "mooring buoys $1", $term);
@@ -134,7 +134,9 @@ class API extends CL_Controller {
 
             // Load poi card
             if (hasFlag($flags, 'poiCard')) {
-                $res['poi']['card'] = "<div>Card</div>";
+                $this->assign('poi', $poi);
+                $card = $this->load->view('templates/card', FALSE);
+                $res['poi']['card'] = $card;
                 addFlag($res, 'showCard');
             }
 
@@ -144,7 +146,8 @@ class API extends CL_Controller {
                 if ($border === NULL) {
                     $vBounds->setCenter($poi->latLng());
                     $vBounds->changeZoom(14 - $zoom);
-                    $zoom = 14;
+                    //$zoom = 14;
+                    $zoom = $zoom < 14 ? 14 : $zoom;
                 } else {
                     $borderBounds = ViewBounds::fromPolygon($border);
                     $vBounds->fitBounds($borderBounds, $zoom);
@@ -285,12 +288,43 @@ class API extends CL_Controller {
     }
 
     /**
+     * @param int $poiId
+     * @return stdClass
      * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
+     * @AjaxMethod=GET
      * @AjaxAsync=TRUE
      */
-    public function doLabelling() {
-        
+    public function get_poi_info($poiId) {
+
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+        $this->load->model('LabelModel');
+
+        $poi = POIModel::load($poiId);
+        return $poi->toObject();
+    }
+
+    /**
+     * @param int $poiId
+     * @return stdClass
+     * @AjaxCallable=TRUE
+     * @AjaxMethod=GET
+     * @AjaxAsync=TRUE
+     */
+    public function get_poi_info_box($poiId) {
+
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+        $this->load->model('LabelModel');
+
+        $poi = POIModel::load($poiId);
+
+        $this->assign('poi', $poi);
+        $html = $this->load->view('templates/infobox', FALSE);
+        return [
+            'html' => $html,
+            'latLng' => $poi->latLng()
+        ];
     }
 
 }

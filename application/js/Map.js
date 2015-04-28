@@ -22,14 +22,33 @@ function Map(o) {
     this.newMarkers = {};
     this.googleMap = null;
 
-    this.markerClickFx = function(marker, pos) {
+    this.markerContextmenu = function (marker, pos) {
+
         $('#editMenu').mapmenu({
             top: pos.y,
             left: pos.x,
-            select: function(e, ui) {
+            select: function (e, ui) {
                 if (ui.item.value === 'edit') {
                     window.location = '/poi/edit?poiId=' + marker.id
                 }
+            }
+        });
+    };
+
+    this.markerClick = function (marker, pos) {
+
+        this_.setPoiId(marker.id);
+
+        APIBroker.loadData({
+            post: {
+                vBounds: this_.getViewBounds().toWKT(),
+                zoom: this_.getZoom(),
+                poiId: marker.id,
+                flags: ['panToPoi', 'poiInfo', 'poiCard']
+            },
+            success: function (res) {
+                this_.handleResult(res);
+                $('#searchInput').val(res.poi.info.name);
             }
         });
     };
@@ -40,91 +59,91 @@ function Map(o) {
     /**
      * @returns {Array}
      */
-    this.getTypes = function() {
+    this.getTypes = function () {
         return this.types;
     };
 
     /**
      * @returns {Number}
      */
-    this.getPoiId = function() {
+    this.getPoiId = function () {
         return this.poiId;
     };
 
     /**
      * @returns {Array}
      */
-    this.getPoiIds = function() {
+    this.getPoiIds = function () {
         return this.poiIds;
     };
 
     /**
      * @returns {Array}
      */
-    this.getFlags = function() {
+    this.getFlags = function () {
         return this.flags;
     };
 
     /**
      * @returns {LatLng}
      */
-    this.getCenter = function() {
+    this.getCenter = function () {
         return LatLng.fromGoogleLatLng(this.googleMap.getCenter());
     };
 
     /**
      * @returns {Number}
      */
-    this.getZoom = function() {
+    this.getZoom = function () {
         return this.googleMap.getZoom();
     };
 
     /**
      * @returns {ViewBounds}
      */
-    this.getViewBounds = function() {
+    this.getViewBounds = function () {
         return ViewBounds.fromMap(this.googleMap);
     };
 
-    this.setTypes = function(types) {
+    this.setTypes = function (types) {
         this.types = types;
     };
 
-    this.setPoiId = function(poiId) {
+    this.setPoiId = function (poiId) {
         this.poiId = poiId;
     };
 
-    this.setPoiIds = function(poiIds) {
+    this.setPoiIds = function (poiIds) {
         this.poiIds = poiIds;
     };
 
-    this.setFlags = function(flags) {
+    this.setFlags = function (flags) {
         this.flags = flags;
     };
 
-    this.addMarker = function(marker) {
+    this.addMarker = function (marker) {
         this.markers.push(marker);
     };
 
-    this.addNewMarker = function(marker) {
+    this.addNewMarker = function (marker) {
         this.newMarkers.push(marker);
     };
 
-    this.clearMarkers = function() {
+    this.clearMarkers = function () {
         for (var i = 0; i < this.markers.length; i++) {
             this.markers[i].setMap(null);
         }
         this.markers = [];
     };
 
-    this.clearNewMarkers = function() {
+    this.clearNewMarkers = function () {
         for (var i = 0; i < this.newMarkers.length; i++) {
             this.newMarkers[i].setMap(null);
         }
         this.newMarkers = [];
     };
 
-    this.loadData = function(flags) {
+    this.loadData = function (flags) {
 
         // Normalise flags
         if (flags === undefined) {
@@ -140,16 +159,25 @@ function Map(o) {
                 poiIds: this.getPoiIds(),
                 flags: this.getFlags().concat(flags)
             },
-            success: function(res) {
+            success: function (res) {
                 this_.handleResult(res);
             }
         });
     };
 
+    this.showCard = function (html) {
+        $('#card').html(html);
+        $('#card').show();
+    };
+
+    this.hideCard = function () {
+        $('#card').hide();
+    };
+
     /**
      * @param {Object} res
      */
-    this.handleResult = function(res) {
+    this.handleResult = function (res) {
 
         var labels = res.labels;
         var flags = res.flags;
@@ -168,6 +196,11 @@ function Map(o) {
 
         if (flags.indexOf('doLabelling') !== -1) {
             Labeller.doLabelling(labels);
+        }
+        
+        if (flags.indexOf('showCard') !== -1) {
+//            console.log(res);
+            this.showCard(res.poi.card);
         }
 
         this.clearMarkers();
@@ -199,7 +232,7 @@ function Map(o) {
     /**
      * @param {Number} zoom
      */
-    this.setZoom = function(zoom) {
+    this.setZoom = function (zoom) {
         this.ignoreZoomChange = true;
         this.googleMap.setZoom(zoom);
     };
@@ -207,26 +240,27 @@ function Map(o) {
     /**
      * @param {LatLng} center
      */
-    this.setCenter = function(center) {
-        this.googleMap.setCenter(center.toGoogleLatLng());
+    this.setCenter = function (center) {
+        //this.googleMap.setCenter(center.toGoogleLatLng());
+        this.googleMap.panTo(center.toGoogleLatLng());
     };
 
     /**
      * @param {LatLng} center
      * @param {Number} zoom
      */
-    this.panTo = function(center, zoom) {
-        this.setCenter(center);
+    this.panTo = function (center, zoom) {
         this.setZoom(zoom);
+        this.setCenter(center);
     };
 
-    this.addListener = function(type, fx) {
-        google.maps.event.addListener(this.googleMap, type, function(e) {
+    this.addListener = function (type, fx) {
+        google.maps.event.addListener(this.googleMap, type, function (e) {
             fx.call(this, e);
         });
     };
 
-    this.initGoogleMap = function() {
+    this.initGoogleMap = function () {
 
         // Initialise custom map style
         var styledMap = new google.maps.StyledMapType(mapStyle, {name: "PocketSail"});
@@ -280,7 +314,7 @@ function Map(o) {
         }
 
         // Load data on the first idle
-        google.maps.event.addListener(this.googleMap, 'idle', function() {
+        google.maps.event.addListener(this.googleMap, 'idle', function () {
             // Skip all idles except the first one
             if (this_.init) {
                 this_.init = false;
@@ -314,12 +348,12 @@ function Map(o) {
 //            }
 //        });
 
-        google.maps.event.addListener(this.googleMap, 'dragend', function() {
+        google.maps.event.addListener(this.googleMap, 'dragend', function () {
             this_.loadData();
         });
 
         // Load data on zoom_change
-        google.maps.event.addListener(this.googleMap, 'zoom_changed', function() {
+        google.maps.event.addListener(this.googleMap, 'zoom_changed', function () {
             if (this_.ignoreZoomChange) {
                 this_.ignoreZoomChange = false;
                 return;

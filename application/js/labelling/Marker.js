@@ -14,7 +14,7 @@ function Marker(o) {
 
 Marker.prototype = new google.maps.OverlayView();
 
-Marker.prototype.onAdd = function() {
+Marker.prototype.onAdd = function () {
 
     this.div_ = document.createElement('div');
     this.div_.style.position = 'absolute';
@@ -32,29 +32,38 @@ Marker.prototype.onAdd = function() {
     // Closure
     var this_ = this;
 
-    google.maps.event.addDomListener(this.div_, 'contextmenu', function(e) {
+    google.maps.event.addDomListener(this.div_, 'contextmenu', function (e) {
         var position = {
             x: e.clientX,
             y: e.clientY
         };
-        this_.psMap.markerClickFx(this_, position);
+        this_.psMap.markerContextmenu(this_, position);
+        e.preventDefault();
+    });
+
+    google.maps.event.addDomListener(this.div_, 'click', function (e) {
+        var position = {
+            x: e.clientX,
+            y: e.clientY
+        };
+        this_.psMap.markerClick(this_, position);
         e.preventDefault();
     });
 };
 
-Marker.prototype.draw = function() {
+Marker.prototype.draw = function () {
     var overlayProjection = this.getProjection();
     var pos = overlayProjection.fromLatLngToDivPixel(this.latLng);
     this.div_.style.top = pos.y + 'px';
     this.div_.style.left = pos.x + 'px';
 };
 
-Marker.prototype.onRemove = function() {
+Marker.prototype.onRemove = function () {
     this.div_.parentNode.removeChild(this.div_);
     this.div_ = null;
 };
 
-Marker.prototype.buildIcon = function() {
+Marker.prototype.buildIcon = function () {
 
     var icon = document.createElement('div');
     var iconDesc = this.label.getIconStyle();
@@ -75,7 +84,7 @@ Marker.prototype.buildIcon = function() {
     this.div_.appendChild(icon);
 };
 
-Marker.prototype.buildText = function() {
+Marker.prototype.buildText = function () {
 
     var text = document.createElement('div');
     var textWrapper = null;
