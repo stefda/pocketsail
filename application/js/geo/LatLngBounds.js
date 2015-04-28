@@ -138,7 +138,7 @@ function LatLngBounds(sw, ne) {
         z_x = Math.round(z_x * zf) / zf;
         z_y = Math.round(z_y * zf) / zf;
 
-        return Math.floor(Math.min(z_x, z_y));
+        return Math.max(0, Math.floor(Math.min(z_x, z_y)));
     };
 
     /**
