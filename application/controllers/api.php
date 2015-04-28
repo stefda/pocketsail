@@ -71,6 +71,7 @@ class API extends CL_Controller {
         $this->load->library('geo/*');
         $this->load->model('POIModel');
         $this->load->model('LabelModel');
+        $this->load->helper('html');
 
         // Helper functions
         function addFlag(&$res, $flag) {

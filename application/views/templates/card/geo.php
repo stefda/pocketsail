@@ -20,7 +20,7 @@
         if (strlen($desc) !== strlen($descTrimmed)) {
             $desc = rtrim($descTrimmed, '.') . '...';
         }
-        echo $desc;
+        echo html($desc);
         ?>
     </div>
 
