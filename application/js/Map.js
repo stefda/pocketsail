@@ -16,9 +16,10 @@ function Map(o) {
     this.ids = [];
     this.types = [];
 
-//    this.cache = o.cache !== undefined ? o.cache : false;
+    this.cache = o.cache !== undefined ? o.cache : false;
     this.ignoreZoomChange = false;
     this.ignoreHash = false;
+    this.ignoreClick = false;
     this.init = true;
     this.labels = [];
     this.markers = {};
@@ -42,6 +43,11 @@ function Map(o) {
 
     if (o.markerClick !== undefined && o.markerClick) {
         this.markerClick = function (marker, pos) {
+            
+            if (this.ignoreClick) {
+                this.ignoreClick = false;
+                return;
+            }
 
             this.id = marker.id;
             this.url = marker.url;
@@ -371,6 +377,7 @@ function Map(o) {
             this_.loadData('normal', function (res) {
                 this_.handleResult(res);
             });
+            this_.ignoreClick = true;
         });
 
         google.maps.event.addListener(this.map, 'zoom_changed', function () {

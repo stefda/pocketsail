@@ -25,7 +25,7 @@ class MapManager {
             } else {
                 $bounds = Bounds::fromPolygon($poi->border());
                 $zoom = $bounds->getMaxZoom($width, $height);
-                $bounds = Bounds::getBounds($width, $height, $zoom, $poi->latLng());
+                $bounds = Bounds::getBounds($width, $height, $zoom, $bounds->getCenter());
             }
         } else {
             $bounds = Bounds::getBounds($width, $height, $zoom, $latLng);
@@ -112,6 +112,7 @@ class MapManager {
 
         $poi = NULL;
         $bounds = NULL;
+        $center = NULL;
         $card = '';
 
         if ($url !== '') {
@@ -130,9 +131,12 @@ class MapManager {
 
         if ($bounds !== NULL) {
             $zoom = min($zoom, $bounds->getMaxZoom($width, $height));
+            $center = $bounds->getCenter();
+        } else {
+            $center = $poi->latLng();
         }
-
-        $bounds = Bounds::getBounds($width, $height, $zoom, $poi->latLng());
+        
+        $bounds = Bounds::getBounds($width, $height, $zoom, $center);
         $labels = LabelModel::loadDynamic($poi->id());
 
         $labels = [];
@@ -141,7 +145,7 @@ class MapManager {
 
         return [
             'zoom' => $zoom,
-            'center' => $poi->latLng()->toWKT(),
+            'center' => $center->toWKT(),
             'card' => $card,
             'labels' => $labels,
             'action' => 'relabel',

@@ -96,7 +96,8 @@
                     cursor: 'crosshair',
                     cache: true,
                     markerContextMenu: true,
-                    markerClick: true
+                    markerClick: true,
+                    cache: true
                 });
 
                 var hash = getHashCommand();
