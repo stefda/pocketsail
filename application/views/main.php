@@ -153,15 +153,19 @@
 
                 map.addListener('click', function (e) {
                     $('.ps-ui-menu').mapmenu('hide');
-                    map.setPoiId(0);
-                    map.setPoiUrl('');
-                    map.setTypes([]);
-                    map.setPoiIds([]);
-                    map.hideCard();
-                    map.loadData('normal', function(res) {
-                        map.handleResult(res);
-                    });
+//                    map.setPoiId(0);
+//                    map.setPoiUrl('');
+//                    map.setTypes([]);
+//                    map.setPoiIds([]);
+//                    map.hideCard();
+//                    map.loadData('normal', function(res) {
+//                        map.handleResult(res);
+//                    });
                     $('#searchInput').val('');
+                });
+                
+                map.addListener('mouseup', function (e) {
+                    map.ignoreClick = false;
                 });
 
                 map.addListener('drag', function (e) {

@@ -41,9 +41,11 @@ function Map(o) {
         };
     }
 
+    this.dragStarted = false;
+
     if (o.markerClick !== undefined && o.markerClick) {
         this.markerClick = function (marker, pos) {
-            
+
             if (this.ignoreClick) {
                 this.ignoreClick = false;
                 return;
@@ -354,15 +356,11 @@ function Map(o) {
             this.map.fitBounds(bounds);
         }
 
-        // Load data on the first idle
         google.maps.event.addListener(this.map, 'idle', function () {
 
             if (this_.init) {
                 this_.init = false;
                 this_.ready !== null ? this_.ready(this_) : false;
-//                this_.loadData('normal', function (res) {
-//                    this_.handleResult(res);
-//                });
             }
 
             if (this_.cache) {
@@ -378,6 +376,26 @@ function Map(o) {
                 this_.handleResult(res);
             });
             this_.ignoreClick = true;
+            this_.dragStarted = false;
+        });
+
+        google.maps.event.addListener(this.map, 'click', function () {
+
+            // Reset all data
+            this_.hideCard();
+            this_.setPoiId(0);
+            this_.setPoiUrl('');
+            this_.setPoiIds([]);
+            this_.setTypes([]);
+
+            // Start anew
+            this_.loadData('normal', function (res) {
+                this_.handleResult(res);
+            });
+        });
+
+        google.maps.event.addListener(this.map, 'mouseup', function () {
+            this_.map.ignoreClick = false;
         });
 
         google.maps.event.addListener(this.map, 'zoom_changed', function () {
