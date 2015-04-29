@@ -5,6 +5,9 @@ function Labeller() {
 
 Labeller.doLabelling = function(labels) {
 
+    var top = labels.shift();
+    top.important = true;
+
     for (var i = 0; i < labels.length - 1; i++) {
         if (!labels[i].canOverlap()) {
             continue;
@@ -22,4 +25,6 @@ Labeller.doLabelling = function(labels) {
             }
         }
     }
+    
+    labels.unshift(top);
 };

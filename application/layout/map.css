@@ -23,6 +23,8 @@ body { height: 100%; margin: 0; padding: 0 }
 .label.channel .text { color: #5676a2; }
 .label.town .text { text-transform: uppercase; }
 
+.label.important { z-index: 9999 !important; }
+
 /* 006699 */
 
 .icon { cursor: default; z-index: 96; background-image: url('/application/images/marker-icons.png'); }

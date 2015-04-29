@@ -1,8 +1,10 @@
 <?php
 
 define('GEO_R', 6371);
+define('GEO_2_Y_LIM', 3.1313013314716462 * 2);
 define('GEO_TILE_SIZE', 256);
 define('GEO_2_PI', 2 * M_PI);
+define('GEO_ZOOMPREC', 3);
 
 function merLat($lat) {
     return Geo::mercatorLat($lat);

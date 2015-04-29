@@ -93,6 +93,7 @@ class API extends CL_Controller {
         // Optional params, need to normalise if not present
         $types = filter_input(INPUT_POST, 'types', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
         $poiId = filter_input(INPUT_POST, 'poiId', FILTER_VALIDATE_INT);
+        $poiUrl = filter_input(INPUT_POST, 'poiUrl', FILTER_SANITIZE_STRING);
         $poiIds = filter_input(INPUT_POST, 'poiIds', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
         $flags = filter_input(INPUT_POST, 'flags', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
@@ -121,10 +122,17 @@ class API extends CL_Controller {
             'flags' => []
         ];
 
-        if ($poiId !== 0 && !hasFlag($flags, 'excludePoiLabel')) {
+        if (($poiId !== 0 || $poiUrl !== '') && !hasFlag($flags, 'excludePoiLabel')) {
 
-            $poi = POIModel::load($poiId);
-            $res['labels'][] = LabelModel::loadDynamic($poiId);
+            $poi = NULL;
+            
+            if ($poiId !== 0) {
+                $poi = POIModel::load($poiId);
+            } else {
+                $poi = POIModel::loadByUrl($poiUrl);
+            }
+            
+            $res['labels'][] = LabelModel::loadDynamic($poi->id());
             $res['poi'] = [];
             addFlag($res, 'doLabelling');
 
@@ -207,7 +215,7 @@ class API extends CL_Controller {
             addFlag($res, 'doLabelling');
         }
 
-        if ($poiId !== 0 || $types !== NULL && count($types) > 0) {
+        if (($poiId !== 0 || $poiUrl !== '') || $types !== NULL && count($types) > 0) {
             $bounds = $vBounds->toBounds();
             $exceptIds = array_merge($poiIds, [$poiId]);
             addLabels($res, LabelModel::loadStaticDynamicByBounds($bounds, $zoom, $exceptIds, $types));

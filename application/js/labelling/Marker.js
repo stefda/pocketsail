@@ -1,8 +1,9 @@
 function Marker(o) {
 
     this.psMap = o.map;
-    this.map = o.map.googleMap;
+    this.map = o.map.map;
     this.label = o.label;
+    this.url = o.label.url;
     this.id = this.label.id;
     this.text = o.label.text;
     this.latLng = this.label.latLng.toGoogleLatLng();
@@ -20,6 +21,10 @@ Marker.prototype.onAdd = function () {
     this.div_.style.position = 'absolute';
     this.div_.className = 'label ' + this.label.sub;
     this.getPanes().floatPane.appendChild(this.div_);
+    
+    if (this.label.important) {
+        this.div_.className = this.div_.className + " important";
+    }
 
     if (this.label.hasText()) {
         this.buildText();

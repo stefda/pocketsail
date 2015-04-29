@@ -3,6 +3,7 @@
 class LabelModel implements JsonSerializable {
 
     public $id;
+    public $url;
     public $text;
     public $cat;
     public $sub;
@@ -13,6 +14,7 @@ class LabelModel implements JsonSerializable {
     public function __construct($o, $type) {
 
         $this->id = $o->id;
+        $this->url = $o->url;
         $this->text = $o->text;
         $this->cat = $o->cat;
         $this->sub = $o->sub;
@@ -46,6 +48,23 @@ class LabelModel implements JsonSerializable {
                 ->from('label_dynamic')->alias('ld')
                 ->leftJoin('label_dynamic_descriptor')->alias('ldd')->on('sub')
                 ->where('id', EQ, $id)
+                ->exec();
+
+        return LabelModel::fromObject($r->fetchObject(), 'selected');
+    }
+    
+    /**
+     * @param int $id
+     * @return \LabelModel|null
+     */
+    public static function loadDynamicByUrl($url) {
+
+        $r = db()->select()
+                ->all('ld')
+                ->col('desc', 'ldd')
+                ->from('label_dynamic')->alias('ld')
+                ->leftJoin('label_dynamic_descriptor')->alias('ldd')->on('sub')
+                ->where('url', EQ, $url)
                 ->exec();
 
         return LabelModel::fromObject($r->fetchObject(), 'selected');
@@ -263,6 +282,7 @@ class LabelModel implements JsonSerializable {
     public function jsonSerialize() {
         return [
             'id' => $this->id,
+            'url' => $this->url,
             'text' => $this->text,
             'cat' => $this->cat,
             'sub' => $this->sub,

@@ -1,7 +1,8 @@
 
-function Label(id, text, cat, sub, latLng, desc, shapes, bShape) {
+function Label(id, url, text, cat, sub, latLng, desc, shapes, bShape) {
 
     this.id = id;
+    this.url = url;
     this.text = text;
     this.cat = cat;
     this.sub = sub;
@@ -104,6 +105,7 @@ Label.deserialize = function(label, zoom) {
 
     var id = label.id;
     var text = label.text;
+    var url = label.url;
     var cat = label.cat;
     var sub = label.sub;
     var latLng = LatLng.fromWKT(label.latLng);
@@ -111,7 +113,7 @@ Label.deserialize = function(label, zoom) {
 
     if (label.type === 'static') {
         var shapes = LabelShape.buildShapes(desc);
-        return new Label(id, text, cat, sub, latLng, desc, shapes, null);
+        return new Label(id, url, text, cat, sub, latLng, desc, shapes, null);
     }
 
     var pos = Projector.mercator(latLng, zoom);
@@ -122,5 +124,5 @@ Label.deserialize = function(label, zoom) {
         shapes[i].wrapAroundPlane(planeWidth);
     }
     bShape.wrapAroundPlane(planeWidth);
-    return new Label(id, text, cat, sub, latLng, desc, shapes, bShape);
+    return new Label(id, url, text, cat, sub, latLng, desc, shapes, bShape);
 };

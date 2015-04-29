@@ -11,16 +11,19 @@ function Map(o) {
     var cursor = o.cursor === undefined ? 'auto' : o.cursor;
     var border = o.border;
 
-    this.cache = o.cache !== undefined ? o.cache : false;
-    this.types = o.types !== undefined ? o.types : [];
-    this.poiId = o.poiId !== undefined ? o.poiId : 0;
-    this.poiIds = o.poiIds !== undefined ? o.poiIds : [];
-    this.flags = o.flags !== undefined ? o.flags : [];
+    this.id = 0;
+    this.url = '';
+    this.ids = [];
+    this.types = [];
+
+//    this.cache = o.cache !== undefined ? o.cache : false;
     this.ignoreZoomChange = false;
+    this.ignoreHash = false;
     this.init = true;
+    this.labels = [];
     this.markers = {};
-    this.newMarkers = {};
-    this.googleMap = null;
+    this.map = null;
+    this.ready = null;
 
     this.markerContextmenu = function (marker, pos) {
 
@@ -29,7 +32,7 @@ function Map(o) {
             left: pos.x,
             select: function (e, ui) {
                 if (ui.item.value === 'edit') {
-                    window.location = '/poi/edit?poiId=' + marker.id
+                    window.location = '/poi/edit?poiId=' + marker.id;
                 }
             }
         });
@@ -37,84 +40,207 @@ function Map(o) {
 
     this.markerClick = function (marker, pos) {
 
-        this_.setPoiId(marker.id);
+        this.id = marker.id;
+        this.url = marker.url;
+        this.ids = [];
+        this.types = [];
 
-        APIBroker.loadData({
+        API2Broker.loadData({
             post: {
-                vBounds: this_.getViewBounds().toWKT(),
-                zoom: this_.getZoom(),
-                poiId: marker.id,
-                flags: ['panToPoi', 'poiInfo', 'poiCard']
+                width: this.getWidth(),
+                height: this.getHeight(),
+                zoom: this.getZoom(),
+                center: this.getCenter().toWKT(),
+                id: marker.id,
+                url: marker.url,
+                action: 'click'
             },
             success: function (res) {
+                this_.ignoreHash = true;
+                window.location.hash = res.url !== '' ? res.url : res.id;
                 this_.handleResult(res);
-                $('#searchInput').val(res.poi.info.name);
             }
         });
     };
 
-    // Assign closure
     var this_ = this;
 
-    /**
-     * @returns {Array}
-     */
+    this.redrawMarkers = function () {
+
+        this.clearMarkers();
+
+        for (var i = 0; i < this.labels.length; i++) {
+            var marker = new Marker({
+                map: this_,
+                label: this.labels[i]
+            });
+            this.addMarker(marker);
+        }
+    };
+
+    this.resetLabels = function (labels) {
+        this.labels = [];
+        for (var i = 0; i < labels.length; i++) {
+            this.labels.push(Label.deserialize(labels[i], this.getZoom()));
+        }
+    };
+
+    this.relabel = function () {
+        Labeller.doLabelling(this.labels);
+    };
+
+    this.processHash = function (hash, callback) {
+        
+        if (this.ignoreHash) {
+            this.ignoreHash = false;
+            return;
+        }
+
+        this.id = hash.id;
+        this.url = hash.url;
+        this.types = hash.types;
+
+        API2Broker.loadData({
+            post: {
+                action: 'hash',
+                width: this.getWidth(),
+                height: this.getHeight(),
+                zoom: hash.zoom === null ? 14 : hash.zoom,
+                center: (hash.lat === null && hash.lng === null) ? null : (new LatLng(hash.lat, hash.lng).toWKT()),
+                id: hash.id,
+                url: hash.url,
+                ids: [],
+                types: hash.types
+            },
+            success: function (res) {
+                callback(res);
+            }
+        });
+    };
+
+    this.loadData = function (action, callback) {
+
+        if (action === undefined) {
+            action = 'normal';
+        }
+
+        API2Broker.loadData({
+            post: {
+                action: action,
+                width: this.getWidth(),
+                height: this.getHeight(),
+                zoom: this.getZoom(),
+                center: this.getCenter().toWKT(),
+                id: this.id,
+                url: this.url,
+                ids: this.ids,
+                types: this.types
+            },
+            success: function (res) {
+                //this_.handleResult(res);
+                callback(res);
+            }
+        });
+    };
+
+    this.updateMap = function (res) {
+        
+        var action = res.action !== undefined ? res.action : '';
+        var zoom = res.zoom === undefined ? this.getZoom() : res.zoom;
+
+        if (res.center !== undefined) {
+            var center = LatLng.fromWKT(res.center);
+            this.panTo(center, zoom);
+        }
+
+        if (res.labels !== undefined) {
+            this.resetLabels(res.labels);
+        }
+
+        if (action === 'relabel') {
+            this.relabel();
+        }
+
+        if (res.card !== undefined && res.card !== '') {
+            this.showCard(res.card);
+        }
+    };
+
+    this.handleResult = function (res) {
+
+        var action = res.action !== undefined ? res.action : '';
+        var zoom = res.zoom === undefined ? this.getZoom() : res.zoom;
+
+        if (res.center !== undefined) {
+            var center = LatLng.fromWKT(res.center);
+            this.panTo(center, zoom);
+        }
+
+        if (res.labels !== undefined) {
+            this.resetLabels(res.labels);
+        }
+
+        if (action === 'relabel') {
+            this.relabel();
+        }
+
+        if (res.card !== undefined && res.card !== '') {
+            this.showCard(res.card);
+        }
+
+        this.redrawMarkers();
+    };
+
+    this.getWidth = function () {
+        return $('#' + canvas).innerWidth();
+    };
+
+    this.getHeight = function () {
+        return $('#' + canvas).innerHeight();
+    };
+
     this.getTypes = function () {
         return this.types;
     };
 
-    /**
-     * @returns {Number}
-     */
     this.getPoiId = function () {
         return this.poiId;
     };
 
-    /**
-     * @returns {Array}
-     */
     this.getPoiIds = function () {
         return this.poiIds;
     };
 
-    /**
-     * @returns {Array}
-     */
     this.getFlags = function () {
         return this.flags;
     };
 
-    /**
-     * @returns {LatLng}
-     */
     this.getCenter = function () {
-        return LatLng.fromGoogleLatLng(this.googleMap.getCenter());
+        return LatLng.fromGoogleLatLng(this.map.getCenter());
     };
 
-    /**
-     * @returns {Number}
-     */
     this.getZoom = function () {
-        return this.googleMap.getZoom();
+        return this.map.getZoom();
     };
 
-    /**
-     * @returns {ViewBounds}
-     */
     this.getViewBounds = function () {
-        return ViewBounds.fromMap(this.googleMap);
+        return ViewBounds.fromMap(this.map);
     };
 
     this.setTypes = function (types) {
         this.types = types;
     };
 
-    this.setPoiId = function (poiId) {
-        this.poiId = poiId;
+    this.setPoiId = function (id) {
+        this.id = id;
     };
 
-    this.setPoiIds = function (poiIds) {
-        this.poiIds = poiIds;
+    this.setPoiUrl = function (url) {
+        this.url = url;
+    };
+
+    this.setPoiIds = function (ids) {
+        this.ids = ids;
     };
 
     this.setFlags = function (flags) {
@@ -136,35 +262,6 @@ function Map(o) {
         this.markers = [];
     };
 
-    this.clearNewMarkers = function () {
-        for (var i = 0; i < this.newMarkers.length; i++) {
-            this.newMarkers[i].setMap(null);
-        }
-        this.newMarkers = [];
-    };
-
-    this.loadData = function (flags) {
-
-        // Normalise flags
-        if (flags === undefined) {
-            flags = [];
-        }
-
-        APIBroker.loadData({
-            post: {
-                vBounds: ViewBounds.fromMap(this.googleMap).toWKT(),
-                zoom: this.getZoom(),
-                types: this.getTypes(),
-                poiId: this.getPoiId(),
-                poiIds: this.getPoiIds(),
-                flags: this.getFlags().concat(flags)
-            },
-            success: function (res) {
-                this_.handleResult(res);
-            }
-        });
-    };
-
     this.showCard = function (html) {
         $('#card').html(html);
         $('#card').show();
@@ -174,88 +271,22 @@ function Map(o) {
         $('#card').hide();
     };
 
-    /**
-     * @param {Object} res
-     */
-    this.handleResult = function (res) {
-
-        var labels = res.labels;
-        var flags = res.flags;
-
-        if (flags.indexOf('panToCenter') !== -1) {
-            if (res.center !== undefined && res.zoom !== undefined) {
-                var center = LatLng.fromWKT(res.center);
-                var zoom = res.zoom;
-                this.panTo(center, zoom);
-            }
-        }
-
-        for (var i = 0; i < labels.length; i++) {
-            labels[i] = Label.deserialize(labels[i], this.getZoom());
-        }
-
-        if (flags.indexOf('doLabelling') !== -1) {
-            Labeller.doLabelling(labels);
-        }
-        
-        if (flags.indexOf('showCard') !== -1) {
-//            console.log(res);
-            this.showCard(res.poi.card);
-        }
-
-        this.clearMarkers();
-        this.clearNewMarkers();
-
-        for (var i = 0; i < labels.length; i++) {
-            var marker = new Marker({
-                map: this_,
-                label: labels[i]
-            });
-            this.addMarker(marker);
-        }
-//
-//        // Display new markers
-//        if (res.new !== undefined) {
-//            for (var i = 0; i < res.new.length; i++) {
-//                var poi = res.new[i];
-//                var position = LatLng.fromWKT(poi.latLng).toGoogleLatLng();
-//                console.log(poi);
-//                marker = new google.maps.Marker({
-//                    map: this.googleMap,
-//                    position: position
-//                });
-//                this.addNewMarker(marker);
-//            }
-//        }
-    };
-
-    /**
-     * @param {Number} zoom
-     */
     this.setZoom = function (zoom) {
         this.ignoreZoomChange = true;
-        this.googleMap.setZoom(zoom);
+        this.map.setZoom(zoom);
     };
 
-    /**
-     * @param {LatLng} center
-     */
     this.setCenter = function (center) {
-        //this.googleMap.setCenter(center.toGoogleLatLng());
-        this.googleMap.panTo(center.toGoogleLatLng());
+        this.map.panTo(center.toGoogleLatLng());
     };
 
-    /**
-     * @param {LatLng} center
-     * @param {Number} zoom
-     */
     this.panTo = function (center, zoom) {
         this.setZoom(zoom);
         this.setCenter(center);
     };
 
     this.addListener = function (type, fx) {
-        google.maps.event.addListener(this.googleMap, type, function (e) {
+        google.maps.event.addListener(this.map, type, function (e) {
             fx.call(this, e);
         });
     };
@@ -287,7 +318,7 @@ function Map(o) {
         var PS_MAPTYPE_ID = 'PocketSail';
 
         // Create new map
-        this.googleMap = new google.maps.Map(document.getElementById(canvas), {
+        this.map = new google.maps.Map(document.getElementById(canvas), {
             zoom: zoom,
             center: center.toGoogleLatLng(),
             panControl: false,
@@ -304,21 +335,24 @@ function Map(o) {
         });
 
         // Set map to custom style
-        this.googleMap.mapTypes.set(PS_MAPTYPE_ID, styledMap);
-        this.googleMap.setMapTypeId(PS_MAPTYPE_ID);
+        this.map.mapTypes.set(PS_MAPTYPE_ID, styledMap);
+        this.map.setMapTypeId(PS_MAPTYPE_ID);
 
         // Fit map to given border, if
         if (border) {
             var bounds = border.toGoogleBounds();
-            this.googleMap.fitBounds(bounds);
+            this.map.fitBounds(bounds);
         }
 
         // Load data on the first idle
-        google.maps.event.addListener(this.googleMap, 'idle', function () {
-            // Skip all idles except the first one
+        google.maps.event.addListener(this.map, 'idle', function () {
+
             if (this_.init) {
                 this_.init = false;
-                this_.loadData();
+                this_.ready !== null ? this_.ready(this_) : false;
+//                this_.loadData('normal', function (res) {
+//                    this_.handleResult(res);
+//                });
             }
 
             if (this_.cache) {
@@ -329,39 +363,20 @@ function Map(o) {
             }
         });
 
-//        google.maps.event.addListener(this.googleMap, 'maptypeid_changed', function() {
-//            if (this.getMapTypeId() === 'hybrid') {
-//                $('#mapStyle').attr('href', '/application/layout/map-satellite.css');
-//                this_.googleMap.setOptions({
-//                    styles: [{
-//                            featureType: "all",
-//                            elementType: "labels",
-//                            stylers: [{visibility: "off"}]
-//                        },
-//                        {
-//                            featureType: "road",
-//                            stylers: [{visibility: "off"}]}
-//                    ]
-//                });
-//            } else {
-//                $('#mapStyle').attr('href', '/application/layout/map.css');
-//            }
-//        });
-
-        google.maps.event.addListener(this.googleMap, 'dragend', function () {
-            this_.loadData();
+        google.maps.event.addListener(this.map, 'dragend', function () {
+            this_.loadData('normal', function (res) {
+                this_.handleResult(res);
+            });
         });
 
-        // Load data on zoom_change
-        google.maps.event.addListener(this.googleMap, 'zoom_changed', function () {
+        google.maps.event.addListener(this.map, 'zoom_changed', function () {
             if (this_.ignoreZoomChange) {
                 this_.ignoreZoomChange = false;
                 return;
             }
-            this_.loadData();
+            this_.loadData('normal', function (res) {
+                this_.handleResult(res);
+            });
         });
     };
-
-    // Initialise google map
-    this.initGoogleMap();
 }

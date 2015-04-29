@@ -10,8 +10,49 @@ class Test extends CL_Controller {
         echo "Test::index";
     }
     
-    function non() {
-        echo ctype_upper("a");
+    function cool() {
+        
+        $this->load->model('POIModel');
+        $this->load->model('LabelModel');
+        $this->load->library('MapManager');
+        $this->load->library('geo/*');
+        
+        $width = 900;
+        $height = 600;
+        $zoom = 14;
+        $latLng = new LatLng(43.3266, 16.4465);
+        $id = 0;
+        $url = 'marina-tankerkomerc-zadar';
+        $types = ['anchorage'];
+        
+        $mm = new MapManager();
+        
+        //print_r($mm->click(900, 600, 14, 15));
+        print_r($mm->search($width, $height, $zoom, $latLng, $id, $url, $types));
+    }
+    
+    function geo2() {
+        $this->load->view("geo2");
+    }
+    
+    function geo() {
+        $this->load->library('geo/*');
+//        $bounds = new Bounds(new LatLng(0, 0), new LatLng(10, 10));
+        $bounds = (new ViewBounds(new LatLng(0, 0), new LatLng(10, 10)))->toBounds();
+        echo $bounds->getMaxZoom(1, 1);
+    }
+    
+    function hash() {
+        $this->load->library('geo/*');
+        $this->load->model('POIModel');
+        $this->load->view('hash');
+        $poi = POIModel::loadByUrl('luka-rogac-harbour-berths');
+        print_r($poi);
+    }
+    
+    function html() {
+        $this->load->helper('html');
+        echo html("**Heading**\nasd\n[Ciovo Les|/google.com]");
     }
 
     function save_image() {

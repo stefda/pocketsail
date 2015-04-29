@@ -20,7 +20,6 @@ a:hover { text-decoration: underline; }
 #infoMenu .sub { background-color: #f0f1f2; }
 #infoMenu .sub a { font-size: 13px; margin-left: 25px; }
 #infoMenu .sub a:hover { border-right: none; }
-
 #infoMenu .icon { display: block; float: left; margin-left: 5px; width: 12px; height: 18px; background-repeat: no-repeat; }
 #infoMenu .label { margin-left: 8px; }
 #infoMenu .icon.ps-ui-menu { background-image: url('/application/images/menu-icon.png'); }
@@ -60,3 +59,5 @@ a:hover { text-decoration: underline; }
     width: 512px;
     width: 100%;
 }
+
+.label.important { z-index: 9999 !important; }

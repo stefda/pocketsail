@@ -10,6 +10,7 @@
         <script src="/application/js/jquery/ajax.js"></script>
         <script src="/application/js/jquery/utils.js"></script>
         <script src="/application/js/brokers/APIBroker.js"></script>
+        <script src="/application/js/brokers/API2Broker.js"></script>
         <script src="/application/js/brokers/AdminBroker.js"></script>
         <script src="/application/js/geo/Geo.js"></script>
         <script src="/application/js/geo/Point.js"></script>
@@ -57,7 +58,36 @@
 
         <script>
 
-            var focusedMarker = null;
+            function getHashCommand() {
+
+                var hash = window.location.hash;
+                var params = hash.split(',');
+
+                var id = params[0].substring(1, params[0].length);
+                var poiId = 0;
+                var poiUrl = '';
+
+                if (isNaN(parseInt(id))) {
+                    poiUrl = id;
+                } else {
+                    poiId = parseInt(id);
+                }
+
+                var lat = parseFloat(params[1]);
+                var lng = parseFloat(params[2]);
+                var zoom = parseInt(params[3]);
+                var types = params.slice(4, params.length);
+
+                // Build and return command object
+                return {
+                    id: poiId,
+                    url: poiUrl,
+                    lat: isNaN(lat) ? null : lat,
+                    lng: isNaN(lng) ? null : lng,
+                    zoom: isNaN(zoom) ? null : zoom,
+                    types: types
+                };
+            }
 
             $(function () {
 
@@ -67,7 +97,32 @@
                     cache: true
                 });
 
-                map.setFlags(['newPois']);
+                var hash = getHashCommand();
+
+                if (hash.id !== 0 || hash.url !== '' || (hash.lat !== null && hash.lng !== null && hash.zoom !== null)) {
+                    map.processHash(hash, function (res) {
+                        map.updateMap(res);
+                    });
+                    map.ready = function (map) {
+                        map.redrawMarkers();
+                    };
+                    map.initGoogleMap();
+                } else {
+                    map.ready = function (map) {
+                        map.loadData('normal', function(res) {
+                            map.updateMap(res);
+                            map.redrawMarkers();
+                        });
+                    };
+                    map.initGoogleMap();
+                }
+                
+                window.onhashchange = function() {
+                    map.processHash(getHashCommand(), function (res) {
+                        map.updateMap(res);
+                        map.redrawMarkers();
+                    });
+                };
 
                 map.addListener('rightclick', function (e) {
 
@@ -96,9 +151,13 @@
                 map.addListener('click', function (e) {
                     $('.ps-ui-menu').mapmenu('hide');
                     map.setPoiId(0);
+                    map.setPoiUrl('');
                     map.setTypes([]);
+                    map.setPoiIds([]);
                     map.hideCard();
-                    map.loadData();
+                    map.loadData('normal', function(res) {
+                        map.handleResult(res);
+                    });
                     $('#searchInput').val('');
                 });
 
@@ -167,19 +226,23 @@
                         var poiBrief = ui.item.poi;
                         var types = ui.item.types;
 
-                        var poiId = poiBrief === null ? 0 : poiBrief.id;
+                        var id = poiBrief === null ? 0 : poiBrief.id;
                         var types = types === null ? [] : types;
 
                         map.setTypes(types);
-                        map.setPoiId(poiId);
+                        map.setPoiId(id);
 
-                        APIBroker.loadData({
+                        API2Broker.loadData({
                             post: {
-                                vBounds: map.getViewBounds().toWKT(),
+                                action: 'search',
+                                width: map.getWidth(),
+                                height: map.getHeight(),
                                 zoom: map.getZoom(),
-                                poiId: poiId,
-                                types: types,
-                                flags: ['panToPoi', 'zoomToTypes', 'poiInfo', 'poiCard']
+                                center: map.getCenter().toWKT(),
+                                id: id,
+                                url: '',
+                                ids: [],
+                                types: types
                             },
                             success: function (res) {
                                 map.handleResult(res);
@@ -255,7 +318,7 @@
 
         <div id="canvas" style="position: absolute; width: 100%; top: 60px; bottom: 0; height: auto;">
         </div>
-        
+
         <div id="card" style="position: absolute; left: 20px; top: 80px; width: 350px; height: 180px; background-color: #fff; border-radius: 3px; box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.3);"></div>
 
         <div id="zoomOut" style="font-family: Arial; font-size: 14px; position: absolute; bottom: 22px; right: 40px; background-color: #fff; border: solid 1px #bbb; border-radius: 2px; box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.3); padding: 3px 5px;">10</div>
