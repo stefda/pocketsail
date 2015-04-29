@@ -21,7 +21,7 @@ Marker.prototype.onAdd = function () {
     this.div_.style.position = 'absolute';
     this.div_.className = 'label ' + this.label.sub;
     this.getPanes().floatPane.appendChild(this.div_);
-    
+
     if (this.label.important) {
         this.div_.className = this.div_.className + " important";
     }
@@ -42,8 +42,10 @@ Marker.prototype.onAdd = function () {
             x: e.clientX,
             y: e.clientY
         };
-        this_.psMap.markerContextmenu(this_, position);
-        e.preventDefault();
+        if (this_.psMap.markerContextmenu !== undefined) {
+            this_.psMap.markerContextmenu(this_, position);
+            e.preventDefault();
+        }
     });
 
     google.maps.event.addDomListener(this.div_, 'click', function (e) {
@@ -51,8 +53,10 @@ Marker.prototype.onAdd = function () {
             x: e.clientX,
             y: e.clientY
         };
-        this_.psMap.markerClick(this_, position);
-        e.preventDefault();
+        if (this_.psMap.markerClick !== undefined) {
+            this_.psMap.markerClick(this_, position);
+            e.preventDefault();
+        }
     });
 };
 

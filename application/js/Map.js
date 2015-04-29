@@ -25,43 +25,47 @@ function Map(o) {
     this.map = null;
     this.ready = null;
 
-    this.markerContextmenu = function (marker, pos) {
+    if (o.markerContextMenu !== undefined && o.markerContextMenu) {
+        this.markerContextmenu = function (marker, pos) {
 
-        $('#editMenu').mapmenu({
-            top: pos.y,
-            left: pos.x,
-            select: function (e, ui) {
-                if (ui.item.value === 'edit') {
-                    window.location = '/poi/edit?poiId=' + marker.id;
+            $('#editMenu').mapmenu({
+                top: pos.y,
+                left: pos.x,
+                select: function (e, ui) {
+                    if (ui.item.value === 'edit') {
+                        window.location = '/poi/edit?poiId=' + marker.id;
+                    }
                 }
-            }
-        });
-    };
+            });
+        };
+    }
 
-    this.markerClick = function (marker, pos) {
+    if (o.markerClick !== undefined && o.markerClick) {
+        this.markerClick = function (marker, pos) {
 
-        this.id = marker.id;
-        this.url = marker.url;
-        this.ids = [];
-        this.types = [];
+            this.id = marker.id;
+            this.url = marker.url;
+            this.ids = [];
+            this.types = [];
 
-        API2Broker.loadData({
-            post: {
-                width: this.getWidth(),
-                height: this.getHeight(),
-                zoom: this.getZoom(),
-                center: this.getCenter().toWKT(),
-                id: marker.id,
-                url: marker.url,
-                action: 'click'
-            },
-            success: function (res) {
-                this_.ignoreHash = true;
-                window.location.hash = res.url !== '' ? res.url : res.id;
-                this_.handleResult(res);
-            }
-        });
-    };
+            API2Broker.loadData({
+                post: {
+                    width: this.getWidth(),
+                    height: this.getHeight(),
+                    zoom: this.getZoom(),
+                    center: this.getCenter().toWKT(),
+                    id: marker.id,
+                    url: marker.url,
+                    action: 'click'
+                },
+                success: function (res) {
+                    this_.ignoreHash = true;
+                    window.location.hash = res.url !== '' ? res.url : res.id;
+                    this_.handleResult(res);
+                }
+            });
+        };
+    }
 
     var this_ = this;
 
@@ -90,7 +94,7 @@ function Map(o) {
     };
 
     this.processHash = function (hash, callback) {
-        
+
         if (this.ignoreHash) {
             this.ignoreHash = false;
             return;
@@ -144,7 +148,7 @@ function Map(o) {
     };
 
     this.updateMap = function (res) {
-        
+
         var action = res.action !== undefined ? res.action : '';
         var zoom = res.zoom === undefined ? this.getZoom() : res.zoom;
 

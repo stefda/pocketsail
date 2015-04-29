@@ -94,7 +94,9 @@
                 var map = new Map({
                     canvas: 'canvas',
                     cursor: 'crosshair',
-                    cache: true
+                    cache: true,
+                    markerContextMenu: true,
+                    markerClick: true
                 });
 
                 var hash = getHashCommand();
