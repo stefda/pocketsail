@@ -12,6 +12,7 @@
 
         <script src="/application/js/brokers/APIBroker.js"></script>
         <script src="/application/js/brokers/POIBroker.js"></script>
+        <script src="/application/js/brokers/API2Broker.js"></script>
 
         <script src="/application/js/geo/Geo.js"></script>
         <script src="/application/js/geo/Point.js"></script>
@@ -37,7 +38,6 @@
         <script src="/application/js/jquery/jquery-autosize.js"></script>
         <script src="/application/js/jquery/jquery-plugins.js"></script>
         <script src="/application/js/jquery/ajax.js"></script>
-        <script src="/application/js/brokers/TestBroker.js"></script>
         <script src="/application/js/geo/Point.js"></script>
         <script src="/application/js/geo/LatLng.js"></script>
         <script src="/application/js/geo/Polygon.js"></script>
@@ -61,10 +61,12 @@
                     zoom: 16,
                     border: border
                 });
+                
+                map.initGoogleMap();
 
                 // Show latLng marker
                 var marker = new google.maps.Marker({
-                    map: map.googleMap,
+                    map: map.map,
                     position: latLng.toGoogleLatLng(),
                     draggable: true
                 });
@@ -81,7 +83,7 @@
                 if (border !== null) {
 
                     var polygon = new google.maps.Polygon({
-                        map: map.googleMap,
+                        map: map.map,
                         path: border.toGooglePath(),
                         clickable: true,
                         editable: true,
@@ -96,7 +98,7 @@
                             // Replace back to polyline when only one vertex
                             if (this.getPath().length === 1) {
                                 polyline.setPath(this.getPath());
-                                polyline.setMap(map.googleMap);
+                                polyline.setMap(map.map);
                                 polygon.setMap(null);
                                 polygon = null;
                             }
@@ -104,13 +106,13 @@
                     });
                 }
 
-                google.maps.event.addListener(map.googleMap, 'click', function(e) {
+                google.maps.event.addListener(map.map, 'click', function(e) {
 
                     if (polyline === null) {
 
                         // Create new polyline
                         polyline = new google.maps.Polyline({
-                            map: map.googleMap,
+                            map: map.map,
                             editable: true,
                             clickable: true,
                             strokeColor: 'red',
@@ -131,7 +133,7 @@
 
                                 // Create replacement polygon
                                 polygon = new google.maps.Polygon({
-                                    map: map.googleMap,
+                                    map: map.map,
                                     path: polyline.getPath(),
                                     clickable: true,
                                     editable: true,
@@ -150,7 +152,7 @@
                                         // Replace back to polyline when only one vertex
                                         if (this.getPath().length === 1) {
                                             polyline.setPath(this.getPath());
-                                            polyline.setMap(map.googleMap);
+                                            polyline.setMap(map.map);
                                             polygon.setMap(null);
                                             polygon = null;
                                         }
@@ -234,7 +236,7 @@
                         $('#canvasWrapper').css('width', '100%');
                     }
 
-                    google.maps.event.trigger(map.googleMap, 'resize');
+                    google.maps.event.trigger(map.map, 'resize');
                     map.setCenter(center);
                 });
 
