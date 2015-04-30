@@ -1,7 +1,5 @@
 <?php
 
-require SYSPATH . "libraries/doctrine/Common/ClassLoader.php";
-
 /**
  * @author David Stefan
  */
@@ -23,7 +21,7 @@ class CL_Database {
         $password = $config->get_value('database', "{$type}_password");
         $database = $config->get_value('database', "{$type}_database");
 
-        $dbalConfig = new \Doctrine\DBAL\Configuration();
+        $dbalConfig = new Doctrine\DBAL\Configuration();
 
         $connParams = array(
             'dbname' => $database,
@@ -33,7 +31,7 @@ class CL_Database {
             'driver' => "pdo_{$type}"
         );
 
-        $this->conn = \Doctrine\DBAL\DriverManager::getConnection($connParams, $dbalConfig);
+        $this->conn = Doctrine\DBAL\DriverManager::getConnection($connParams, $dbalConfig);
     }
     
     public function begin() {

@@ -5,6 +5,10 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
+    
+    function mysql() {
+        $mysql = get_mysql();
+    }
 
     function index() {
         $this->load->model('PhotoModel');

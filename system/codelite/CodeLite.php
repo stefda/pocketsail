@@ -8,6 +8,7 @@ if (!defined('SYSPATH'))
  */
 
 function __autoload($name) {
+    $name = str_replace('\\', DIRECTORY_SEPARATOR, $name);
     require_once SYSPATH . 'libraries/' . $name . '.php';
 }
 
