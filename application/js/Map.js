@@ -397,6 +397,8 @@ function Map(o) {
         google.maps.event.addListener(this.map, 'mouseup', function () {
             this_.map.ignoreClick = false;
         });
+        
+//        google.maps.event.addListener(this.map)
 
         google.maps.event.addListener(this.map, 'zoom_changed', function () {
             if (this_.ignoreZoomChange) {
