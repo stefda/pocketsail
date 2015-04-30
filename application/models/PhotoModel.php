@@ -65,10 +65,10 @@ class PhotoModel {
             'description' => $description
         ]);
         $id = $mysql->insert_id();
-        image_write($full, BASEPATH . 'data/images/full/' . $id . '.jpg');
-        image_write($preview, BASEPATH . 'data/images/preview/' . $id . '.jpg');
-        image_write($gallery, BASEPATH . 'data/images/gallery/' . $id . '.jpg');
-        image_write($thumb, BASEPATH . 'data/images/thumb/' . $id . '.jpg');
+        image_write($full, BASEPATH . 'data/photos/full/' . $id . '.jpg');
+        image_write($preview, BASEPATH . 'data/photos/preview/' . $id . '.jpg');
+        image_write($gallery, BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
+        image_write($thumb, BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
     }
 
 }
