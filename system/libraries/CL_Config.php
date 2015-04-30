@@ -45,8 +45,11 @@ class CL_Config {
         $item = @$config[$key];
         return $item === NULL ? NULL : $item;
     }
+    
+    public function get_value($file, $key) {
+        $config = $this->get_config($file);
+        $item = @$config[$key];
+        return $item === NULL ? NULL : $item;
+    }
 
 }
-
-/* End of file CL_Config.php */
-/* Location: /system/libraries/CL_Config.php */

@@ -7,7 +7,26 @@ class Test extends CL_Controller {
     }
 
     function index() {
-        echo "Test::index";
+        $this->load->model('PhotoModel');
+//        $photo = new PhotoModel(4);
+//        print_r(PhotoModel::get_info(2));
+//        echo $photo->get_main_id();
+//        PhotoModel::set_info(1, [
+//            'title' => 'Titulecek',
+//            'description' => 'Jelen'
+//        ]);
+        $mysql = get_mysql();
+        $res = $mysql->insert('photo_info', [
+            'poiId' => 23,
+            'title' => '',
+            'description' => 'asd',
+            'main' => FALSE
+        ]);
+        echo $mysql->insert_id();
+    }
+    
+    function photo() {
+        $this->load->view('photo');
     }
 
     function files() {

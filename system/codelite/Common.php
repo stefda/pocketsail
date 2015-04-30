@@ -1,7 +1,10 @@
 <?php
 
-if (!defined('SYSPATH')) {
-    exit("No direct script access allowed!");
+/**
+ * @return CL_Database
+ */
+function get_mysql() {
+    return CL_MySQL::get_instance();
 }
 
 function aasort(&$array, $key) {
