@@ -35,6 +35,9 @@ function Map(o) {
                 select: function (e, ui) {
                     if (ui.item.value === 'edit') {
                         window.location = '/poi/edit?poiId=' + marker.id;
+                    } else {
+                        $('#editMenu').hide();
+                        alert('Not implemented!');
                     }
                 }
             });

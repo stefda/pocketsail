@@ -34,6 +34,23 @@ function image_resize($img, $maxWidth, $maxHeight) {
     return $resized;
 }
 
+function image_resize_width($img, $width) {
+
+    $currentWidth = imagesx($img);
+    $currentHeight = imagesy($img);
+    
+    $newHeight = $currentHeight * ($width / $currentWidth);
+    $newWidth = $width;
+
+    // Create new image container
+    $resized = imagecreatetruecolor($newWidth, $newHeight);
+
+    // Copy resampled for higher quality result
+    imagecopyresampled($resized, $img, 0, 0, 0, 0, $newWidth, $newHeight, $currentWidth, $currentHeight);
+
+    return $resized;
+}
+
 function image_resize_crop($img, $width, $height) {
 
     $currentWidth = imagesx($img);
@@ -54,6 +71,10 @@ function image_resize_crop($img, $width, $height) {
     imagecopy($cropped, $resized, 0, 0, $newWidth / 2 - $width / 2, $newHeight / 2 - $height / 2, $width, $height);
 
     return $cropped;
+}
+
+function image_rotate($img, $angle) {
+    return imagerotate($img, $angle, 0);
 }
 
 function image_write($data, $path) {

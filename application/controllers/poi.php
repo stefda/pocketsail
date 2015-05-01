@@ -88,6 +88,7 @@ class POI extends CL_Controller {
         $this->load->library('geo/*');
         $this->load->model('POIModel');
         $this->load->model('POITypeModel');
+        $this->load->model('PhotoModel');
 
         $poiId = filter_input(INPUT_GET, 'poiId', FILTER_VALIDATE_INT);
 
@@ -112,6 +113,8 @@ class POI extends CL_Controller {
         $this->assign('cats', $cats);
         $this->assign('subs', $subs);
         $this->assign('attrs', $poi->attrs());
+        $this->assign('mainPhotoId', PhotoModel::get_main_id($poi->id()));
+        $this->assign('mainPhotoInfo', PhotoModel::get_main_info($poi->id()));
 
         $this->load->view('templates/edit');
     }

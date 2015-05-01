@@ -78,7 +78,7 @@ class CL_Database {
     }
     
     public function insert_id() {
-        return $this->conn->lastInsertId();
+        return (int) $this->conn->lastInsertId();
     }
 
 }

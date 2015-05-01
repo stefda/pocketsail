@@ -9,6 +9,14 @@ class Test extends CL_Controller {
     function mysql() {
         $mysql = get_mysql();
     }
+    
+    function rotate() {
+        $this->load->helper('image');
+        $img = image_create('C:/dev/images/croatia.jpg');
+        $rotated = imagerotate($img, 90, 30);
+        header('Content-Type: image/jpeg');
+        imagejpeg($rotated);
+    }
 
     function index() {
         $this->load->model('PhotoModel');
