@@ -374,7 +374,6 @@
                 $('#photoUploadFrame').load(function () {
 
                     if (!init) {
-                        console.log('iframe init');
                         init = true;
                         return;
                     }
@@ -396,8 +395,6 @@
                 var galleryVisible = false;
 
                 $('#galleryShowButton').click(function () {
-
-                    console.log(galleryVisible);
 
                     if (galleryVisible) {
                         galleryVisible = false;
@@ -457,7 +454,7 @@
                                 'description': description
                             },
                             success: function (res) {
-                                console.log('set');
+                                //console.log('Description set.');
                             }
                         });
                     });
@@ -539,11 +536,6 @@
                     $('#mainPhotoContainment').innerHeight(photoContainmentHeight);
                     $('#mainPhotoContainment').css('top', photoContainmentOffset);
 
-                    console.log($('#mainPhotoWrapper').css('top'));
-                    console.log(photoHeight);
-                    console.log(photoContainmentHeight);
-                    console.log(photoContainmentOffset);
-
                     if (offset === undefined) {
                         $('#mainPhotoWrapper').css('top', (-photoContainmentOffset / 2) + 'px');
                     } else if (offset !== 'given') {
@@ -566,7 +558,7 @@
                                     'offset': offset
                                 },
                                 success: function (res) {
-                                    console.log(res);
+//                                    console.log(res);
                                 }
                             });
                         }
