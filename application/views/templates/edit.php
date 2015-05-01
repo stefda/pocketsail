@@ -247,7 +247,7 @@
                     }
 
                     google.maps.event.trigger(map.map, 'resize');
-                    map.setCenter(center);
+                    map.setCenterNormal(center);
                 });
 
                 // Load subs for changed cat
@@ -409,7 +409,6 @@
                         },
                         success: function (res) {
                             show_photos(res.ids, res.descriptions);
-                            galleryVisible = true;
                             $('#galleryShowButton').val('Hide all photos');
                         }
                     });
@@ -513,6 +512,7 @@
                     });
 
                     $('#photoPreview').show();
+                    galleryVisible = true;
                 }
 
                 function setMainPhoto(id, offset) {

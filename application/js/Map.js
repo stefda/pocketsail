@@ -291,6 +291,10 @@ function Map(o) {
         this.map.setZoom(zoom);
     };
 
+    this.setCenterNormal = function (center) {
+        this.map.setCenter(center.toGoogleLatLng());
+    };
+
     this.setCenter = function (center) {
         this.map.panTo(center.toGoogleLatLng());
     };
@@ -400,7 +404,7 @@ function Map(o) {
         google.maps.event.addListener(this.map, 'mouseup', function () {
             this_.map.ignoreClick = false;
         });
-        
+
 //        google.maps.event.addListener(this.map)
 
         google.maps.event.addListener(this.map, 'zoom_changed', function () {
