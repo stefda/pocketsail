@@ -264,7 +264,6 @@ $(function () {
         var img = $('<img id="galleryPhoto" src="/data/photos/gallery/' + id + '.jpg" />');
 
         img.load(function () {
-            console.log('asd');
             initMainPhoto();
         });
 
