@@ -19,7 +19,7 @@ class PhotoModel {
         }
         return $ids;
     }
-    
+
     public static function get_infos($poiId) {
         $mysql = get_mysql();
         $res = $mysql->fetch_all("SELECT id, description FROM photo_info WHERE poiId = ?", [$poiId]);
@@ -61,15 +61,6 @@ class PhotoModel {
             'id' => $id
         ]);
     }
-    
-    public static function set_offset($id, $offset) {
-        $mysql = get_mysql();
-        $mysql->update('photo_info', [
-            'offset' => $offset
-                ], [
-            'id' => $id
-        ]);
-    }
 
     public static function get_main_info($poiId) {
         $mysql = get_mysql();
@@ -84,11 +75,27 @@ class PhotoModel {
     }
 
     public static function set_main($id) {
+
         $mysql = get_mysql();
+
+        // Retrieve the id of related POI
         $rows = $mysql->fetch_all("SELECT poiId FROM photo_info WHERE id = $id");
         $poiId = $rows[0]['poiId'];
+
+        // Remove main from current main photo
         $mysql->update('photo_info', ['main' => FALSE, 'offset' => NULL], ['poiId' => $poiId, 'main' => TRUE]);
+
+        // Set main to given photo
         $mysql->update('photo_info', ['main' => TRUE, 'offset' => NULL], ['id' => $id]);
+    }
+
+    public static function set_offset($id, $offset) {
+        $mysql = get_mysql();
+        $mysql->update('photo_info', [
+            'offset' => $offset
+                ], [
+            'id' => $id
+        ]);
     }
 
     public function insert($original, $full, $preview, $gallery, $thumb) {
@@ -100,7 +107,7 @@ class PhotoModel {
             'description' => ''
         ]);
 
-        $id = $mysql->insert_id();
+        $id = $mysql->last_insert_id();
         image_write($original, BASEPATH . 'data/photos/original/' . $id . '.jpg');
         image_write($full, BASEPATH . 'data/photos/full/' . $id . '.jpg');
         image_write($preview, BASEPATH . 'data/photos/preview/' . $id . '.jpg');
@@ -120,6 +127,16 @@ class PhotoModel {
 
     public static function load_original($id) {
         return image_create(BASEPATH . self::PATH . 'original/' . $id . '.jpg');
+    }
+
+    public static function delete($id) {
+        $mysql = get_mysql();
+        $mysql->execute("DELETE FROM photo_info WHERE id = ?", [$id]);
+        unlink(BASEPATH . 'data/photos/original/' . $id . '.jpg');
+        unlink(BASEPATH . 'data/photos/full/' . $id . '.jpg');
+        unlink(BASEPATH . 'data/photos/preview/' . $id . '.jpg');
+        unlink(BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
+        unlink(BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
     }
 
 }

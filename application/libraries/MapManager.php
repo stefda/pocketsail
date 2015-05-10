@@ -2,7 +2,17 @@
 
 class MapManager {
 
-    public function hash($width, $height, $zoom, $latLng, $id, $url, $ids, $types) {
+    private $width;
+    private $height;
+    private $zoom;
+
+    public function __construct($width, $height, $zoom) {
+        $this->width = $width;
+        $this->height = $height;
+        $this->zoom = $zoom;
+    }
+
+    public function load_params($latLng, $id, $url, $ids, $types) {
 
         $bounds = NULL;
         $poi = NULL;
@@ -19,16 +29,16 @@ class MapManager {
             $labels = [LabelModel::loadDynamic($poi->id())];
         }
 
-        if ($latLng === NULL || $zoom === NULL) {
+        if ($latLng === NULL || $this->zoom === NULL) {
             if ($poi->border() === NULL) {
-                $bounds = Bounds::getBounds($width, $height, 14, $poi->latLng());
+                $bounds = Bounds::getBounds($this->width, $this->height, 14, $poi->latLng());
             } else {
                 $bounds = Bounds::fromPolygon($poi->border());
-                $zoom = $bounds->getMaxZoom($width, $height);
-                $bounds = Bounds::getBounds($width, $height, $zoom, $bounds->getCenter());
+                $this->zoom = $bounds->getMaxZoom($this->width, $this->height);
+                $bounds = Bounds::getBounds($this->width, $this->height, $this->zoom, $bounds->getCenter());
             }
         } else {
-            $bounds = Bounds::getBounds($width, $height, $zoom, $latLng);
+            $bounds = Bounds::getBounds($this->width, $this->height, $this->zoom, $latLng);
         }
 
         if (count($types) > 0) {
@@ -56,14 +66,14 @@ class MapManager {
             'center' => $bounds->getCenter()
         ];
     }
-    
-    public function normal($width, $height, $zoom, $latLng, $id, $url, $ids, $types) {
+
+    public function load_default($latLng, $id, $url, $ids, $types) {
 
         $bounds = NULL;
         $poi = NULL;
         $labels = [];
         $action = '';
-        $card = '';
+        $infobox = '';
 
         if ($id !== 0 || $url !== '') {
             if ($url !== '') {
@@ -75,9 +85,9 @@ class MapManager {
         }
 
         if ($latLng === NULL) {
-            $bounds = Bounds::getBounds($width, $height, $zoom, $poi->latLng());
+            $bounds = Bounds::getBounds($this->width, $this->height, $this->zoom, $poi->latLng());
         } else {
-            $bounds = Bounds::getBounds($width, $height, $zoom, $latLng);
+            $bounds = Bounds::getBounds($this->width, $this->height, $this->zoom, $latLng);
         }
 
         if (count($ids) > 0) {
@@ -90,25 +100,25 @@ class MapManager {
 
         if ($poi !== NULL) {
             CL_Output::get_instance()->assign('poi', $poi);
-            $card = view_get_html('templates/card');
+            $infobox = view_get_html('templates/infobox');
         }
 
         if ($poi !== NULL || count($ids) > 0 || count($types) > 0) {
             $exceptIds = $poi !== NULL ? array_merge([$poi->id()], $ids) : $ids;
-            $labels = array_merge($labels, LabelModel::loadStaticDynamicByBounds($bounds, $zoom, $exceptIds, $types));
+            $labels = array_merge($labels, LabelModel::loadStaticDynamicByBounds($bounds, $this->zoom, $exceptIds, $types));
             $action = 'relabel';
         } else {
-            $labels = LabelModel::loadStaticByBounds($bounds, $zoom);
+            $labels = LabelModel::loadStaticByBounds($bounds, $this->zoom);
         }
 
         return [
             'labels' => $labels,
             'action' => $action,
-            'card' => $card
+            'infobox' => $infobox
         ];
     }
 
-    public function click($width, $height, $zoom, $id, $url) {
+    public function load_click($width, $height, $zoom, $id, $url) {
 
         $poi = NULL;
         $bounds = NULL;
@@ -135,7 +145,7 @@ class MapManager {
         } else {
             $center = $poi->latLng();
         }
-        
+
         $bounds = Bounds::getBounds($width, $height, $zoom, $center);
         $labels = LabelModel::loadDynamic($poi->id());
 
@@ -154,7 +164,7 @@ class MapManager {
         ];
     }
 
-    public function search($width, $height, $zoom, $latLng, $id, $url, $types) {
+    public function load_search($width, $height, $zoom, $latLng, $id, $url, $types) {
 
         $poi = NULL;
         $bounds = NULL;

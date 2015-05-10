@@ -29,37 +29,6 @@ class POIIndexModel {
         return json_decode($json);
     }
 
-//    private function raw_search($query, $offset = 0, $limit = 10, $params = array()) {
-//        $res = new stdClass();
-//        $res->items = array();
-//        $res->count = 0;
-//        try {
-//            $data = $this->solr->search($query, $offset, $limit, $params);
-//            $raw = $data->getRawResponse();
-//            $o = json_decode($raw);
-//            $res->numFound = $o->response->numFound;
-//            $res->count = 0;
-//            foreach ($o->response->docs AS $doc) {
-//                $res->items[] = $doc;
-//                $res->count++;
-//            }
-//        }
-//        catch (Apache_Solr_Exception $e) {
-//            show_error($e);
-//        }
-//        return $res;
-//    }
-//
-//    public function search_by_sub($subID, $term, $offset = 0, $limit = 3) {
-//        $query = "name:($term) AND subID=$subID";
-//        return $this->raw_search($query, $offset, $limit);
-//    }
-//    
-//    public function search($term, $offset = 0, $limit = 3) {
-//        $query = "$term";
-//        return $this->raw_search($query, $offset, $limit);
-//    }
-
     public function reload_cache() {
         $url = 'http://' . $this->solr->getHost() . ':' . $this->solr->getPort() . $this->solr->getPath() . 'reloadCache?wt=json';
         return file_get_contents($url);

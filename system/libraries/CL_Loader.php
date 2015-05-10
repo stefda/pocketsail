@@ -9,7 +9,7 @@ class CL_Loader {
     private static $instance = NULL;
     private $out;
 
-    private function CL_Loader() {
+    private function __construct() {
         $this->out = CL_Output::get_instance();
     }
 
@@ -38,7 +38,7 @@ class CL_Loader {
         }
 
         if (!file_exists(APPPATH . 'libraries/' . $library . '.php')) {
-            show_error("Requested library does not exist.", "Loader Error");
+            error("Requested library does not exist.");
         }
         require_once APPPATH . 'libraries/' . $library . '.php';
     }
@@ -46,7 +46,7 @@ class CL_Loader {
     public function test($test) {
 
         if (!file_exists(APPPATH . 'tests/' . $test . '.php')) {
-            show_error("Requested test does not exist.", "Loader Error");
+            error("Requested test does not exist.");
         }
         require_once APPPATH . 'tests/' . $test . '.php';
     }
@@ -54,7 +54,7 @@ class CL_Loader {
     public function helper($helper) {
 
         if (!file_exists(SYSPATH . 'helpers/' . $helper . '.php')) {
-            show_error("Requested helper does not exist.", "Loader Error");
+            error("Requested helper does not exist.");
         }
         require_once SYSPATH . 'helpers/' . $helper . '.php';
     }
@@ -62,7 +62,7 @@ class CL_Loader {
     public function model($model) {
 
         if (!file_exists(APPPATH . 'models/' . $model . '.php')) {
-            show_error("Requested model $model does not exist.", "Loader Error");
+            error("Requested model $model does not exist.");
         }
 
         require_once APPPATH . 'models/' . $model . '.php';
@@ -74,7 +74,7 @@ class CL_Loader {
         $viewPath = APPPATH . 'views/' . $view . '.php';
 
         if (!file_exists($viewPath)) {
-            show_error("View '$view' does not exist.", "Loader Error");
+            error("View '$view' does not exist.");
         }
 
         foreach ($this->out->vars as $var => $value) {

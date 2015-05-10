@@ -44,7 +44,7 @@ function Label(id, url, text, cat, sub, latLng, desc, shapes, bShape) {
         if (firstShape === null) {
             return false;
         }
-        return firstShape.getType().match(/[R|L|T|B|X]/);
+        return firstShape.getType().match(/[R|L|T|B|X]/) !== null;
     };
 
     this.getIconStyle = function() {
@@ -108,7 +108,7 @@ Label.deserialize = function(label, zoom) {
     var url = label.url;
     var cat = label.cat;
     var sub = label.sub;
-    var latLng = LatLng.fromWKT(label.latLng);
+    var latLng = LatLng.fromGeoJson(label.latLng);
     var desc = LabelDescriptor.fromString(label.desc);
 
     if (label.type === 'static') {
@@ -116,7 +116,7 @@ Label.deserialize = function(label, zoom) {
         return new Label(id, url, text, cat, sub, latLng, desc, shapes, null);
     }
 
-    var pos = Projector.mercator(latLng, zoom);
+    var pos = Proj.latlng2pixel(latLng, zoom);
     var shapes = LabelShape.buildShapes(desc, text, pos);
     var bShape = LabelShape.buildBShape(shapes);
     var planeWidth = Math.pow(2, zoom) * 256;

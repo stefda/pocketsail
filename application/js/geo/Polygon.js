@@ -1,99 +1,103 @@
 
-function Polygon(points) {
+/**
+ * A representation of a polygon in the Cartesian plane, coordinates must be an
+ * array of linear rings. For Polygons with multiple rings, the first must be
+ * the exterior ring and any others must be interior rings or holes.
+ * 
+ * @example
+ * var polygon = new Polygon([[[0, 0], [0, 1], [1, 1], [1, 0], [0, 0]]]);
+ * 
+ * @constructor
+ * @param {Array} coordinates
+ * @extends GeoJSON
+ */
+function Polygon(coordinates) {
 
-    this.points = points;
+    GeoJSON.apply(this, ['Polygon', coordinates]);
 
     /**
-     * @returns {String}
+     * Get the coordinates array fo the i-th ring.
+     * @param {Number} i Ring position
+     * @returns {Array}
      */
-    this.toWKT = function() {
-        var str = "POLYGON((";
-        for (var i = 0; i < this.points.length; i++) {
-            str += this.points[i].x + " " + this.points[i].y;
-            str += i < this.points.length - 1 ? "," : "";
-        }
-        str += "))";
-        return str;
+    this.getRing = function (i) {
+        return this.coordinates[i];
     };
 
     /**
-     * @returns {Array[google.maps.LatLng]}
+     * Number of linear rings in the polygon.
+     * @returns {Number}
      */
-    this.toGooglePath = function() {
-        var path = [];
-        for (var i = 0; i < this.points.length - 1; i++) {
-            path.push(this.points[i].toLatLng().toGoogleLatLng());
-        }
-        return path;
+    this.size = function () {
+        return this.coordinates.length;
     };
 
     /**
-     * @returns {google.maps.LatLngBounds}
+     * Get the n-th point of the i-th ring.
+     * @param {Number} i Position of the ring in the polygon
+     * @param {Number} n Position of the point in the i-th ring
+     * @returns {Point}
      */
-    this.toGoogleBounds = function() {
-        var bounds = new google.maps.LatLngBounds();
-        for (var i = 0; i < this.points.length; i++) {
-            bounds.extend(this.points[i].toLatLng().toGoogleLatLng());
+    this.getPoint = function (i, n) {
+
+        if (i > this.size() - 1) {
+            throw "PolygonException: Accessing undefined liear ring with index '" + i + "'";
         }
-        return bounds;
+
+        if (n > 1) {
+            throw "PolygonException: Accessing undefined position with index '" + n + "'";
+        }
+
+        var position = this.coordinates[i][n];
+        return new Point(position[0], position[1]);
+    };
+
+    this.toGoogleArray = function () {
+
+        if (this.size() === 0) {
+            return [];
+        }
+
+        var coordinates = [];
+        var ring = this.getRing(0);
+
+        for (var i = 0; i < ring.length - 1; i++) {
+            coordinates[i] = new google.maps.LatLng(ring[i][1], ring[i][0]);
+        }
+
+        return coordinates;
+    };
+
+    this.toString = function () {
+        return '[' + this.getRing(0).join() + ']';
     };
 }
 
+Polygon.prototype = GeoJSON.prototype;
+Polygon.prototype.constructor = Polygon;
+
 /**
- * @param {Array[google.maps.LatLng]} path
+ * Create Polygon from a GeoJSON "Polygon" object.
+ * @param {Object} geoJson GeoJSON object
+ * @returns {Polygon}
  */
-Polygon.fromGooglePath = function(path) {
-    var points = [];
-    for (var i = 0; i < path.length; i++) {
-        var latLng = path[i];
-        points.push(new Point(latLng.lng(), latLng.lat()));
+Polygon.fromGeoJson = function (geoJson) {
+    if (geoJson && geoJson.type === 'Polygon' && geoJson.coordinates) {
+        return new Polygon(geoJson.coordinates);
     }
-    if (points[0].x !== points[points.length - 1].x
-            || points[0].y !== points[points.length - 1].y) {
-        points[points.length] = points[0];
-    }
-    return new Polygon(points);
+    return null;
 };
 
-/**
- * @param {String} wkt
- */
-Polygon.fromWKT = function(wkt) {
+Polygon.fromGooglePolygon = function (polygon) {
 
-    var points = [];
+    var latLngs = polygon.getPath().getArray();
+    var coordinates = [[]];
 
-    // Do initial matching
-    var pattern = /POLYGON *\( *\((.*)\).*\)/i;
-    var matches = pattern.exec(wkt);
-
-    // Matches array remains empty if nothing is matched
-    if (matches === null) {
-        return null;
+    var i = 0;
+    for (; i < latLngs.length; i++) {
+        coordinates[0][i] = [latLngs[i].lng(), latLngs[i].lat()];
     }
+    coordinates[0][i] = [latLngs[0].lng(), latLngs[0].lat()];
 
-    // Explode by comma matched coordinates trimmed off of spaces
-    var sPoints = matches[1].trim().split(",");
-
-    // Iterate over coordinates to instantiate Points of the Polygons
-    for (var i = 0; i < sPoints.length; i++) {
-        // Parse xy point coordinates
-        var pattern = / *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) */;
-        var matches = pattern.exec(sPoints[i]);
-        // Return null if matching fails
-        if (matches.length === 0) {
-            return null;
-        }
-        // Instantiate next Polygon point from matched coordinates
-        var x = parseFloat(matches[1]);
-        var y = parseFloat(matches[3]);
-        points.push(new Point(x, y));
-    }
-
-    // Polygon's first and last coordinate must match
-    if (!points[0].equals(points[points.length - 1])) {
-        return null;
-    }
-
-    // Finally, instantiate and return Polygon
-    return new Polygon(points);
+    return new Polygon(coordinates);
 };

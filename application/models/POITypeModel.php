@@ -18,7 +18,7 @@ class POITypeModel implements JsonSerializable {
 
     public static function loadSubs($id) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('poi_type')
                 ->where('parentId', EQ, $id)
@@ -33,7 +33,7 @@ class POITypeModel implements JsonSerializable {
 
     public static function loadCats() {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('poi_type')
                 ->where('parentId', IS, NULL)
@@ -48,7 +48,7 @@ class POITypeModel implements JsonSerializable {
 
     public static function catFromSub($sub) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all('cat')
                 ->from('poi_type')->alias('cat')
                 ->leftJoin('poi_type')->alias('sub')->on('parentId', 'id')

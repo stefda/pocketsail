@@ -1,4 +1,4 @@
-<?php
+\<?php
 
 if (!defined('SYSPATH'))
     exit("No direct script access allowed!");
@@ -53,6 +53,7 @@ class Compile extends CL_Controller {
                 $className = $rc->getName();
 
                 foreach ($methods as $method) {
+                    
                     $comment = $method->getDocComment();
                     $callableRegexp = '/@AjaxCallable/';
 
@@ -62,10 +63,10 @@ class Compile extends CL_Controller {
                         $typeRegexp = '/@AjaxMethod=(GET|POST)/';
 
                         preg_match($asyncRegexp, $comment, $matches);
-                        $async = (count($matches) > 1) ? $matches[1] : 'FALSE';
+                        $async = (count($matches) > 1) ? $matches[1] : 'TRUE';
 
                         preg_match($typeRegexp, $comment, $matches);
-                        $type = (count($matches) > 1) ? $matches[1] : 'GET';
+                        $type = (count($matches) > 1) ? $matches[1] : 'POST';
 
                         $methods = array();
 
@@ -127,7 +128,7 @@ class Compile extends CL_Controller {
                 $code .= "if (options !== undefined && options.beforeSend !== undefined) {o.beforeSend = options.beforeSend;}\n";
                 $code .= "if (options !== undefined && options.success !== undefined) {o.success = options.success;}\n";
                 $code .= "if (options !== undefined && options.post !== undefined) {o.data = options.post;}\n";
-                $code .= "return ajax(o);\n";
+                $code .= "return broker(o, this);\n";
                 $code .= "};\n\n";
             }
 

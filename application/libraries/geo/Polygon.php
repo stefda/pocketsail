@@ -1,102 +1,131 @@
 <?php
 
-class Polygon implements JsonSerializable {
+class Polygon extends GeoJSON implements JsonSerializable {
 
-    private $points;
-
-    public function __construct($points = []) {
-        $this->points = $points;
+    public function __construct($coordinates) {
+        parent::__construct('Polygon', $coordinates);
     }
 
     /**
-     * @param string $wkt
-     * @return Polygon|null
+     * Create Polygon from a GeoJSON "Polygon" object.
+     * 
+     * @param array $geoJson GeoJSON object
+     * @returns Polygon
      */
-    public static function fromWKT($wkt) {
-        
+    public static function from_geo_json($geoJson) {
+        if (!isset($geoJson['type']) || !isset($geoJson['coordinates'])) {
+            return NULL;
+        }
+        return new Polygon($geoJson['coordinates']);
+    }
+
+    /**
+     * TODO: Implement parsing more than one linear ring!
+     * 
+     * @param string $wkt
+     * @return Polygon
+     */
+    public static function from_wkt($wkt) {
+
+        if ($wkt === NULL) {
+            return NULL;
+        }
+
         $matches = [];
-        $points = [];
+        $coordinates = [];
 
         // Do initial matching
-        preg_match("/POLYGON *\( *\((.*)\).*\)/i", $wkt, $matches);
+        if (preg_match("/POLYGON\((.*)\)/i", $wkt, $matches)) {
+            preg_match_all("/\(([^()]*)\)/i", $matches[1], $matches);
+        }
 
         // Matches array remains empty if nothing is matched
         if (count($matches) == 0) {
-            return NULL;
+            return new Polygon([]);
         }
 
-        // Explode by comma matched coordinates trimmed off of spaces
-        $sPoints = explode(",", trim($matches[1]));
-
-        // Iterate over coordinates to instantiate points of the polygons
-        foreach ($sPoints AS $sPoint) {
-            $matches = [];
-            // Parse xy point coordinates
-            preg_match("/ *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) */", $sPoint, $matches);
-            // Return null if matching fails
-            if (count($matches) == 0) {
-                return NULL;
+        foreach ($matches[1] AS $sRing) {
+            $sPoints = explode(",", trim($sRing));
+            $ring = [];
+            foreach ($sPoints AS $sPoint) {
+                $matches = [];
+                preg_match("/ *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) */", $sPoint, $matches);
+                if (count($matches) == 0) {
+                    error('Polygon: WKT format error.');
+                }
+                $ring[] = [floatval($matches[1]), floatval($matches[3])];
             }
-            // Instantiate next polygon's point from matched coordinates
-            $points[] = new Point($matches[1], $matches[3]);
-        }
 
-        // Polygon's first and last coordinates must match
-        if (!$points[0]->equals($points[count($points) - 1])) {
-            return NULL;
+            $coordinates[] = $ring;
         }
-
-        // Finally, instantiate and return new, shiny polygon
-        return new Polygon($points);
+        return new Polygon($coordinates);
     }
 
     /**
-     * @return array[Point]
+     * Get the coordinates array fo the i-th ring.
+     * 
+     * @param int $i Ring position
+     * @return array
      */
-    public function points() {
-        return $this->points;
+    public function get_ring($i) {
+        return $this->coordinates[$i];
     }
 
     /**
-     * @param int $i
-     * @return Point|NULL
-     */
-    public function getPointAt($i) {
-        if ($i < 0 || $i > count($this->points) - 1) {
-            return NULL;
-        }
-        return $this->points[$i];
-    }
-
-    /**
-     * @return int
+     * Number of linear rings in the polygon.
+     * 
+     * @returns int
      */
     public function size() {
-        return count($this->points);
+        return count($this->coordinates);
+    }
+
+    /**
+     * Get the n-th point of the i-th ring.
+     * 
+     * @param int $i Position of the ring in the polygon
+     * @param int $n Position of the point in the i-th ring
+     * @returns Point
+     */
+    public function get_point($i, $n) {
+
+        if ($i > $this->size() - 1) {
+            error("Accessing undefined liear ring with index '$i'");
+        }
+
+        if ($n > 1) {
+            error("Accessing undefined position with index '$n'");
+        }
+
+        $position = $this->coordinates[$i][$n];
+        return new Point($position[0], $position[1]);
     }
 
     /**
      * @return string
      */
-    public function toWKT() {
-        if (count($this->points) === 0) {
-            return "NULL";
+    public function to_wkt() {
+        $str = 'POLYGON(';
+        $rings = $this->coordinates;
+        $sRings = [];
+        foreach ($rings AS $ring) {
+            $sRings[] = '(';
+            for ($i = 0; $i < count($ring); $i++) {
+                $sRings[count($sRings) - 1] .= $ring[$i][0] . ' ' . $ring[$i][1];
+                $sRings[count($sRings) - 1] .= $i < count($ring) - 1 ? ',' : '';
+            }
+            $sRings[count($sRings) - 1] .= ')';
         }
-        $str = "POLYGON((";
-        for ($i = 0; $i < count($this->points); $i++) {
-            $str .= $this->points[$i]->x() . " " . $this->points[$i]->y();
-            $str .= $i < count($this->points) - 1 ? "," : "";
-        }
-        $str .= "))";
-        return $str;
-    }
-
-    public function jsonSerialize() {
-        return $this->toWKT();
+        $str .= implode(',', $sRings);
+        return $str . ')';
     }
 
     public function __toString() {
-        return "Polygon [size={$this->size()}]";
+        return $this->to_wkt();
+    }
+
+    public function jsonSerialize() {
+        return $this->to_geo_json();
     }
 
 }

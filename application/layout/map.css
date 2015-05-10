@@ -1,11 +1,5 @@
 
-/*.tpl-details-large::selection {color: #333; background: rgba(0, 0, 0, 0);}*/
-
 .subtitle { font-size: 10px; }
-
-html { height: 100% }
-body { height: 100%; margin: 0; padding: 0 }
-#map { height: 100% }
 
 .label { position: absolute; }
 .label.sel { z-index: 100; }
@@ -23,9 +17,8 @@ body { height: 100%; margin: 0; padding: 0 }
 .label.channel .text { color: #5676a2; }
 .label.town .text { text-transform: uppercase; }
 
-.label.important { z-index: 9999 !important; }
-
-/* 006699 */
+.label.important { z-index: 999; }
+.label.super { z-index: 9999; }
 
 .icon { cursor: default; z-index: 96; background-image: url('/application/images/marker-icons.png'); }
 .icon.p { z-index: 95; opacity: 1; }
@@ -44,10 +37,10 @@ body { height: 100%; margin: 0; padding: 0 }
 }
 
 .icon .tpl-details-large {
-    -webkit-user-select: none; /* webkit (safari, chrome) browsers */
-    -moz-user-select: none; /* mozilla browsers */
-    -khtml-user-select: none; /* webkit (konqueror) browsers */
-    -ms-user-select: none; /* IE10+ */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -ms-user-select: none;
 }
 
 #markerHoverInfo { display: none; position: absolute; top: 300px; left: 300px; background-color: #fff; border-radius: 1px; padding: 10px 15px 12px; box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3); }

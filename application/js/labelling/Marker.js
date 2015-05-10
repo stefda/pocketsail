@@ -1,7 +1,7 @@
 function Marker(o) {
 
     this.psMap = o.map;
-    this.map = o.map.map;
+    this.map = o.map._map;
     this.label = o.label;
     this.url = o.label.url;
     this.id = this.label.id;
@@ -11,6 +11,18 @@ function Marker(o) {
 
     this.div_ = null;
     this.setMap(this.map);
+
+    this.getPoiId = function () {
+        return this.id;
+    };
+
+    this.hasUrl = function () {
+        return this.url !== undefined;
+    };
+
+    this.getPoiUrl = function () {
+        return this.url;
+    };
 }
 
 Marker.prototype = new google.maps.OverlayView();
@@ -23,7 +35,11 @@ Marker.prototype.onAdd = function () {
     this.getPanes().floatPane.appendChild(this.div_);
 
     if (this.label.important) {
-        this.div_.className = this.div_.className + " important";
+        if (this.label.hasText()) {
+            this.div_.className = this.div_.className + " super";
+        } else {
+            this.div_.className = this.div_.className + " important";
+        }
     }
 
     if (this.label.hasText()) {
@@ -35,28 +51,65 @@ Marker.prototype.onAdd = function () {
     }
 
     // Closure
-    var this_ = this;
+    var _this = this;
 
     google.maps.event.addDomListener(this.div_, 'contextmenu', function (e) {
-        var position = {
-            x: e.clientX,
-            y: e.clientY
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        var offset = _this.psMap.canvas.offset();
+        var pos = {
+            client: {
+                x: e.clientX,
+                y: e.clientY
+            },
+            pixel: {
+                x: e.clientX - offset.left,
+                y: e.clientY - offset.top
+            }
         };
-        if (this_.psMap.markerContextmenu !== undefined) {
-            this_.psMap.markerContextmenu(this_, position);
-            e.preventDefault();
+
+        if ('marker_contextmenu' in _this.psMap.onCallbacks) {
+            var callbacks = _this.psMap.onCallbacks.marker_contextmenu;
+            for (var i = 0; i < callbacks.length; i++) {
+                callbacks[i].call(_this.map, _this, pos);
+            }
         }
     });
 
     google.maps.event.addDomListener(this.div_, 'click', function (e) {
-        var position = {
-            x: e.clientX,
-            y: e.clientY
-        };
-        if (this_.psMap.markerClick !== undefined) {
-            this_.psMap.markerClick(this_, position);
-            e.preventDefault();
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (_this.psMap.ignoreMarkerClick) {
+            _this.psMap.ignoreMarkerClick = false;
+            return false;
         }
+
+        var offset = _this.psMap.canvas.offset();
+        var pos = {
+            client: {
+                x: e.clientX,
+                y: e.clientY
+            },
+            pixel: {
+                x: e.clientX - offset.left,
+                y: e.clientY - offset.top
+            }
+        };
+
+        if ('marker_click' in _this.psMap.onCallbacks) {
+            var callbacks = _this.psMap.onCallbacks.marker_click;
+            for (var i = 0; i < callbacks.length; i++) {
+                callbacks[i].call(_this.map, _this, pos);
+            }
+        }
+    });
+    
+    google.maps.event.addDomListener(this.div_, 'mouseup', function (e) {
+        _this.psMap.markerClicked = true;
     });
 };
 

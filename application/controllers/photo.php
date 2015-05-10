@@ -9,7 +9,11 @@ class Photo extends CL_Controller {
     }
 
     function index() {
-        
+        // DO NOTHING
+    }
+
+    function init_load_frame() {
+        return '';
     }
 
     function upload() {
@@ -30,32 +34,60 @@ class Photo extends CL_Controller {
             $photo = new PhotoModel($poiId);
             $photo->insert($img, $full, $preview, $gallery, $thumb);
         }
-        
+
         $ids = PhotoModel::get_ids($poiId);
-        $mainId = NULL;
-        
+        $mainId = PhotoModel::get_main_id($poiId);
+
         // First photos for this POI, set main!
         if (count($files) === count($ids)) {
             PhotoModel::set_main($ids[0]);
             $mainId = $ids[0];
         }
 
-        echo json_encode([
+        return [
             'status' => 'OK',
             'ids' => $ids,
             'main' => $mainId
+        ];
+    }
+
+    /**
+     * @AjaxCallable
+     */
+    function delete() {
+
+        $args = deserialize_input(INPUT_POST, [
+            'id' => FILTER_VALIDATE_INT,
+            'poiId' => FILTER_VALIDATE_INT
         ]);
+
+        PhotoModel::delete($args['id']);
+        $ids = PhotoModel::get_ids($args['poiId']);
+        $mainId = PhotoModel::get_main_id($args['poiId']);
+
+        if ($mainId === FALSE && count($ids) > 0) {
+            PhotoModel::set_main($ids[0]);
+            $mainId = $ids[0];
+        }
+
+        return [
+            'ids' => $ids,
+            'main' => $mainId
+        ];
     }
 
     /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
+     * @AjaxCallable
      */
-    function rotate_right() {
+    function rotate() {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $dir = filter_input(INPUT_POST, 'dir', FILTER_SANITIZE_STRING);
         $img = PhotoModel::load_original($id);
-        $rotated = image_rotate($img, -90);
+        if ($dir === 'right') {
+            $rotated = image_rotate($img, -90);
+        } else if ($dir === 'left') {
+            $rotated = image_rotate($img, 90);
+        }
         $full = image_resize($rotated, 1600, 900);
         $gallery = image_resize_width($rotated, 580);
         $preview = image_resize_crop($rotated, 216, 216);
@@ -65,26 +97,7 @@ class Photo extends CL_Controller {
     }
 
     /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
-     */
-    function rotate_left() {
-        $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $img = PhotoModel::load_original($id);
-        $rotated = image_rotate($img, 90);
-        $full = image_resize($rotated, 1600, 900);
-        $gallery = image_resize_width($rotated, 580);
-        $preview = image_resize_crop($rotated, 216, 216);
-        $thumb = image_resize_crop($rotated, 100, 100);
-        PhotoModel::update($id, $rotated, $full, $preview, $gallery, $thumb);
-        return TRUE;
-    }
-
-    /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
+     * @AjaxCallable
      */
     function set_main() {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -93,9 +106,7 @@ class Photo extends CL_Controller {
     }
 
     /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
+     * @AjaxCallable
      */
     function set_description() {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -105,9 +116,7 @@ class Photo extends CL_Controller {
     }
 
     /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
+     * @AjaxCallable
      */
     function set_offset() {
         $id = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
@@ -117,20 +126,16 @@ class Photo extends CL_Controller {
     }
 
     /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
+     * @AjaxCallable
      */
     function get_ids() {
         $poiId = filter_input(INPUT_POST, 'poiId', FILTER_VALIDATE_INT);
         $ids = PhotoModel::get_ids($poiId);
         return $ids;
     }
-    
+
     /**
-     * @AjaxCallable=TRUE
-     * @AjaxMethod=POST
-     * @AjaxAsync=TRUE
+     * @AjaxCallable
      */
     function get_infos() {
         $poiId = filter_input(INPUT_POST, 'poiId', FILTER_VALIDATE_INT);

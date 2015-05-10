@@ -1,351 +1,287 @@
 
-/**
- * @param {Object} o
- * @returns {Map}
- */
-function Map(o) {
+function Map(canvas, args) {
 
-    var canvas = o.canvas;
-    var zoom = o.zoom;
-    var center = o.center;
-    var cursor = o.cursor === undefined ? 'auto' : o.cursor;
-    var border = o.border;
+    args = args === undefined ? {} : args;
 
-    this.id = 0;
-    this.url = '';
-    this.ids = [];
-    this.types = [];
+    this.canvas = canvas;
+    this.mode = args.mode ? args.mode : 'default';
+    this.center = args.center;
+    this.zoom = args.zoom;
+    this.cursor = args.cursor === undefined ? 'auto' : args.cursor;
+    this.cache = args.cache === undefined ? true : args.cache;
+    this.borderEdit = args.borderEdit === undefined ? false : args.borderEdit;
 
-    this.cache = o.cache !== undefined ? o.cache : false;
-    this.ignoreZoomChange = false;
-    this.ignoreHash = false;
-    this.ignoreClick = false;
-    this.init = true;
-    this.labels = [];
-    this.markers = {};
-    this.map = null;
-    this.ready = null;
+    this.params = {
+        poiId: undefined,
+        poiUrl: undefined,
+        poiIds: undefined,
+        types: undefined,
+        bounds: undefined,
+        zoom: undefined
+    };
 
-    if (o.markerContextMenu !== undefined && o.markerContextMenu) {
-        this.markerContextmenu = function (marker, pos) {
+    this.labels = {
+        static: [],
+        dynamic: []
+    };
 
-            $('#editMenu').mapmenu({
-                top: pos.y,
-                left: pos.x,
-                select: function (e, ui) {
-                    if (ui.item.value === 'edit') {
-                        window.location = '/poi/edit?poiId=' + marker.id;
-                    } else {
-                        $('#editMenu').hide();
-                        alert('Not implemented!');
-                    }
-                }
-            });
-        };
-    }
+    this.cardHtml = '';
+    this.markers = [];
+    this.draggableMarker = null;
+    this.onCallbacks = {};
 
-    this.dragStarted = false;
+    // Google Map
+    this._map = null;
+    this.init = false;
+    this.loadDataOnIdle = false;
+    this.loadDataOnZoomChange = true;
+    this.markerClicked = false;
+    this.ignoreMarkerClick = false;
+    this.zoomChanged = false;
+    this.centerChanged = false;
+    this.cardChanged = false;
 
-    if (o.markerClick !== undefined && o.markerClick) {
-        this.markerClick = function (marker, pos) {
+    this.border = {
+        polyline: null,
+        polygon: null
+    };
 
-            if (this.ignoreClick) {
-                this.ignoreClick = false;
-                return;
+    // Closure
+    var _this = this;
+
+    this.setParam = function (name, value) {
+        this.params[name] = value;
+    };
+
+    this.clearParam = function (name) {
+        this.params[name] = undefined;
+    };
+
+    this.setParams = function (params) {
+        for (var name in params) {
+            this.params[name] = params[name];
+        }
+    };
+
+    this.clearAllParams = function () {
+        for (var name in this.params) {
+            this.params[name] = undefined;
+        }
+    };
+
+    this.setCenter = function (center) {
+        this.center = center;
+        if (this.init) {
+            this._map.setCenter(center.toGoogleLatLng());
+        }
+    };
+
+    this.paramsAreClear = function () {
+        for (var name in this.params) {
+            if (typeof this.params[name] !== undefined) {
+                return false;
             }
+        }
+        return true;
+    };
 
-            this.id = marker.id;
-            this.url = marker.url;
-            this.ids = [];
-            this.types = [];
+    this.resize = function () {
+        google.maps.event.trigger(this._map, 'resize');
+    };
 
-            API2Broker.loadData({
-                post: {
-                    width: this.getWidth(),
-                    height: this.getHeight(),
-                    zoom: this.getZoom(),
-                    center: this.getCenter().toWKT(),
-                    id: marker.id,
-                    url: marker.url,
-                    action: 'click'
-                },
-                success: function (res) {
-                    this_.ignoreHash = true;
-                    window.location.hash = res.url !== '' ? res.url : res.id;
-                    this_.handleResult(res);
-                }
-            });
-        };
-    }
+    this.setCardHtml = function (cardHtml) {
+        this.cardHtml = cardHtml;
+    };
 
-    var this_ = this;
-
-    this.redrawMarkers = function () {
-
-        this.clearMarkers();
-
-        for (var i = 0; i < this.labels.length; i++) {
-            var marker = new Marker({
-                map: this_,
-                label: this.labels[i]
-            });
-            this.addMarker(marker);
+    this.setZoom = function (zoom) {
+        if (this.init) {
+            this.loadDataOnZoomChange = false;
+            this._map.setZoom(zoom);
         }
     };
 
-    this.resetLabels = function (labels) {
-        this.labels = [];
-        for (var i = 0; i < labels.length; i++) {
-            this.labels.push(Label.deserialize(labels[i], this.getZoom()));
+    this.panTo = function (center) {
+        if (this.init) {
+            this._map.panTo(center.toGoogleLatLng());
         }
     };
 
-    this.relabel = function () {
-        Labeller.doLabelling(this.labels);
+    this.getCenter = function () {
+        if (!this.init) {
+            return undefined;
+        }
+        return LatLng.fromGoogleLatLng(this._map.getCenter());
     };
 
-    this.processHash = function (hash, callback) {
-
-        if (this.ignoreHash) {
-            this.ignoreHash = false;
-            return;
+    this.getBounds = function () {
+        if (!this.init) {
+            return undefined;
         }
+        return LatLngBounds.fromGoogleLatLngBounds(this._map.getBounds());
+    };
 
-        this.id = hash.id;
-        this.url = hash.url;
-        this.types = hash.types;
+    this.getZoom = function () {
+        if (!this.init) {
+            return undefined;
+        }
+        return this._map.getZoom();
+    };
 
-        API2Broker.loadData({
-            post: {
-                action: 'hash',
-                width: this.getWidth(),
-                height: this.getHeight(),
-                zoom: hash.zoom === null ? 14 : hash.zoom,
-                center: (hash.lat === null && hash.lng === null) ? null : (new LatLng(hash.lat, hash.lng).toWKT()),
-                id: hash.id,
-                url: hash.url,
-                ids: [],
-                types: hash.types
-            },
-            success: function (res) {
-                callback(res);
-            }
+    this.reload = function () {
+        this.loadData(function (res) {
+            this.handleData(res);
+            this.redraw();
         });
     };
 
-    this.loadData = function (action, callback) {
+    this.loadData = function () {
 
-        if (action === undefined) {
-            action = 'normal';
-        }
+        var action = typeof arguments[0] === 'string' ? arguments[0] : 'default';
+        var callback = typeof arguments[0] === 'function' ? arguments[0] : arguments[1];
 
-        API2Broker.loadData({
+        MapBroker.load_data({
             post: {
                 action: action,
-                width: this.getWidth(),
-                height: this.getHeight(),
-                zoom: this.getZoom(),
-                center: this.getCenter().toWKT(),
-                id: this.id,
-                url: this.url,
-                ids: this.ids,
-                types: this.types
+                mode: this.mode,
+                poiId: this.params.poiId,
+                poiUrl: this.params.poiUrl,
+                poiIds: this.params.poiIds,
+                types: this.params.types,
+                bounds: this.params.bounds !== undefined ? this.params.bounds.toGeoJson() : this.init ? this.getBounds().toGeoJson() : undefined,
+                zoom: this.params.zoom !== undefined ? this.params.zoom : this.getZoom(),
+                width: this.canvas.innerWidth(),
+                height: this.canvas.innerHeight()
             },
             success: function (res) {
-                //this_.handleResult(res);
-                callback(res);
+                callback && callback.call(_this, res);
+                _this.clearParam('bounds');
+                _this.clearParam('zoom');
             }
         });
     };
 
-    this.updateMap = function (res) {
-
-        var action = res.action !== undefined ? res.action : '';
-        var zoom = res.zoom === undefined ? this.getZoom() : res.zoom;
-
-        if (res.center !== undefined) {
-            var center = LatLng.fromWKT(res.center);
-            this.panTo(center, zoom);
-        }
-
-        if (res.labels !== undefined) {
-            this.resetLabels(res.labels);
-        }
-
-        if (action === 'relabel') {
-            this.relabel();
-        }
-
-        if (res.card !== undefined && res.card !== '') {
-            this.showCard(res.card);
+    this.setLabels = function (labels) {
+        if (labels) {
+            this.labels.static = labels.static ? labels.static : [];
+            this.labels.dynamic = labels.dynamic ? labels.dynamic : [];
         }
     };
 
-    this.handleResult = function (res) {
+    this.redraw = function () {
 
-        var action = res.action !== undefined ? res.action : '';
-        var zoom = res.zoom === undefined ? this.getZoom() : res.zoom;
-
-        if (res.center !== undefined) {
-            var center = LatLng.fromWKT(res.center);
-            this.panTo(center, zoom);
+        if (this.zoomChanged) {
+            if (this.centerChanged) {
+                this.panTo(this.center);
+                this.centerChanged = false;
+            }
+            this.setZoom(this.zoom);
+            this.zoomChanged = false;
         }
 
-        if (res.labels !== undefined) {
-            this.resetLabels(res.labels);
-        }
-
-        if (action === 'relabel') {
-            this.relabel();
-        }
-
-        if (res.card !== undefined && res.card !== '') {
-            this.showCard(res.card);
+        if (this.cardChanged) {
+            this.trigger('card_changed', this.cardHtml);
+            this.cardChanged = false;
         }
 
         this.redrawMarkers();
     };
 
-    this.getWidth = function () {
-        return $('#' + canvas).innerWidth();
-    };
+    this.redrawMarkers = function () {
 
-    this.getHeight = function () {
-        return $('#' + canvas).innerHeight();
-    };
+        var dynamic = [];
+        var static = [];
+        var labelIds = [];
+        var zoom = this.getZoom();
 
-    this.getTypes = function () {
-        return this.types;
-    };
+        for (var i = 0; i < this.labels.dynamic.length; i++) {
+            dynamic.push(Label.deserialize(this.labels.dynamic[i], zoom));
+            labelIds.push(this.labels.dynamic[i].id);
+        }
 
-    this.getPoiId = function () {
-        return this.poiId;
-    };
+        for (var i = 0; i < this.labels.static.length; i++) {
+            static.push(Label.deserialize(this.labels.static[i], zoom));
+            labelIds.push(this.labels.static[i].id);
+        }
 
-    this.getPoiIds = function () {
-        return this.poiIds;
-    };
+        if (dynamic.length !== 0) {
+            Labeller.doLabelling(dynamic);
+        }
 
-    this.getFlags = function () {
-        return this.flags;
-    };
+        var labels = dynamic.concat(static);
 
-    this.getCenter = function () {
-        return LatLng.fromGoogleLatLng(this.map.getCenter());
-    };
-
-    this.getZoom = function () {
-        return this.map.getZoom();
-    };
-
-    this.getViewBounds = function () {
-        return ViewBounds.fromMap(this.map);
-    };
-
-    this.setTypes = function (types) {
-        this.types = types;
-    };
-
-    this.setPoiId = function (id) {
-        this.id = id;
-    };
-
-    this.setPoiUrl = function (url) {
-        this.url = url;
-    };
-
-    this.setPoiIds = function (ids) {
-        this.ids = ids;
-    };
-
-    this.setFlags = function (flags) {
-        this.flags = flags;
-    };
-
-    this.addMarker = function (marker) {
-        this.markers.push(marker);
-    };
-
-    this.addNewMarker = function (marker) {
-        this.newMarkers.push(marker);
-    };
-
-    this.clearMarkers = function () {
+        // Clear markers
         for (var i = 0; i < this.markers.length; i++) {
             this.markers[i].setMap(null);
         }
-        this.markers = [];
+
+        for (var i = 0; i < labels.length; i++) {
+            var marker = new Marker({
+                map: _this,
+                label: labels[i]
+            });
+            this.markers.push(marker);
+        }
     };
 
-    this.showCard = function (html) {
-        $('#card').html(html);
-        $('#card').show();
+    this.clearCardHtml = function () {
+        this.cardHtml = '';
     };
 
-    this.hideCard = function () {
-        $('#card').hide();
+    this.handleData = function (data) {
+
+        if (data.zoom) {
+            if (data.center) {
+                this.center = LatLng.fromGeoJson(data.center);
+                this.centerChanged = true;
+            }
+            this.zoom = data.zoom;
+            this.zoomChanged = true;
+        }
+
+        if (data.card) {
+            this.cardHtml = data.card;
+            this.cardChanged = true;
+        }
+
+        this.setLabels(data.labels);
     };
 
-    this.setZoom = function (zoom) {
-        this.ignoreZoomChange = true;
-        this.map.setZoom(zoom);
-    };
-
-    this.setCenterNormal = function (center) {
-        this.map.setCenter(center.toGoogleLatLng());
-    };
-
-    this.setCenter = function (center) {
-        this.map.panTo(center.toGoogleLatLng());
-    };
-
-    this.panTo = function (center, zoom) {
-        this.setZoom(zoom);
-        this.setCenter(center);
-    };
-
-    this.addListener = function (type, fx) {
-        google.maps.event.addListener(this.map, type, function (e) {
-            fx.call(this, e);
-        });
-    };
-
-    this.initGoogleMap = function () {
-
-        // Initialise custom map style
-        var styledMap = new google.maps.StyledMapType(mapStyle, {name: "PocketSail"});
+    this.initCanvas = function (callback) {
 
         // If no center or zoom given, try cookies or set fixed
-        if (center === undefined || zoom === undefined) {
+        if (this.center === undefined || this.zoom === undefined) {
 
-            var userLat = get_cookie('psMapLat');
-            var userLng = get_cookie('psMapLng');
-            var userZoom = get_cookie('psMapZoom');
+            var cacheLat = get_cookie('psMapLat');
+            var cacheLng = get_cookie('psMapLng');
+            var cacheZoom = get_cookie('psMapZoom');
 
-            if (userLat && userLng && userZoom) {
-                userLat = parseFloat(userLat);
-                userLng = parseFloat(userLng);
-                userZoom = parseInt(userZoom);
-                center = new LatLng(userLat, userLng);
-                zoom = userZoom;
+            if (this.cache && cacheLat && cacheLng && cacheZoom) {
+                cacheLat = parseFloat(cacheLat);
+                cacheLng = parseFloat(cacheLng);
+                cacheZoom = parseInt(cacheZoom);
+                this.center = new LatLng(cacheLat, cacheLng);
+                this.zoom = cacheZoom;
             } else {
-                center = new LatLng(44, 16);
-                zoom = 12;
+                this.center = new LatLng(44, 16);
+                this.zoom = 10;
             }
         }
 
-        var PS_MAPTYPE_ID = 'PocketSail';
+        // Initialise custom map style
+        var psMapStyle = new google.maps.StyledMapType(mapStyle, {name: "PocketSail"});
+        var psMapTypeId = 'PocketSail';
 
-        // Create new map
-        this.map = new google.maps.Map(document.getElementById(canvas), {
-            zoom: zoom,
-            center: center.toGoogleLatLng(),
+        // Create google map
+        this._map = new google.maps.Map(this.canvas.get(0), {
+            zoom: this.zoom,
+            maxZoom: 18,
+            center: this.center.toGoogleLatLng(),
             panControl: false,
             streetViewControl: false,
             scaleControl: true,
-            draggableCursor: cursor,
+            draggableCursor: this.cursor,
             mapTypeControlOptions: {
-                mapTypeIds: [PS_MAPTYPE_ID, google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID]
+                mapTypeIds: [psMapTypeId, google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID]
             },
             zoomControlOptions: {
                 position: google.maps.ControlPosition.RIGHT_BOTTOM,
@@ -354,23 +290,25 @@ function Map(o) {
         });
 
         // Set map to custom style
-        this.map.mapTypes.set(PS_MAPTYPE_ID, styledMap);
-        this.map.setMapTypeId(PS_MAPTYPE_ID);
+        this._map.mapTypes.set(psMapTypeId, psMapStyle);
+        this._map.setMapTypeId(psMapTypeId);
 
-        // Fit map to given border, if
-        if (border) {
-            var bounds = border.toGoogleBounds();
-            this.map.fitBounds(bounds);
-        }
+        google.maps.event.addListener(this._map, 'idle', function () {
 
-        google.maps.event.addListener(this.map, 'idle', function () {
-
-            if (this_.init) {
-                this_.init = false;
-                this_.ready !== null ? this_.ready(this_) : false;
+            if (!_this.init) {
+                _this.init = true;
+                callback && callback.call(_this);
             }
 
-            if (this_.cache) {
+            if (_this.loadDataOnIdle) {
+                _this.loadData(function (data) {
+                    _this.handleData(data);
+                    _this.redraw();
+                });
+                _this.loadDataOnIdle = false;
+            }
+
+            if (_this.cache) {
                 var center = this.getCenter();
                 set_cookie('psMapLat', center.lat());
                 set_cookie('psMapLng', center.lng());
@@ -378,43 +316,214 @@ function Map(o) {
             }
         });
 
-        google.maps.event.addListener(this.map, 'dragend', function () {
-            this_.loadData('normal', function (res) {
-                this_.handleResult(res);
-            });
-            this_.ignoreClick = true;
-            this_.dragStarted = false;
+        google.maps.event.addListener(this._map, 'dragstart', function () {
+            _this.ignoreMarkerClick = true;
         });
 
-        google.maps.event.addListener(this.map, 'click', function () {
+        google.maps.event.addListener(this._map, 'dragend', function () {
+            _this.loadDataOnIdle = true;
 
-            // Reset all data
-            this_.hideCard();
-            this_.setPoiId(0);
-            this_.setPoiUrl('');
-            this_.setPoiIds([]);
-            this_.setTypes([]);
-
-            // Start anew
-            this_.loadData('normal', function (res) {
-                this_.handleResult(res);
-            });
         });
 
-        google.maps.event.addListener(this.map, 'mouseup', function () {
-            this_.map.ignoreClick = false;
+        google.maps.event.addListener(this._map, 'zoom_changed', function () {
+
+            if (_this.loadDataOnZoomChange) {
+                _this.loadData(function (data) {
+                    _this.handleData(data);
+                    _this.redraw();
+                });
+            } else {
+                _this.loadDataOnZoomChange = true;
+            }
         });
 
-//        google.maps.event.addListener(this.map)
+        google.maps.event.addListener(this._map, 'click', function (e) {
 
-        google.maps.event.addListener(this.map, 'zoom_changed', function () {
-            if (this_.ignoreZoomChange) {
-                this_.ignoreZoomChange = false;
+            if (_this.borderEdit) {
+                _this._drawBorder(e);
                 return;
             }
-            this_.loadData('normal', function (res) {
-                this_.handleResult(res);
-            });
+
+            var pos = {
+                pixel: e.pixel,
+                latLng: LatLng.fromGoogleLatLng(e.latLng)
+            };
+
+            if ('click' in _this.onCallbacks) {
+                var callbacks = _this.onCallbacks.click;
+                for (var i = 0; i < callbacks.length; i++) {
+                    callbacks[i].call(_this, pos);
+                }
+            }
         });
+
+        google.maps.event.addListener(this._map, 'rightclick', function (e) {
+
+            var offset = _this.canvas.offset();
+            var pos = {
+                client: {
+                    x: e.pixel.x + offset.left,
+                    y: e.pixel.y + offset.top
+                },
+                pixel: e.pixel,
+                latLng: LatLng.fromGoogleLatLng(e.latLng)
+            };
+
+            if ('rightclick' in _this.onCallbacks) {
+                var callbacks = _this.onCallbacks.rightclick;
+                for (var i = 0; i < callbacks.length; i++) {
+                    callbacks[i].call(_this, pos);
+                }
+            }
+        });
+
+        google.maps.event.addListener(this._map, 'mousedown', function (e) {
+
+            var offset = _this.canvas.offset();
+            var pos = {
+                client: {
+                    x: e.pixel.x + offset.left,
+                    y: e.pixel.y + offset.top
+                },
+                pixel: e.pixel,
+                latLng: LatLng.fromGoogleLatLng(e.latLng)
+            };
+
+            if ('mousedown' in _this.onCallbacks) {
+                var callbacks = _this.onCallbacks.mousedown;
+                for (var i = 0; i < callbacks.length; i++) {
+                    callbacks[i].call(_this, pos);
+                }
+            }
+        });
+
+        google.maps.event.addListener(this._map, 'mouseup', function (e) {
+            if (_this.markerClicked) {
+                _this.markerClicked = false;
+            } else {
+                _this.ignoreMarkerClick = false;
+            }
+        });
+    };
+
+    this.on = function (type, callback) {
+        if (!(type in this.onCallbacks)) {
+            this.onCallbacks[type] = [];
+        }
+        this.onCallbacks[type].push(callback);
+    };
+
+    this.trigger = function (type) {
+        if (type in this.onCallbacks) {
+            var callback = this.onCallbacks[type];
+            for (var i = 0; i < callback.length; i++) {
+                [].shift.call(arguments);
+                callback[i].apply(this, arguments);
+            }
+        }
+    };
+
+    this._initBorderPolyline = function (latLng) {
+
+        this.border.polyline = new google.maps.Polyline({
+            map: _this._map,
+            editable: true,
+            clickable: true,
+            strokeColor: 'darkblue',
+            strokeWeight: 1,
+            path: [latLng]
+        });
+
+        google.maps.event.addListener(this.border.polyline, 'rightclick', function (e) {
+            if (e.vertex !== undefined) {
+                this.getPath().removeAt(e.vertex);
+            }
+        });
+
+        // Replace with polygon when click on first vertex
+        google.maps.event.addListener(this.border.polyline, 'click', function (e) {
+            if (e.vertex === 0) {
+                _this._initBoderPolygon(this.getPath().getArray());
+            }
+        });
+    };
+
+    this._initBoderPolygon = function (array) {
+
+        this.border.polygon = new google.maps.Polygon({
+            map: _this._map,
+            path: array,
+            clickable: true,
+            editable: true,
+            strokeColor: 'darkblue',
+            strokeWeight: 1,
+            fillOpacity: 0.1
+        });
+
+        // Make polyline invisible
+        if (this.border.polyline !== null) {
+            this.border.polyline.setMap(null);
+        }
+
+        // Remove vertex when rightclicked
+        google.maps.event.addListener(this.border.polygon, 'rightclick', function (e) {
+
+            if (e.vertex !== undefined) {
+                this.getPath().removeAt(e.vertex);
+
+                // Replace polygon with polyline when only one vertex is left
+                if (this.getPath().length === 1) {
+                    _this._initBorderPolyline(this.getPath().getAt(0));
+                    _this.border.polygon.setMap(null);
+                    _this.border.polygon = null;
+                }
+            }
+        });
+    };
+
+    this._drawBorder = function (e) {
+        if (this.border.polyline === null && this.border.polygon === null) {
+            this._initBorderPolyline(e.latLng);
+        } else if (this.border.polygon === null) {
+            var path = this.border.polyline.getPath();
+            path.push(e.latLng);
+        }
+    };
+
+    this.setBorderPolygon = function (polygon) {
+        this._initBoderPolygon(polygon.toGoogleArray());
+    };
+
+    this.getBorderPolygon = function () {
+        if (this.border.polygon === null) {
+            return null;
+        }
+        return Polygon.fromGooglePolygon(this.border.polygon);
+    };
+
+    this.hasBorderPolygon = function () {
+        return this.border.polygon !== null;
+    };
+
+    this.setDraggableMarkerLatLng = function (latLng) {
+        if (!this.init) {
+            throw "MapException: Cannot add draggable marker before google map has been initialized.";
+        }
+        this.draggableMarker = new google.maps.Marker({
+            map: this._map,
+            position: latLng.toGoogleLatLng(),
+            draggable: true
+        });
+    };
+
+    this.getDraggableMarkerLatLng = function () {
+        if (this.draggableMarker === null) {
+            return null;
+        }
+        return LatLng.fromGoogleLatLng(this.draggableMarker.getPosition());
+    };
+
+    this.hasDraggableMarker = function () {
+        return this.draggableMarker !== null;
     };
 }

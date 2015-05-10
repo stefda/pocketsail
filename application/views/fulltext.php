@@ -15,7 +15,7 @@
 
         <? foreach ($docs AS $doc): ?>
             <div style="font-size: 14px; font-weight: bold; margin-bottom: 5px;">
-                <?= $doc->name ?>
+                <a href="http://<?= DOMAIN ?>/#<?= $doc->id ?>"><?= $doc->name ?></a>
             </div>
             <div style="font-size: 14px; margin-bottom: 20px;">
                 <?

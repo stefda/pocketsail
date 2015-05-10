@@ -3,12 +3,10 @@ function Labeller() {
     // Left blank
 }
 
-Labeller.doLabelling = function(labels) {
-
-    var top = labels.shift();
-    top.important = true;
+Labeller.doLabelling = function (labels) {
 
     for (var i = 0; i < labels.length - 1; i++) {
+        labels[i].important = true;
         if (!labels[i].canOverlap()) {
             continue;
         }
@@ -25,6 +23,5 @@ Labeller.doLabelling = function(labels) {
             }
         }
     }
-    
-    labels.unshift(top);
+    labels[labels.length - 1].important = true;
 };

@@ -18,6 +18,7 @@ define('SYSPATH',   BASEPATH . 'system/');
 define('APPPATH',   BASEPATH . 'application/');
 define('BASEURL',   'http://' . $_SERVER['HTTP_HOST'] . '/' . (defined('CODEBASE') ? CODEBASE : '/'));
 define('TEMP', 'C:/Temp/');
+define('DEBUG', TRUE);
 
 require_once SYSPATH . 'codelite/CodeLite.php';
 

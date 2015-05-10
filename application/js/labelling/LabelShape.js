@@ -95,8 +95,8 @@ LabelShape.buildShapes = function(desc, text, pos) {
     var tw2 = 0;
     var th2 = 0;
     
-    var left = pos.left;
-    var top = pos.top;
+    var left = pos.x();
+    var top = pos.y();
     var pad = desc.getPadding();
     var spc = desc.getSpacing();
 
@@ -118,10 +118,10 @@ LabelShape.buildShapes = function(desc, text, pos) {
         var type = typesArray[i];
         switch (type) {
             case 'F':
-                shapes.push(LabelShape.buildFreeIconShape(pos.left, pos.top, iw2));
+                shapes.push(LabelShape.buildFreeIconShape(left, top, iw2));
                 break;
             case 'I':
-                shapes.push(LabelShape.buildIconOnlyShape(pos.left, pos.top, desc.getPadding(), iw2));
+                shapes.push(LabelShape.buildIconOnlyShape(left, top, desc.getPadding(), iw2));
                 break;
             case 'X':
                 shapes.push(LabelShape.buildTextOnlyShape(left, top, pad, th2, tw2));

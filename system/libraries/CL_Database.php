@@ -1,89 +1,108 @@
 <?php
 
-/**
- * @author David Stefan
- */
 class CL_Database {
 
-    private $conn = NULL;
+    protected $conn = NULL;
 
-    public function __construct($type) {
+    protected function __construct($type) {
 
-        if (!in_array($type, ['pgsql', 'mysql'])) {
-            throw new Exception("Database type " . $type . " is not supported.");
+        $host = get_config_value('database', "{$type}_host");
+        $user = get_config_value('database', "{$type}_user");
+        $password = get_config_value('database', "{$type}_password");
+        $database = get_config_value('database', "{$type}_database");
+
+        $this->conn = $this->connect($type, $host, $user, $password, $database);
+    }
+
+    public function __destruct() {
+        $this->conn = NULL;
+    }
+
+    /**
+     * @param string $type
+     * @param string $host
+     * @param string $user
+     * @param string $password
+     * @param string $database
+     * @return PDO
+     */
+    private function connect($type, $host, $user, $password, $database) {
+        $conn = new PDO("$type:host=$host;dbname=$database;charset=utf8", $user, $password);
+        $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        return $conn;
+    }
+
+    public function query($query) {
+        try {
+            return new CL_DatabaseStatement($this->conn->query($query));
+        } catch (PDOException $e) {
+            error($e->getMessage());
         }
-
-        $config = CL_Config::get_instance();
-
-        // Retrieve mysql config
-        $host = $config->get_value('database', "{$type}_host");
-        $user = $config->get_value('database', "{$type}_user");
-        $password = $config->get_value('database', "{$type}_password");
-        $database = $config->get_value('database', "{$type}_database");
-
-        $dbalConfig = new Doctrine\DBAL\Configuration();
-
-        $connParams = array(
-            'dbname' => $database,
-            'user' => $user,
-            'password' => $password,
-            'host' => $host,
-            'driver' => "pdo_{$type}"
-        );
-
-        $this->conn = Doctrine\DBAL\DriverManager::getConnection($connParams, $dbalConfig);
-    }
-    
-    public function begin() {
-        $this->conn->beginTransaction();
-    }
-    
-    public function commit() {
-        $this->conn->commit();
     }
 
-    public function execute_query($sql, $params = []) {
-        if ($this->conn !== NULL) {
-            return new CL_Statement($this->conn->executeQuery($sql, $params));
+    public function prepare($query) {
+        try {
+            return new CL_DatabaseStatement($this->conn->prepare($query));
+        } catch (Exception $e) {
+            error($e->getMessage());
         }
-        return FALSE;
     }
 
-    public function fetch_all($sql, $params = []) {
-        if ($this->conn !== NULL) {
-            return $this->conn->fetchAll($sql, $params);
-        }
-        return FALSE;
+    public function execute($query, $params = []) {
+        $stmt = $this->prepare($query);
+        $stmt->execute($params);
+        return $stmt;
     }
 
-    public function execute_update($sql, $params = []) {
-        if ($this->conn !== NULL) {
-            return $this->conn->executeUpdate($sql, $params);
-        }
-        return FALSE;
+    public function fetch_all($query, $params = []) {
+        $stmt = $this->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetch_all();
     }
 
-    public function insert($table, $data) {
-        if ($this->conn !== NULL) {
-            return $this->conn->insert($table, $data);
-        }
-        return FALSE;
+    public function insert($table, $params) {
+
+        // Build columns string
+        //$cols = '`' . implode('`, `', array_keys($params)) . '`';
+        $cols = implode(', ', array_keys($params));
+
+        // Build values string
+        $vals = implode(', ', array_fill(0, count($params), '?'));
+
+        // Build final query
+        $query = "INSERT INTO `$table` ($cols) VALUES ($vals)";
+
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute(array_values($params));
     }
 
-    public function update($table, $data, $match) {
-        if ($this->conn !== NULL) {
-            return $this->conn->update($table, $data, $match);
-        }
-        return FALSE;
+    public function update($table, $cols, $cond) {
+
+        // Build "set" query
+        $set = '`' . implode('` = ?, `', array_keys($cols)) . '` = ?';
+
+        // Build "where" condition
+        $where = '`' . implode('` = ? AND `', array_keys($cond)) . '` = ?';
+
+        // Merge params
+        $params = array_values($cols);
+        $params = array_merge($params, array_values($cond));
+
+        // Build final query
+        $query = "UPDATE `$table` SET $set WHERE $where";
+
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute($params);
     }
-    
-    public function insert_id() {
-        return (int) $this->conn->lastInsertId();
+
+    public function last_insert_id() {
+        return $this->conn->lastInsertId();
     }
 
 }
 
-class CL_Statement {
+class CL_DatabaseStatement {
 
     private $stmt;
 
@@ -91,15 +110,28 @@ class CL_Statement {
         $this->stmt = $stmt;
     }
 
-    /**
-     * Retrieves the next row from the statement or false if there are none.
-     * Moves the pointer forward one row, so that consecutive calls will always
-     * return the next row.
-     * 
-     * @return Associative array
-     */
-    public function fetch() {
-        return $this->stmt->fetch();
+    public function execute($params) {
+        try {
+            return $this->stmt->execute($params);
+        } catch (PDOException $e) {
+            error($e);
+        }
+    }
+
+    public function fetch_all($fetchStyle = NULL) {
+        try {
+            return $this->stmt->fetchAll($fetchStyle);
+        } catch (PDOException $e) {
+            error($e->getMessage());
+        }
+    }
+
+    public function fetch($fetchStyle = NULL) {
+        try {
+            return $this->stmt->fetch($fetchStyle);
+        } catch (PDOException $e) {
+            error($e->getMessage());
+        }
     }
 
 }

@@ -42,7 +42,7 @@ class LabelModel implements JsonSerializable {
      */
     public static function loadDynamic($id) {
 
-        $r = db()->select()
+        $r = get_mysqli()->select()
                 ->all('ld')
                 ->col('desc', 'ldd')
                 ->from('label_dynamic')->alias('ld')
@@ -52,14 +52,14 @@ class LabelModel implements JsonSerializable {
 
         return LabelModel::fromObject($r->fetchObject(), 'selected');
     }
-    
+
     /**
      * @param int $id
      * @return \LabelModel|null
      */
     public static function loadDynamicByUrl($url) {
 
-        $r = db()->select()
+        $r = get_mysqli()->select()
                 ->all('ld')
                 ->col('desc', 'ldd')
                 ->from('label_dynamic')->alias('ld')
@@ -80,7 +80,7 @@ class LabelModel implements JsonSerializable {
             return [];
         }
 
-        $r = db()->select()
+        $r = get_mysqli()->select()
                 ->all('ld')
                 ->col('desc', 'ldd')
                 ->from('label_dynamic')->alias('ld')
@@ -104,7 +104,7 @@ class LabelModel implements JsonSerializable {
      */
     public static function loadStaticByBounds(Bounds $bounds, $zoom) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('label_static')->alias('ls')
                 ->where('zoom', EQ, $zoom)
@@ -126,7 +126,7 @@ class LabelModel implements JsonSerializable {
      */
     public static function loadNew(Bounds $bounds, $userId) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->col('id')
                 ->col('name')->alias('text')
                 ->col('cat')
@@ -174,16 +174,9 @@ class LabelModel implements JsonSerializable {
 //        return $labels;
 //    }
 
-    /**
-     * @param Bounds $bounds
-     * @param int $zoom
-     * @param int $exceptId
-     * @param string[] $exceptTypes
-     * @return \LabelModel
-     */
-    public static function loadStaticDynamicByBounds(Bounds $bounds, $zoom, $exceptIds, $exceptTypes = []) {
+    public static function loadStaticDynamicByBounds(LatLngBounds $bounds, $zoom, $exceptIds, $exceptTypes = []) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('label_static')->alias('ls')
                 ->leftJoin('label_static_descriptor')->alias('lsd')->on('sub')
@@ -201,6 +194,25 @@ class LabelModel implements JsonSerializable {
         }
         return $labels;
     }
+    
+    public static function loadStaticByBounds2(LatLngBounds $bounds, $zoom, $exceptIds = [], $exceptTypes = []) {
+
+        $res = get_mysqli()->select()
+                ->all()
+                ->from('label_static')->alias('ls')
+                ->where('zoom', 'ls', EQ, $zoom)
+                ->andCond(self::buildBoundsClause($bounds))
+                ->andCond('id', NOT_IN, $exceptIds)
+                ->andCond('sub', 'ls', NOT_IN, $exceptTypes)
+                ->orderBy('order')
+                ->exec();
+
+        $labels = [];
+        while ($o = $res->fetchObject()) {
+            $labels[] = new LabelModel($o, 'static');
+        }
+        return $labels;
+    }
 
     /**
      * @param Bounds $bounds
@@ -208,15 +220,17 @@ class LabelModel implements JsonSerializable {
      * @param int $exceptId
      * @return \LabelModel
      */
-    public static function loadDynamicByBounds(Bounds $bounds, $types, $exceptId = 0) {
+    //public static function loadDynamicByBounds(Bounds $bounds, $types, $exceptId = 0) {
+    public static function loadDynamicByBounds(LatLngBounds $bounds, $types, $exceptIds = []) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('label_dynamic')->alias('ld')
                 ->leftJoin('label_dynamic_descriptor')->alias('ldd')->on('sub')
                 ->where(self::buildBoundsClause($bounds))
                 ->andCond('sub', 'ld', IN, $types)
-                ->andCond('id', NE, $exceptId)
+                //->andCond('id', NE, $exceptId)
+                ->andCond('id', NOT_IN, $exceptIds)
                 ->orderBy('rank')
                 ->exec();
 
@@ -227,9 +241,9 @@ class LabelModel implements JsonSerializable {
         return $labels;
     }
 
-    public static function typesWithinBounds(Bounds $bounds, $types, $exceptId = 0) {
+    public static function typesWithinBounds(LatLngBounds $bounds, $types, $exceptId = 0) {
 
-        $res = db()->select()
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('label_dynamic')
                 ->where(self::buildBoundsClause($bounds))
@@ -244,33 +258,26 @@ class LabelModel implements JsonSerializable {
         }
         return count($types) === count($rows);
     }
-    
-    public static function oneOfTypesWithinBounds(Bounds $bounds, $types, $exceptId = 0) {
 
-        $res = db()->select()
+    public static function oneOfTypesWithinBounds(LatLngBounds $bounds, $types, $exceptId = 0) {
+
+        $res = get_mysqli()->select()
                 ->all()
                 ->from('label_dynamic')
                 ->where(self::buildBoundsClause($bounds))
                 ->andCond('sub', IN, $types)
                 ->andCond('id', NE, $exceptId)
-//                ->groupBy('sub')
                 ->exec();
 
         return $res->numRows() > 0;
-//        $rows = [];
-//        while ($o = $res->fetchObject()) {
-//            $rows[] = $o;
-//        }
-//        return count($types) === count($rows);
     }
 
-    //Helper method
-    private static function buildBoundsClause(Bounds $bounds) {
+    private static function buildBoundsClause(LatLngBounds $bounds) {
 
-        $s = $bounds->s();
-        $w = $bounds->w();
-        $n = $bounds->n();
-        $e = $bounds->e();
+        $s = $bounds->get_south();
+        $w = $bounds->get_west();
+        $n = $bounds->get_north();
+        $e = $bounds->get_east();
 
         if ($w > $e) {
             return "(`lat` < $n AND `lat` > $s AND (`lng` < $e OR `lng` > $w))";

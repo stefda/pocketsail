@@ -1,44 +1,46 @@
 
+/**
+ * A representation of a point in the Cartesian coordinate system.
+ * 
+ * @example
+ * var point = new Point(0, 0);
+ * 
+ * @constructor
+ * @param {Number} x
+ * @param {Number} y
+ * @extends GeoJSON
+ */
 function Point(x, y) {
 
-    this.x = x;
-    this.y = y;
+    GeoJSON.apply(this, ['Point', [x, y]]);
 
     /**
-     * @param {Point} point
-     * @returns {Boolean}
+     * @returns {Number}
      */
-    this.equals = function(point) {
-        return this.x === point.x && this.y === point.y;
+    this.x = function () {
+        return this.coordinates[0];
     };
 
     /**
-     * @returns {LatLng}
+     * @returns {Number}
      */
+    this.y = function () {
+        return this.coordinates[1];
+    };
+    
     this.toLatLng = function() {
-        return new LatLng(this.y, this.x);
-    };
-
-    /**
-     * @returns {String}
-     */
-    this.toWKT = function() {
-        return "POINT(" + this.x + " " + this.y + ")";
+        return new LatLng(this.y(), this.x());
     };
 }
 
-Point.fromWKT = function(wkt) {
+Point.prototype = GeoJSON.prototype;
+Point.prototype.constructor = Point;
 
-    var pattern = /POINT *\( *(-?\d+(\.\d+)?) +(-?\d+(\.\d+)?) *\)/i;
-    var matches = pattern.exec(wkt);
-
-    if (matches === null) {
-        return null;
-    }
-
-    // Extract point coordinates from matches
-    var x = parseFloat(matches[1]);
-    var y = parseFloat(matches[3]);
-
-    return new Point(x, y);
+/**
+ * Create Point from a GeoJSON "Point" object.
+ * @param {Object} geoJson GeoJSON object
+ * @returns {Point}
+ */
+Point.fromGeoJson = function (geoJson) {
+    return new Point(geoJson.coordinates[0], geoJson.coordinates[1]);
 };

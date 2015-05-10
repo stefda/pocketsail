@@ -1,5 +1,5 @@
 
-<ul id="menu" style="display: none;">
+<ul id="addMenu" style="display: none;">
 
     <li data-value="cove">Cove</li>
     <li data-value="anchorage">Anchorage</li>

@@ -1,8 +1,5 @@
 <?php
 
-/**
- * @author David Stefan
- */
 class CL_MySQL extends CL_Database {
 
     private static $instance = NULL;
@@ -11,9 +8,12 @@ class CL_MySQL extends CL_Database {
         parent::__construct('mysql');
     }
 
+    /**
+     * @return CL_MySQL
+     */
     public static function get_instance() {
         if (self::$instance === NULL) {
-            self::$instance = new CL_MySQL();
+            return self::$instance = new CL_MySQL();
         }
         return self::$instance;
     }

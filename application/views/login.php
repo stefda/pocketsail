@@ -14,7 +14,7 @@
 
     <body>
 
-        <div id="head" style="width: 100%; height: 60px; background-color: #e9eaeb;">
+        <div id="header" style="width: 100%; height: 60px; background-color: #e9eaeb;">
             <img src="/application/images/logo.png" style="float: left; margin: 14px 0 0 16px;" />
         </div>
 

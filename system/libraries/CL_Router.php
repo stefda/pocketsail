@@ -1,8 +1,5 @@
 <?php
 
-if (!defined('SYSPATH'))
-    exit("No direct script access allowed!");
-
 class CL_Router {
 
     private static $instance = NULL;
@@ -10,8 +7,6 @@ class CL_Router {
     private $uri;
     private $class = null;
     private $method = null;
-    private $section = null;
-    private $page = null;
     private $parameters = NULL;
 
     private function __construct() {
@@ -42,7 +37,7 @@ class CL_Router {
         // from the config object...
         if (count($this->uri->segments) == 0) {
             if (trim($this->config->get_item('main', 'default_controller')) == '') {
-                show_error("Default controller is not defined.", "Router Error");
+                error("Default controller is not defined.");
             }
             return strtolower($this->config->get_item('main', 'default_controller'));
         }
@@ -80,6 +75,3 @@ class CL_Router {
     }
 
 }
-
-/* End of file CL_Router.php */
-/* Location: /system/libraries/CL_Router.php */

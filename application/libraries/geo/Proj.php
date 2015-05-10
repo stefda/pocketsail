@@ -6,6 +6,7 @@ class Proj {
     const ZOOMPREC = 3;
     const YLIM = 3.13130133147;
     const DOUBLEYLIM = 6.26260266294;
+    const ZOOMMAX = 24;
 
     public static function latlng2merc(LatLng $latLng) {
 
