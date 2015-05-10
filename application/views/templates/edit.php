@@ -130,7 +130,7 @@
                         <div id="mainPhotoBounds">
                             <div id="mainPhotoWrapper" style="top: <?= $mainPhotoInfo !== NULL && $mainPhotoInfo['offset'] !== NULL ? $mainPhotoInfo['offset'] . 'px' : 'auto' ?>;">
                                 <? if ($mainPhotoInfo !== NULL): ?>
-                                    <img src="/data/photos/gallery/<?= $mainPhotoId ?>.jpg" />
+                                    <img id="galleryPhoto" src="/data/photos/gallery/<?= $mainPhotoId ?>.jpg" />
                                 <? endif; ?>
                             </div>
                         </div>

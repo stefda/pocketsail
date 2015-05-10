@@ -261,9 +261,10 @@ $(function () {
     function showMainPhoto(id) {
 
         mainPhotoId = id;
-        var img = $('<img src="/data/photos/gallery/' + id + '.jpg" />');
+        var img = $('<img id="galleryPhoto" src="/data/photos/gallery/' + id + '.jpg" />');
 
         img.load(function () {
+            console.log('asd');
             initMainPhoto();
         });
 
@@ -276,5 +277,11 @@ $(function () {
         mainPhotoWrapper.html('');
     }
 
-    initMainPhoto('default');
+    $('#galleryPhoto').load(function () {
+        initMainPhoto('default');
+    }).each(function () {
+        if (this.complete) {
+            $(this).load();
+        }
+    });
 });
