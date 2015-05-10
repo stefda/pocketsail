@@ -8,8 +8,6 @@ class API extends CL_Controller {
 
     function __construct() {
         parent::__construct();
-        $this->load->library('Security');
-        Security::redirectWhenNotSignedIn();
     }
 
     function suggest() {

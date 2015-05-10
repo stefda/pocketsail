@@ -1,5 +1,7 @@
 <?php
 
+require_library('geo/GeoJSON');
+
 class Polygon extends GeoJSON implements JsonSerializable {
 
     public function __construct($coordinates) {

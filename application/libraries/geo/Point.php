@@ -1,5 +1,7 @@
 <?php
 
+require_library('geo/GeoJSON');
+
 class Point extends GeoJSON implements JsonSerializable {
 
     public function __construct($x, $y) {

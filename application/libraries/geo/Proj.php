@@ -1,5 +1,9 @@
 <?php
 
+require_library('geo/GeoJSON');
+require_library('geo/Point');
+require_library('geo/LatLng');
+
 class Proj {
 
     const TILESIZE = 256;

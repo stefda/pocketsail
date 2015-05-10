@@ -7,7 +7,8 @@ class Test extends CL_Controller {
     }
 
     function index() {
-        echo 'Test::index';
+        require_library('geo/*');
+        require_library('geo/*');
     }
 
     function mysql() {

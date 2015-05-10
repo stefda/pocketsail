@@ -1,5 +1,7 @@
 <?php
 
+require_library('geo/GeoJSON');
+
 class LatLngBounds extends GeoJSON implements JsonSerializable, CL_Serializable {
 
     public function __construct(LatLng $sw = NULL, LatLng $ne = NULL) {

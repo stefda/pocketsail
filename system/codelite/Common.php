@@ -19,6 +19,7 @@ function require_library($library) {
         $dp = opendir($dirPath);
         while ($file = readdir($dp)) {
             if ($file !== '.' && $file !== '..') {
+                echo $dirPath . $file . "\n";
                 require_once $dirPath . $file;
             }
         }
