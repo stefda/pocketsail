@@ -2,7 +2,7 @@
 <html>
     <head>
         
-        <title>Pocketsail</title>
+        <title>Pocketsail - The Modern Nautical Guide</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="icon" type="image/png"  href="/application/images/favicon4.png">
 
