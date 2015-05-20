@@ -14,6 +14,32 @@ class Test extends CL_Controller {
     function icons() {
         $this->load->view('icons');
     }
+    
+    function nearby() {
+        
+        require_library('geo/*');
+        require_model('POIModel');
+        $this->load->helper('geo');
+        
+        $poiId = 21;
+        
+        $poi = POIModel::load($poiId);
+        $bounds = NULL;
+        
+        if ($poi->has_border()) {
+            $bounds = LatLngBounds::from_polygon($poi->border());
+            $bounds->grow(1);
+        } else {
+            $bounds = new LatLngBounds($poi->latLng());
+            $bounds->grow(1);
+            echo $bounds->get_north_east()->lat() . "," . $bounds->get_north_east()->lng() . "\n";
+            echo $bounds->get_south_west()->lat() . "," . $bounds->get_south_west()->lng() . "\n";
+        }
+        
+        // Load everything within the bounds
+        
+        POIModel::load_pois_near($poiId);
+    }
 
     function fulltext() {
 

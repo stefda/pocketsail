@@ -24,10 +24,7 @@ function geo_proximity($lat, $lng, $d, $dir) {
     $dir = deg2rad($dir);
     $newLat = asin(sin($lat) * cos($d / $R) + cos($lat) * sin($d / $R) * cos($dir));
     $newLng = $lng + atan2(sin($dir) * sin($d / $R) * cos($lat), cos($d / $R) - sin($lat) * sin($newLat));
-    $res = new stdClass();
-    $res->lat = rad2deg($newLat);
-    $res->lng = rad2deg($newLng);
-    return $res;
+    return new LatLng(rad2deg($newLat), rad2deg($newLng));
 }
 
 function bearing($lat1, $lng1, $lat2, $lng2) {

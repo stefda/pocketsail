@@ -132,6 +132,13 @@ class LatLngBounds extends GeoJSON implements JsonSerializable, CL_Serializable 
         $this->set_south_west(Proj::pixel2latLng($bottomLeft, $zoom));
         $this->set_north_east(Proj::pixel2latLng($topRight, $zoom));
     }
+    
+    public function grow($d) {
+        $ne = $this->get_north_east();
+        $sw = $this->get_south_west();
+        $this->set_north_east(geo_proximity($ne->lat(), $ne->lng(), $d, 45));
+        $this->set_south_west(geo_proximity($sw->lat(), $sw->lng(), $d, 225));
+    }
 
     private function wrap_lng($a, $b) {
         $c = $b - $a;

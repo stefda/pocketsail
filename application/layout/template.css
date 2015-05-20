@@ -139,7 +139,7 @@ h2 { vertical-align: middle; font-size: 12px; margin: 0 4px 0; font-weight: bold
 .photo .photoSettings:hover { cursor: pointer; cursor: hand; }
 .photoDescription { resize: none; width: 216px; margin-top: -1px; border-radius: 0 0 4px 4px; height: 20px; }
 
-#photosUploadFrame { }
+#photosUploadFrame { display: none; }
 
 #mainPhotoWrapper { position: absolute; cursor: pointer; cursor: n-resize; }
 #mainPhotoWrapper img { display: block; }

@@ -485,6 +485,12 @@ class POIModel implements JsonSerializable {
 
         return self::loadByIds($ids);
     }
+    
+    public static function load_pois_near($poiId) {
+        
+        $mysql = get_mysql();
+        $rows = $mysql->fetch_all("SELECT id, name, cat, sub FROM poi WHERE nearId = ?", [$poiId]);
+    }
 
     /**
      * @param LatLng $latLng
