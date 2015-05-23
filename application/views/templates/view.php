@@ -53,7 +53,8 @@
                  */
 
                 map = new Map(canvas, {
-                    cache: true
+                    cache: true,
+                    disableDefaultUI: true
                 });
 
                 map.setParam('poiId', poiId);

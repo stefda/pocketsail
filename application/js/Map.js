@@ -10,6 +10,7 @@ function Map(canvas, args) {
     this.cursor = args.cursor === undefined ? 'auto' : args.cursor;
     this.cache = args.cache === undefined ? true : args.cache;
     this.borderEdit = args.borderEdit === undefined ? false : args.borderEdit;
+    this.disableDefaultUI = args.disableDefaultUI === undefined ? false : args.disableDefaultUI;
 
     this.params = {
         poiId: undefined,
@@ -282,6 +283,7 @@ function Map(canvas, args) {
             streetViewControl: false,
             scaleControl: true,
             draggableCursor: this.cursor,
+            disableDefaultUI: this.disableDefaultUI,
             mapTypeControlOptions: {
                 mapTypeIds: [psMapTypeId, google.maps.MapTypeId.ROADMAP, google.maps.MapTypeId.HYBRID]
             },
