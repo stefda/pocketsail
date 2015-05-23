@@ -1,3 +1,3 @@
 
-<? include_view('templates/view/description'); ?>
-<? include_view('templates/view/approach'); ?>
+<? include_view('templates/infopage/description'); ?>
+<? include_view('templates/infopage/approach'); ?>

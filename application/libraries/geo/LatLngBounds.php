@@ -104,6 +104,16 @@ class LatLngBounds extends GeoJSON implements JsonSerializable, CL_Serializable 
         $this->coordinates[0][0] = $west;
     }
 
+    public function extend_with_polygon(Polygon $poly) {
+
+        $ring = $poly->get_ring(0);
+
+        for ($i = 0; $i < count($ring); $i++) {
+            $latLng = new LatLng($ring[$i][1], $ring[$i][0]);
+            $this->extend($latLng);
+        }
+    }
+
     public function expand($zoom, $top, $right = NULL, $left = NULL, $bottom = NULL) {
 
         if ($bottom === NULL) {
@@ -132,7 +142,7 @@ class LatLngBounds extends GeoJSON implements JsonSerializable, CL_Serializable 
         $this->set_south_west(Proj::pixel2latLng($bottomLeft, $zoom));
         $this->set_north_east(Proj::pixel2latLng($topRight, $zoom));
     }
-    
+
     public function grow($d) {
         $ne = $this->get_north_east();
         $sw = $this->get_south_west();
@@ -238,7 +248,20 @@ class LatLngBounds extends GeoJSON implements JsonSerializable, CL_Serializable 
      * @param int [$left = 0] Left padding (right padding used if ommited)
      * @returns int
      */
-    public function get_max_zoom($width, $height, $top = 0, $right = 0, $bottom = 0, $left = 0) {
+    public function get_max_zoom($width, $height, $top = 0, $right = NULL, $bottom = NULL, $left = NULL) {
+
+        if ($bottom === NULL) {
+            if ($left === NULL) {
+                if ($right === NULL) {
+                    $right = $left = $bottom = $top;
+                } else {
+                    $left = $right;
+                    $bottom = $top;
+                }
+            } else {
+                $bottom = $top;
+            }
+        }
 
         // Subtract padding
         $width -= $right + $left;

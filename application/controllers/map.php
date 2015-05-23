@@ -10,6 +10,7 @@ class Map extends CL_Controller {
         require_model('POIModel');
         require_model('LabelModel');
         $this->load->helper('html');
+        $this->load->helper('geo');
     }
 
     /**
@@ -53,6 +54,9 @@ class Map extends CL_Controller {
                 }
             case 'edit': {
                     return $this->load_edit($args);
+                }
+            case 'quick': {
+                    return $this->load_quick($args);
                 }
         }
 
@@ -194,8 +198,6 @@ class Map extends CL_Controller {
         $args['poi'] = POIModel::load($args['poiId']);
 
         $this->compute_bounds($args, FALSE);
-//        $args['bounds']->expand($args['zoom'], 300);
-//        $labels['dynamic'][] = LabelModel::loadDynamic($args['poiId']);
         $this->add_static($args, $labels);
 
         $this->assign('poi', $args['poi']);
@@ -204,7 +206,47 @@ class Map extends CL_Controller {
             'center' => $args['center'],
             'zoom' => $args['zoom'],
             'labels' => $labels
-//            'card' => $this->load->view('templates/infobox', TRUE)
+        ];
+    }
+
+    private function load_quick($args) {
+
+        if (!isset($args['poiId']) || !isset($args['poiIds'])) {
+            error("'Quick' action requires the 'poiId' and 'poiIds' parameters.");
+        }
+
+        $labels = [
+            'dynamic' => [],
+            'static' => []
+        ];
+
+        $args['poi'] = POIModel::load($args['poiId']);
+        $args['pois'] = POIModel::loadByIds($args['poiIds']);
+
+        $bounds = new LatLngBounds($args['poi']->latLng());
+//        if ($args['poi']->has_border()) {
+//            $bounds->extend_with_polygon($args['poi']->border());
+//        }
+
+        foreach ($args['pois'] AS $poi) {
+            if ($poi->has_border()) {
+                $bounds->extend_with_polygon($poi->border());
+            } else {
+                $bounds->extend($poi->latLng());
+            }
+        }
+
+        $args['zoom'] = $bounds->get_max_zoom($args['width'], $args['height'], 30, 70, 30, 15);
+        $args['bounds'] = LatLngBounds::from_dimensions($args['width'], $args['height'], $bounds->get_center(), $args['zoom']);
+
+        $this->add_poi($args, $labels);
+        $this->add_pois($args, $labels);
+        $this->add_static($args, $labels);
+
+        return [
+            'center' => $args['bounds']->get_center(),
+            'zoom' => $args['zoom'],
+            'labels' => $labels
         ];
     }
 
@@ -281,7 +323,8 @@ class Map extends CL_Controller {
 
     private function expand_bounds_to_types(&$args) {
         if (isset($args['types'])) {
-            while (!LabelModel::oneOfTypesWithinBounds($args['bounds'], $args['types'])) {
+            $exceptId = isset($args['poiId']) ? $args['poiId'] : 0;
+            while (!LabelModel::oneOfTypesWithinBounds($args['bounds'], $args['types'], $exceptId)) {
                 $args['zoom'] --;
                 $args['bounds'] = LatLngBounds::from_dimensions($args['width'], $args['height'], $args['bounds']->get_center(), $args['zoom']);
             }

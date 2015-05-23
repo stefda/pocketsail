@@ -22,7 +22,7 @@ class POIModel implements JsonSerializable {
     private $timestamp;
 
     public function __construct($o) {
-        
+
         $this->id = $o->id;
         $this->url = $o->url;
         $this->nearId = $o->nearId;
@@ -132,7 +132,7 @@ class POIModel implements JsonSerializable {
      * @return int
      */
     public static function addNew($url, $nearId, $countryId, $userId, $name, $label, $cat, $sub, $latLng, $border, $attrs) {
-        
+
         $mysql = CL_MySQLi::get_instance();
         $query = insert($mysql)
                 ->into('poi_new')
@@ -148,7 +148,7 @@ class POIModel implements JsonSerializable {
                 ->value('lng', $latLng->lng())
                 ->value('border', $border === NULL ? 'NULL' : $border->to_wkt())->op(GEOM_FROM_TEXT)
                 ->value('attrs', json_encode($attrs));
-        
+
         $mysql->query($query);
         return $mysql->insertId();
     }
@@ -332,13 +332,13 @@ class POIModel implements JsonSerializable {
 
         return POIModel::fromObject($r->fetchObject());
     }
-    
+
     /**
      * @param int $id
      * @return \POIModel|null
      */
     public static function loadByUrl($url) {
-        
+
         $r = get_mysqli()->select()
                 ->all('poi')
                 ->col('border', 'poi')->op(AS_TEXT)->alias('borderWKT')
@@ -358,7 +358,7 @@ class POIModel implements JsonSerializable {
 
         return POIModel::fromObject($r->fetchObject());
     }
-    
+
     /**
      * @param int $id
      * @return \POIModel|null
@@ -376,9 +376,9 @@ class POIModel implements JsonSerializable {
                 ->leftJoin('poi')->alias('poiCountry')->on('id', 'countryId')
                 ->leftJoin('poi_type')->alias('poiType')->on('id', 'sub')
                 ->exec();
-        
+
         $pois = [];
-        
+
         while ($o = $r->fetchObject()) {
             $pois[] = POIModel::fromObject($o);
         }
@@ -441,6 +441,68 @@ class POIModel implements JsonSerializable {
         return $pois;
     }
 
+    public static function load_within_bounds(LatLngBounds $bounds) {
+
+        $mysql = get_mysql();
+        $stmt = $mysql->prepare("SELECT id, name, cat, sub, lat, lng FROM poi WHERE lat > ? && lng > ? && lat < ? && lng < ?");
+
+        $ne = $bounds->get_north_east();
+        $sw = $bounds->get_south_west();
+
+        if ($ne->lng() > $sw->lng()) {
+            $stmt->execute([
+                $sw->lat(),
+                $sw->lng(),
+                $ne->lat(),
+                $ne->lng()
+            ]);
+        } else {
+            $stmt->execute([
+                $sw->lat(),
+                $ne->lng(),
+                $ne->lat(),
+                $sw->lng()
+            ]);
+        }
+
+        return $stmt->fetch_all();
+    }
+    
+    public static function load_sub_within_bounds(LatLngBounds $bounds, $sub) {
+
+        $mysql = get_mysql();
+        $stmt = $mysql->prepare("SELECT id, name, cat, sub, lat, lng FROM poi WHERE sub = ? && lat > ? && lng > ? && lat < ? && lng < ?");
+
+        $ne = $bounds->get_north_east();
+        $sw = $bounds->get_south_west();
+
+        if ($ne->lng() > $sw->lng()) {
+            $stmt->execute([
+                $sub,
+                $sw->lat(),
+                $sw->lng(),
+                $ne->lat(),
+                $ne->lng()
+            ]);
+        } else {
+            $stmt->execute([
+                $sub,
+                $sw->lat(),
+                $ne->lng(),
+                $ne->lat(),
+                $sw->lng(),
+                $sub
+            ]);
+        }
+
+        return $stmt->fetch_all();
+    }
+
+    public static function load_neabys($poiId) {
+        $mysql = get_mysql();
+        return $mysql->fetch_all("SELECT id, name, cat, sub, lat, lng FROM poi WHERE nearId = ?", [$poiId]);
+    }
+
     public static function loadWithinBorder(Polygon $border, $types, $exceptId = 0) {
 
         $res = get_mysqli()->select()
@@ -485,12 +547,6 @@ class POIModel implements JsonSerializable {
 
         return self::loadByIds($ids);
     }
-    
-    public static function load_pois_near($poiId) {
-        
-        $mysql = get_mysql();
-        $rows = $mysql->fetch_all("SELECT id, name, cat, sub FROM poi WHERE nearId = ?", [$poiId]);
-    }
 
     /**
      * @param LatLng $latLng
@@ -514,7 +570,7 @@ class POIModel implements JsonSerializable {
     public function id() {
         return $this->id;
     }
-    
+
     public function url() {
         return $this->url;
     }
@@ -577,7 +633,7 @@ class POIModel implements JsonSerializable {
     public function border() {
         return $this->border;
     }
-    
+
     public function has_border() {
         return $this->border !== NULL;
     }

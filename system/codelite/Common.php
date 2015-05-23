@@ -1,6 +1,31 @@
 <?php
 
 /**
+ * Array helper functions
+ */
+function aasort(&$array, $key) {
+
+    $res = array();
+    $sorted = array();
+    reset($array);
+
+    foreach ($array as $ii => $va) {
+        $sorted[$ii] = $va[$key];
+    }
+
+    asort($sorted);
+
+    foreach ($sorted as $ii => $va) {
+        $res[$ii] = $array[$ii];
+    }
+    
+    // Reassign array keys
+    $res = array_values($res);
+
+    $array = $res;
+}
+
+/**
  * Database helper functions
  */
 function get_mysql() {
@@ -107,12 +132,25 @@ function include_card_template($cat, $sub) {
 }
 
 function include_view_template($sub, $cat) {
-    $viewPath = APPPATH . 'views/templates/view/' . $sub . '.php';
-    if (file_exists($viewPath)) {
-        echo CL_Loader::get_instance()->view('templates/view/' . $sub, FALSE);
-        return;
+
+    $subPath = APPPATH . 'views/templates/infopage/' . $sub . '.php';
+    $catPath = APPPATH . 'views/templates/infopage/' . $cat . '.php';
+
+    if (file_exists($subPath)) {
+        return CL_Loader::get_instance()->view('templates/infopage/' . $sub, FALSE);
+    } else if (file_exists($catPath)) {
+        return CL_Loader::get_instance()->view('templates/infopage/' . $cat, FALSE);
     }
-    echo CL_Loader::get_instance()->view('templates/view/' . $cat, FALSE);
+
+    // If neither sub- or cat-specific template exists, use default
+    return CL_Loader::get_instance()->view('templates/infopage/default', FALSE);
+
+//    $viewPath = APPPATH . 'views/templates/infopage/' . $sub . '.php';
+//    if (file_exists($viewPath)) {
+//        echo CL_Loader::get_instance()->view('templates/infopage/' . $sub, FALSE);
+//        return;
+//    }
+//    echo CL_Loader::get_instance()->view('templates/infopage/' . $cat, FALSE);
 }
 
 /**

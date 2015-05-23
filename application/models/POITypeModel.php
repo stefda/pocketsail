@@ -60,6 +60,32 @@ class POITypeModel implements JsonSerializable {
         }
         return self::fromObject($res->fetchObject());
     }
+    
+    public static function cats_name_map() {
+        
+        $map = [];
+        $mysql = get_mysql();
+        $cats = $mysql->fetch_all("SELECT * FROM `poi_type` WHERE `parentId` IS NULL");
+        
+        foreach ($cats AS $cat) {
+            $map[$cat['id']] = $cat['name'];
+        }
+        
+        return $map;
+    }
+    
+    public static function subs_name_map() {
+        
+        $map = [];
+        $mysql = get_mysql();
+        $subs = $mysql->fetch_all("SELECT * FROM `poi_type` WHERE `parentId` IS NOT NULL");
+        
+        foreach ($subs AS $sub) {
+            $map[$sub['id']] = $sub['name'];
+        }
+        
+        return $map;
+    }
 
     public function jsonSerialize() {
         return [

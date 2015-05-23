@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        
+
         <title>Pocketsail - The Modern Nautical Guide</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <link rel="icon" type="image/png"  href="/application/images/favicon4.png">
@@ -45,6 +45,19 @@
 
             var map = null;
 
+            $(function () {
+
+                $('#test').click(function () {
+                    map.setParam('poiId', 22);
+                    //map.setParam('poiIds', [4, 5]);
+                    map.setParam('types', ['gasstation']);
+                    map.loadData('search', function (data) {
+                        this.handleData(data);
+                        this.redraw();
+                    });
+                });
+            });
+
         </script>
 
         <style>
@@ -58,6 +71,10 @@
         <div id="canvas"></div>
         <div id="card"></div>
         <div id="zoomOut"></div>
+
+        <div style="position: absolute; top: 200px; right: 100px;">
+            <input type="button" id="test" value="Test" />
+        </div>
 
         <div id="logoWrapper">
             <img id="logo" src="/application/images/logo-free.png" />
