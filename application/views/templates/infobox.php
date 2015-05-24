@@ -135,7 +135,7 @@ if (strlen($desc) !== strlen($descTrimmed)) {
 }
 ?>
 
-<? if ($mainPhotoId && strlen($desc) > 0): ?>
+<? if ($mainPhotoId || strlen($desc) > 0): ?>
     <div class="card-content-wrapper" style="margin-top: 10px;">
         <div class="card-content">
 
