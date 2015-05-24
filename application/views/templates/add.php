@@ -63,7 +63,7 @@
                     borderEdit: true
                 });
 
-                map.initCanvas(function() {
+                map.initCanvas(function () {
                     map.setDraggableMarkerLatLng(center);
                 });
 
@@ -85,45 +85,51 @@
 
     <body>
 
-        <div id="header">
+        <div class="wrapper">
 
-            <div style="float: right; margin: 15px 20px 0 0;">
-                <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
-                <input id="cancelButton" class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+            <div id="header">
+
+                <div style="float: right; margin: 15px 20px 0 0;">
+                    <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
+                    <input id="cancelButton" class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+                </div>
+
+                <div style="margin: 12px 0 0 20px;">
+                    <img src="/application/images/logo.png"/>
+                </div>
+
             </div>
 
-            <div style="margin: 12px 0 0 20px;">
-                <img src="/application/images/logo.png"/>
+            <div id="content">
+
+                <div id="boxheadWrapper">
+                    <div id="boxhead">
+
+                        <div id="canvasWrapper">
+                            <div id="canvasResizeButton"></div>
+                            <div id="canvas"></div>
+                        </div>
+
+                        <div id="gallery" class="tpl-gallery">
+                        </div>
+
+                    </div>
+                </div>
+
+                <div>
+                    <?= include_edit_template($poi->cat, $poi->sub) ?>
+                </div>
+                
+                <div style="clear: both;"></div>
+
             </div>
 
-        </div>
-
-        <div id="content">
-
-            <div id="boxheadWrapper">
-                <div id="boxhead">
-
-                    <div id="canvasWrapper">
-                        <div id="canvasResizeButton"></div>
-                        <div id="canvas"></div>
-                    </div>
-
-                    <div id="gallery" class="tpl-gallery">
-                    </div>
-
+            <div id="footer">
+                <div style="width: 230px; margin: 16px auto 0; font-size: 12px; color: #919293;">
+                    Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
                 </div>
             </div>
 
-            <div>
-                <?= include_edit_template($poi->cat, $poi->sub) ?>
-            </div>
-
-        </div>
-
-        <div id="footer">
-            <div style="width: 230px; margin: 16px auto 0; font-size: 12px; color: #919293;">
-                Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
-            </div>
         </div>
 
     </body>
