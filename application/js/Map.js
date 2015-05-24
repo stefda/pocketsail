@@ -230,8 +230,6 @@ function Map(canvas, args) {
 
     this.handleData = function (data) {
 
-        console.log(data);
-
         if (data.zoom) {
             if (data.center) {
                 this.center = LatLng.fromGeoJson(data.center);

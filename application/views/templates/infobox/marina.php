@@ -1,12 +1,13 @@
 <div style="color: #343536;">
 
-    <img src="/application/images/card/marina-small.png" style="float: left; margin-right: 8px;" />
-
-    <div style="font-size: 15px; margin-bottom: 2px; font-weight: bold;">
-        <?= $poi->name() ?>
+    <div style="font-size: 16px; margin-bottom: 4px; font-weight: bold;">
+        <?= $poi->name() ?> (<?= $subsMap[$poi->sub()] ?>)
+        <a class="link" href="/<?= $poi->url() ?>">
+            <img src="/application/images/open_in_new_window.png" style="margin-left: 2px; vertical-align: text-bottom;" />
+        </a>
     </div>
 
-    <div style="font-size: 12px;">
+    <div style="font-size: 13px;">
         <?
         $latLng = $poi->latLng();
         echo $latLng->latFormatted() . ", " . $latLng->lngFormatted();

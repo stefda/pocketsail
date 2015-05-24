@@ -132,6 +132,7 @@ class Map extends CL_Controller {
         }
 
         $this->expand_bounds_to_types($args);
+        
         $args['bounds']->expand($args['zoom'], 300);
         $this->add_poi($args, $labels);
         $this->add_types($args, $labels);

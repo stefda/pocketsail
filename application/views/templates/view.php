@@ -118,6 +118,7 @@
         <style>
 
             #canvas { width: 100%; height: 100%; }
+            .wrapper { min-height: 100%; position: relative; }
 
             .right-column { float: right; width: 300px; margin-top: 75px; }
             .left-column { float: left; width: 580px; margin-top: 75px; }
@@ -127,6 +128,19 @@
             .near { text-decoration: none; color: #4c8efc; font-size: 12px; }
             .seeAll { text-decoration: none; color: #4c8efc; font-size: 12px; }
             .moreGroup { display: none; }
+
+            .facility { display: block; float: left; width: 25px; height: 25px; background-image: url('/application/images/facilities.png'); }
+            .facility.water { background-position-x: 0px; }
+            .facility.electricity { background-position-x: -25px; }
+            .facility.showers { background-position-x: -50px; }
+            .facility.toilets { background-position-x: -75px; }
+            .facility.waste { background-position-x: -100px; }
+            .facility.customs { background-position-x: -125px; }
+            .facility.enquiries { background-position-x: -150px; }
+            .facility.laundry { background-position-x: -175px; }
+            .facility.wifi { background-position-x: -200px; }
+            .facility.disability { background-position-x: -225px; }
+            .facility.pets { background-position-x: -250px; }
 
         </style>
 
@@ -138,110 +152,155 @@
     </head>
     <body>
 
-        <div id="header">
-            <div style="margin: 12px 0 0 20px;">
-                <img src="/application/images/logo.png"/>
-            </div>
-        </div>
+        <div class="wrapper">
 
-        <div id="content">
-
-            <div class="right-column">
-
-                <div id="canvasWrapper" style="height: 200px; float: none;">
-                    <div id="canvas"></div>
+            <div id="header">
+                <div style="margin: 12px 0 0 20px;">
+                    <img src="/application/images/logo.png"/>
                 </div>
+            </div>
 
-                <div style="padding: 20px 10px 0 0;">
+            <div id="content">
 
-                    <div style="margin: 0 0 20px 0;">
-                        <div style="color: #444; font-size: 14px; font-weight: bold; margin-bottom: 8px;">Find nearest</div>
-                        <div style="margin-bottom: 1px;">
-                            <a class="findNearest" href="" data-sub="marina">
-                                Marina
-                            </a>
-                        </div>
-                        <div style="margin-bottom: 1px;">
-                            <a class="findNearest" href="" data-sub="anchorage">
-                                Anchorage
-                            </a>
-                        </div>
-                        <div style="margin-bottom: 1px;">
-                            <a class="findNearest" href="" data-sub="buoys">
-                                Buoys
-                            </a>
-                        </div>
+                <div class="right-column">
+
+                    <div id="canvasWrapper" style="height: 200px; float: none;">
+                        <div id="canvas"></div>
                     </div>
 
-                    <div style="color: #444; font-size: 14px; font-weight: bold;">Places within 1 mile</div>
+                    <div style="padding: 20px 10px 0 0;">
 
-                    <? $cats = ['berthing', 'anchoring', 'attraction', 'goingout', 'shopping', 'refuelling'] ?>
+                        <div style="margin: 0 0 20px 0;">
+                            <div style="color: #444; font-size: 14px; font-weight: bold; margin-bottom: 8px;">Find nearest</div>
+                            <div style="margin-bottom: 1px;">
+                                <a class="findNearest" href="" data-sub="marina">
+                                    Marina
+                                </a>
+                            </div>
+                            <div style="margin-bottom: 1px;">
+                                <a class="findNearest" href="" data-sub="anchorage">
+                                    Anchorage
+                                </a>
+                            </div>
+                            <div style="margin-bottom: 1px;">
+                                <a class="findNearest" href="" data-sub="buoys">
+                                    Buoys
+                                </a>
+                            </div>
+                            <div style="margin-bottom: 1px;">
+                                <a class="findNearest" href="" data-sub="gasstation">
+                                    Gas Station
+                                </a>
+                            </div>
+                        </div>
 
-                    <div style="padding-left: 0px;">
+                        <div style="color: #444; font-size: 14px; font-weight: bold;">Places within 1 mile</div>
 
-                        <? foreach ($cats AS $cat): ?>
-                            <? if (isset($nearbys[$cat])): ?>
-                                <? $group = $nearbys[$cat] ?>
-                                <div style="margin: 10px 0 7px;">
-                                    <div>
-                                        <a class="nearGroup" href="" data-poiids="<?= htmlspecialchars(json_encode($catIds[$cat])); ?>">
-                                            <?= $catsMap[$cat] ?>
-                                            (<?= count($group) ?>)
-                                        </a>
-                                        <? if (count($group) > 1): ?>
-                                            <a class="seeAll" href="" data-cat="<?= $cat ?>">show all</a>
-                                        <? endif; ?>
-                                    </div>
-                                    <div style="margin-top: 3px;">
-                                        <? for ($i = 0; $i < count($group); $i++): ?>
-                                            <? if (count($group) > 1 && $i == 1): ?>
-                                                <div class="moreGroup" data-cat="<?= $cat ?>">
-                                                <? endif; ?>
-                                                <? $nearby = $group[$i] ?>
-                                                <div style="margin-bottom: 1px;">
-                                                    <a class="near" poiId="<?= $nearby['id'] ?>" href="">
-                                                        <? if ($nearby['name'] == ''): ?>
-                                                            (<?= $subsMap[$nearby['sub']] ?>)
-                                                        <? else: ?>
-                                                            <?= $nearby['name'] ?>
-                                                        <? endif; ?>
-                                                    </a>
-                                                    <span style="font-size: 11px; color: #333; margin-left: 3px;"><?= round($nearby['distance'], 1) ?> km</span>
-                                                </div>
-                                            <? endfor; ?>
+                        <? $cats = ['berthing', 'anchoring', 'attraction', 'goingout', 'shopping', 'refuelling'] ?>
+
+                        <div style="padding-left: 0px;">
+
+                            <? foreach ($cats AS $cat): ?>
+                                <? if (isset($nearbys[$cat])): ?>
+                                    <? $group = $nearbys[$cat] ?>
+                                    <div style="margin: 10px 0 7px;">
+                                        <div>
+                                            <a class="nearGroup" href="" data-poiids="<?= htmlspecialchars(json_encode($catIds[$cat])); ?>">
+                                                <?= $catsMap[$cat] ?>
+                                                (<?= count($group) ?>)
+                                            </a>
                                             <? if (count($group) > 1): ?>
-                                            </div>
-                                        <? endif; ?>
+                                                <a class="seeAll" href="" data-cat="<?= $cat ?>">show all</a>
+                                            <? endif; ?>
+                                        </div>
+                                        <div style="margin-top: 3px;">
+                                            <? for ($i = 0; $i < count($group); $i++): ?>
+                                                <? if (count($group) > 1 && $i == 1): ?>
+                                                    <div class="moreGroup" data-cat="<?= $cat ?>">
+                                                    <? endif; ?>
+                                                    <? $nearby = $group[$i] ?>
+                                                    <div style="margin-bottom: 1px;">
+                                                        <a class="near" poiId="<?= $nearby['id'] ?>" href="">
+                                                            <? if ($nearby['name'] == ''): ?>
+                                                                (<?= $subsMap[$nearby['sub']] ?>)
+                                                            <? else: ?>
+                                                                <?= $nearby['name'] ?>
+                                                            <? endif; ?>
+                                                        </a>
+                                                        <span style="font-size: 11px; color: #333; margin-left: 3px;"><?= round($nearby['distance'], 1) ?> km</span>
+                                                    </div>
+                                                <? endfor; ?>
+                                                <? if (count($group) > 1): ?>
+                                                </div>
+                                            <? endif; ?>
+                                        </div>
                                     </div>
-                                </div>
-                            <? endif; ?>
-                        <? endforeach; ?>
+                                <? endif; ?>
+                            <? endforeach; ?>
+
+                        </div>
 
                     </div>
 
                 </div>
+
+                <div class="left-column">
+
+                    <div style="position: relative; width: 580px; height: 200px; background-color: #f4f5f6; overflow: hidden; position: relative; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);">
+                        <? if ($mainPhotoInfo !== NULL): ?>
+                            <img src="/data/photos/gallery/<?= $mainPhotoInfo['id'] ?>.jpg" style="position: absolute; bottom: -<?= $mainPhotoInfo['offset'] ?>px;"/>
+                        <? else: ?>
+                            <div style="width: 64px; height: 52px; background-image: url('/application/images/camera.png'); margin: 72px auto 0;"></div>
+                        <? endif; ?>
+                    </div>
+
+                    <div class="tpl-section" style="position: relative; border-radius: 0 0 2px 2px; z-index: 999;">
+                        <div class="tpl-section-wrapper">
+
+                            <div style="float: right;">
+
+                                <?php
+                                $facilities = [
+                                    'water' => 'Water',
+                                    'electricity' => 'Electricity',
+                                    'showers' => 'Showers',
+                                    'toilets' => 'Toilets',
+                                    'waste' => 'Waste Disposal',
+                                    'customs' => 'Customs',
+                                    'enquiries' => 'Tourist Info',
+                                    'laundry' => 'Laundry',
+                                    'wifi' => 'WiFi',
+                                    'disability' => 'Disability Access',
+                                    'pets' => 'Pets'
+                                ];
+                                ?>
+
+                                <? foreach ($facilities AS $facility => $name): ?>
+                                    <? if (isset($attrs->facilities->{$facility}) && $attrs->facilities->{$facility}->value == 'yes'): ?>
+                                        <span class="facility <?= $facility ?>" title="<?= $name ?>"></span>
+                                    <? endif; ?>
+                                <? endforeach; ?>
+
+                            </div>
+
+                            <div style="font-size: 18px; font-weight: bold; color: #444; margin: 4px 0 6px 0;">
+                                <?= $poi->name ?> (<?= $subsMap[$poi->sub] ?>)
+                            </div>
+                            <div style="font-size: 14px;">
+                                <?= $poi->latLng->latFormatted() . " - " . $poi->latLng->lngFormatted() ?>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="clear: both;"></div>
 
             </div>
 
-            <div class="left-column">
-
-                <div style="width: 580px; height: 200px; background-color: red; overflow: hidden; position: relative;">
-                    <? if ($mainPhotoInfo !== NULL): ?>
-                        <img src="/data/photos/gallery/<?= $mainPhotoInfo['id'] ?>.jpg" style="position: absolute; bottom: -<?= $mainPhotoInfo['offset'] ?>px;"/>
-                    <? endif; ?>
-                </div>
-
-                <div class="tpl-section" style="border-radius: 0 0 2px 2px;">
-                    <div class="tpl-section-wrapper">
-
-                        <div style="font-size: 18px; font-weight: bold; color: #444; margin: 4px 0 6px 0;">
-                            <?= $poi->name ?> (<?= $subsMap[$poi->sub] ?>)
-                        </div>
-                        <div style="font-size: 14px;">
-                            <?= $poi->latLng->latFormatted() . " - " . $poi->latLng->lngFormatted() ?>
-                        </div>
-
-                    </div>
+            <div id="footer">
+                <div style="width: 230px; margin: 8px auto 0; font-size: 12px; color: #919293;">
+                    Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
                 </div>
             </div>
 
