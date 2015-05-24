@@ -30,9 +30,11 @@ class Photo extends CL_Controller {
             $full = image_resize($img, 1600, 900);
             $gallery = image_resize_width($img, 580);
             $preview = image_resize_crop($img, 216, 216);
-            $thumb = image_resize_crop($img, 100, 100);
+            //$thumb = image_resize_crop($img, 100, 100);
+            $thumb = image_resize_crop($img, 178, 110);
+            $thumbWide = image_resize_crop($img, 360, 110);
             $photo = new PhotoModel($poiId);
-            $photo->insert($img, $full, $preview, $gallery, $thumb);
+            $photo->insert($img, $full, $preview, $gallery, $thumb, $thumbWide);
         }
 
         $ids = PhotoModel::get_ids($poiId);
@@ -141,6 +143,20 @@ class Photo extends CL_Controller {
         $poiId = filter_input(INPUT_POST, 'poiId', FILTER_VALIDATE_INT);
         $infos = PhotoModel::get_infos($poiId);
         return $infos;
+    }
+
+    function reformat() {
+
+        $mysql = get_mysql();
+        $photoInfos = $mysql->fetch_all("SELECT * FROM photo_info");
+
+        foreach ($photoInfos AS $info) {
+            $img = PhotoModel::load_original($info['id']);
+            $thumb = image_resize_crop($img, 178, 110);
+            $thumbWide = image_resize_crop($img, 360, 110);
+            image_write($thumb, BASEPATH . 'data/photos/thumb/' . $info['id'] . '.jpg');
+            image_write($thumbWide, BASEPATH . 'data/photos/thumb_wide/' . $info['id'] . '.jpg');
+        }
     }
 
 }

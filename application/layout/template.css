@@ -26,6 +26,8 @@ h2 { vertical-align: middle; font-size: 12px; margin: 0 4px 0; font-weight: bold
 #content {
     width: 900px;
     margin: 0 auto;
+    height: 100%;
+    padding-bottom: 100px;
 }
 
 #boxheadWrapper {

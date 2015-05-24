@@ -118,7 +118,6 @@
         <style>
 
             #canvas { width: 100%; height: 100%; }
-            .wrapper { min-height: 100%; position: relative; }
 
             .right-column { float: right; width: 300px; margin-top: 75px; }
             .left-column { float: left; width: 580px; margin-top: 75px; }

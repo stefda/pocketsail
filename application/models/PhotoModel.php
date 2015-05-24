@@ -98,7 +98,34 @@ class PhotoModel {
         ]);
     }
 
-    public function insert($original, $full, $preview, $gallery, $thumb) {
+//    public function insert($original, $full, $preview, $gallery, $thumb) {
+//
+//        $mysql = get_mysql();
+//        $mysql->insert('photo_info', [
+//            'poiId' => $this->poiId,
+//            'main' => false,
+//            'description' => ''
+//        ]);
+//
+//        $id = $mysql->last_insert_id();
+//        image_write($original, BASEPATH . 'data/photos/original/' . $id . '.jpg');
+//        image_write($full, BASEPATH . 'data/photos/full/' . $id . '.jpg');
+//        image_write($preview, BASEPATH . 'data/photos/preview/' . $id . '.jpg');
+//        image_write($gallery, BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
+//        image_write($thumb, BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+//
+//        return $id;
+//    }
+//
+//    public static function update($id, $original, $full, $preview, $gallery, $thumb) {
+//        image_write($original, BASEPATH . 'data/photos/original/' . $id . '.jpg');
+//        image_write($full, BASEPATH . 'data/photos/full/' . $id . '.jpg');
+//        image_write($preview, BASEPATH . 'data/photos/preview/' . $id . '.jpg');
+//        image_write($gallery, BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
+//        image_write($thumb, BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+//    }
+    
+    public function insert($original, $full, $preview, $gallery, $thumb, $thumbWide) {
 
         $mysql = get_mysql();
         $mysql->insert('photo_info', [
@@ -113,22 +140,35 @@ class PhotoModel {
         image_write($preview, BASEPATH . 'data/photos/preview/' . $id . '.jpg');
         image_write($gallery, BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
         image_write($thumb, BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+        image_write($thumbWide, BASEPATH . 'data/photos/thumb_wide/' . $id . '.jpg');
 
         return $id;
     }
 
-    public static function update($id, $original, $full, $preview, $gallery, $thumb) {
+    public static function update($id, $original, $full, $preview, $gallery, $thumb, $thumbWide) {
         image_write($original, BASEPATH . 'data/photos/original/' . $id . '.jpg');
         image_write($full, BASEPATH . 'data/photos/full/' . $id . '.jpg');
         image_write($preview, BASEPATH . 'data/photos/preview/' . $id . '.jpg');
         image_write($gallery, BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
         image_write($thumb, BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+        image_write($thumb, BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+        image_write($thumb, BASEPATH . 'data/photos/thumb_wide/' . $id . '.jpg');
     }
 
     public static function load_original($id) {
         return image_create(BASEPATH . self::PATH . 'original/' . $id . '.jpg');
     }
 
+//    public static function delete($id) {
+//        $mysql = get_mysql();
+//        $mysql->execute("DELETE FROM photo_info WHERE id = ?", [$id]);
+//        unlink(BASEPATH . 'data/photos/original/' . $id . '.jpg');
+//        unlink(BASEPATH . 'data/photos/full/' . $id . '.jpg');
+//        unlink(BASEPATH . 'data/photos/preview/' . $id . '.jpg');
+//        unlink(BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
+//        unlink(BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+//    }
+    
     public static function delete($id) {
         $mysql = get_mysql();
         $mysql->execute("DELETE FROM photo_info WHERE id = ?", [$id]);
@@ -137,6 +177,7 @@ class PhotoModel {
         unlink(BASEPATH . 'data/photos/preview/' . $id . '.jpg');
         unlink(BASEPATH . 'data/photos/gallery/' . $id . '.jpg');
         unlink(BASEPATH . 'data/photos/thumb/' . $id . '.jpg');
+        unlink(BASEPATH . 'data/photos/thumb_wide/' . $id . '.jpg');
     }
 
 }

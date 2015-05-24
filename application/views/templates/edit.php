@@ -97,76 +97,80 @@
 
     </head>
 
-    <body style="background-color: #f6f7f8; margin: 0; padding: 0;">
+    <body>
 
-        <div id="header">
+        <div class="wrapper">
 
-            <div style="float: right; margin: 15px 20px 0 0;">
-                <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
-                <input id="cancelButton" class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+            <div id="header">
+
+                <div style="float: right; margin: 15px 20px 0 0;">
+                    <input id="saveButton" class="tpl-button tpl-button-blue" type="button" value="Save POI" />
+                    <input id="cancelButton" class="tpl-button" type="button" value="Cancel" style="margin-left: 10px;" />
+                </div>
+
+                <div style="margin: 12px 0 0 20px;">
+                    <img src="/application/images/logo.png"/>
+                </div>
+
             </div>
 
-            <div style="margin: 12px 0 0 20px;">
-                <img src="/application/images/logo.png"/>
-            </div>
+            <div id="content">
 
-        </div>
+                <div id="boxheadWrapper">
+                    <div id="boxhead">
 
-        <div id="content">
-
-            <div id="boxheadWrapper">
-                <div id="boxhead">
-
-                    <div id="canvasWrapper">
-                        <div id="canvasResizeButton"></div>
-                        <div id="canvas"></div>
-                    </div>
-
-                    <!--
-                    -- GALLERY
-                    -->
-                    <div id="gallery" class="tpl-gallery">
-
-                        <div id="mainPhotoBounds">
-                            <div id="mainPhotoWrapper" style="top: <?= $mainPhotoInfo !== NULL && $mainPhotoInfo['offset'] !== NULL ? $mainPhotoInfo['offset'] . 'px' : 'auto' ?>;">
-                                <? if ($mainPhotoInfo !== NULL): ?>
-                                    <img id="galleryPhoto" src="/data/photos/gallery/<?= $mainPhotoId ?>.jpg" />
-                                <? endif; ?>
-                            </div>
+                        <div id="canvasWrapper">
+                            <div id="canvasResizeButton"></div>
+                            <div id="canvas"></div>
                         </div>
 
-                        <form id="photosUploadForm" name="photosUploadForm" method="post" enctype="multipart/form-data" action="/photo/upload?ajax" target="photosUploadFrame">
+                        <!--
+                        -- GALLERY
+                        -->
+                        <div id="gallery" class="tpl-gallery">
 
-                            <input type="hidden" name="poiId" value="<?= $poi->id ?>" /><br />
-                            <input type="button" class="tpl-button tpl-button-blue" value="Show all photos" id="galleryShowButton" style="position: absolute; bottom: 45px; right: 10px;  width: 150px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
-                            <input type="button" class="tpl-button tpl-button-blue" value="Upload Photos" id="photosUploadButton" style="position: absolute; bottom: 10px; right: 10px; width: 150px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
-
-                            <div style="height: 0px; overflow: hidden;">
-                                <input id="photosInput" type="file" name="photo[]" multiple /><br />
+                            <div id="mainPhotoBounds">
+                                <div id="mainPhotoWrapper" style="top: <?= $mainPhotoInfo !== NULL && $mainPhotoInfo['offset'] !== NULL ? $mainPhotoInfo['offset'] . 'px' : 'auto' ?>;">
+                                    <? if ($mainPhotoInfo !== NULL): ?>
+                                        <img id="galleryPhoto" src="/data/photos/gallery/<?= $mainPhotoId ?>.jpg" />
+                                    <? endif; ?>
+                                </div>
                             </div>
 
-                        </form>
+                            <form id="photosUploadForm" name="photosUploadForm" method="post" enctype="multipart/form-data" action="/photo/upload?ajax" target="photosUploadFrame">
+
+                                <input type="hidden" name="poiId" value="<?= $poi->id ?>" /><br />
+                                <input type="button" class="tpl-button tpl-button-blue" value="Show all photos" id="galleryShowButton" style="position: absolute; bottom: 45px; right: 10px;  width: 150px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
+                                <input type="button" class="tpl-button tpl-button-blue" value="Upload Photos" id="photosUploadButton" style="position: absolute; bottom: 10px; right: 10px; width: 150px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);" />
+
+                                <div style="height: 0px; overflow: hidden;">
+                                    <input id="photosInput" type="file" name="photo[]" multiple /><br />
+                                </div>
+
+                            </form>
+
+                        </div>
+                        <!-- /GALLERY -->
 
                     </div>
-                    <!-- /GALLERY -->
+                </div>
 
+                <div style="width: 100%;" id="photoPreview" style="display: none;"></div>
+
+                <div>
+                    <?= include_edit_template($poi->cat, $poi->sub) ?>
+                </div>
+                
+                <div style="clear: both;"></div>
+
+            </div>
+            
+            <div id="footer" style="margin-top: 100px;">
+                <div style="width: 230px; margin: 16px auto 0; font-size: 12px; color: #919293;">
+                    Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
                 </div>
             </div>
 
-            <div style="width: 100%;" id="photoPreview" style="display: none;"></div>
-
-            <div style="clear: both;"></div>
-
-            <div>
-                <?= include_edit_template($poi->cat, $poi->sub) ?>
-            </div>
-
-        </div>
-
-        <div id="footer">
-            <div style="width: 230px; margin: 16px auto 0; font-size: 12px; color: #919293;">
-                Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
-            </div>
         </div>
 
         <ul id="photoSettingsMenu" style="position: absolute; display: none;">
