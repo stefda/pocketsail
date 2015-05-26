@@ -141,6 +141,23 @@
             .facility.disability { background-position-x: -225px; }
             .facility.pets { background-position-x: -250px; }
 
+            .tpl-section-wrapper.html h1 {
+                font-weight: bold;
+            }
+
+            .tpl-section-wrapper.html p {
+                margin: 0 0 10px 0;
+                font-size: 14px;
+                line-height: 1.3em;
+            }
+
+            .tpl-section-wrapper.html p:last-child {
+                margin-bottom: 0;
+            }
+
+            .berthingAttr { font-size: 16px; margin-bottom: 5px; }
+            .berthingAttr:last-child { margin-bottom: 0; }
+
         </style>
 
         <link type="text/css" rel="stylesheet" href="/application/layout/global.css" />
@@ -291,8 +308,63 @@
 
                         </div>
                     </div>
+
+                    <? if ($poi->cat === 'berthing' && isset($attrs->berthing)): ?>
+                        <div class="tpl-section">
+                            <div class="tpl-section-wrapper html" style="font-style: italic;">
+                                <? if ($attrs->berthing->assistance->value === 'yes'): ?>
+                                    <div class="berthingAttr">Berthing with assistance</div>
+                                <? endif; ?>
+                                <? if (isset($attrs->berthing->maxdraught->value) && $attrs->berthing->maxdraught->value !== ''): ?>
+                                    <div class="berthingAttr">Max draught: <?= $attrs->berthing->maxdraught->value ?><?= $attrs->berthing->maxdraught->type ?></div>
+                                <? endif; ?>
+                                <? if (isset($attrs->berthing->maxlength->value) && $attrs->berthing->maxlength->value !== ''): ?>
+                                    <div class="berthingAttr">Max length: <?= $attrs->berthing->maxlength->value ?><?= $attrs->berthing->maxlength->type ?></div>
+                                <? endif; ?>
+                                <? if (isset($attrs->berthing->seaberths->value)): ?>
+                                    <div class="berthingAttr">Berths number: <?= $attrs->berthing->seaberths->total->value ?></div>
+                                <? endif; ?>
+                                <? if (isset($attrs->berthing->type) && count($attrs->berthing->type->values) > 0): ?>
+                                    <div class="berthingAttr">
+                                        <?php
+                                        $typeMap = [
+                                            'bowto' => 'bow-to',
+                                            'sternto' => 'stern-to',
+                                            'lazyline' => 'lazyline',
+                                            'alongiside' => 'alongside'
+                                        ];
+                                        ?>
+                                        Berthing type:
+                                        <? for ($i = 0; $i < count($attrs->berthing->type->values); $i++): ?>
+                                            <span>
+                                                <?= $typeMap[$attrs->berthing->type->values[$i]] ?><? if ($i < count($attrs->berthing->type->values) - 2): ?>,<? elseif ($i == count($attrs->berthing->type->values) - 2): ?> or<? endif; ?>
+                                            </span>
+                                    <? endfor; ?>
+                                    </div>
+                        <? endif; ?>
+                            </div>
+                        </div>
+                    <? endif; ?>
+
+                            <? if (isset($attrs->description) && $attrs->description->details !== ''): ?>
+                        <div class="tpl-section">
+                            <div class="tpl-section-wrapper html">
+                        <?= html($attrs->description->details) ?>
+                            </div>
+                        </div>
+                    <? endif; ?>
+
+<? if (isset($attrs->approach) && $attrs->approach->details !== ''): ?>
+                        <div class="tpl-section">
+                            <div class="tpl-section-wrapper html">
+                                <h1>Approach</h1>
+                        <?= html($attrs->approach->details) ?>
+                            </div>
+                        </div>
+<? endif; ?>
+
                 </div>
-                
+
                 <div style="clear: both;"></div>
 
             </div>

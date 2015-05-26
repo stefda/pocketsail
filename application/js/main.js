@@ -1,5 +1,21 @@
 
+var ignoreHashChange = false;
+
 $(function () {
+
+    window.onhashchange = function () {
+        if (!ignoreHashChange) {
+            var params = parseHashParams();
+            map.clearAllParams();
+            map.setParams(params);
+            map.loadData('hash', function (data) {
+                this.handleData(data);
+                this.reload();
+            });
+        } else {
+            ignoreHashChange = false;
+        }
+    };
 
     Array.prototype.inter = function (a) {
         return this.filter(function (i) {
@@ -35,9 +51,22 @@ $(function () {
      */
 
     map.on('marker_click', function (marker) {
-        console.log(marker);
+
+        var poiUrl = marker.url;
+        var poiId = marker.getPoiId();
+
+        ignoreHashChange = true;
+
+        if (poiUrl !== '') {
+            //window.location.hash = poiUrl + ',,,,,' + map.getZoom();
+            window.location.hash = poiUrl;
+        } else {
+            //window.location.hash = poiId + ',,,,,' + map.getZoom();
+            window.location.hash = poiId;
+        }
+
         map.clearAllParams();
-        map.setParam('poiId', marker.getPoiId());
+        map.setParam('poiId', poiId);
         map.loadData('click', function (data) {
             this.handleData(data);
             this.redraw();

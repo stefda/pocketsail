@@ -75,7 +75,7 @@ CL_Output::get_instance()->assign('subsMap', $subsMap);
     <div class="card-content">
         <div style="font-size: 16px; margin-bottom: 4px; font-weight: bold;">
             <?= $poi->name() ?> (<?= $subsMap[$poi->sub()] ?>)
-            <a class="link" href="/<?= $poi->url() ?>">
+            <a class="link" href="/<?= $poi->url() === '' ? $poi->id() : $poi->url() ?>">
                 <img src="/application/images/open_in_new_window.png" style="margin-left: 2px; vertical-align: text-bottom;" />
             </a>
         </div>

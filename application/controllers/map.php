@@ -132,7 +132,7 @@ class Map extends CL_Controller {
         }
 
         $this->expand_bounds_to_types($args);
-        
+
         $args['bounds']->expand($args['zoom'], 300);
         $this->add_poi($args, $labels);
         $this->add_types($args, $labels);
@@ -161,12 +161,26 @@ class Map extends CL_Controller {
         ];
 
         $this->add_poi($args, $labels);
-        if (!isset($args['bounds'])) {
-            $this->compute_bounds($args);
-        } else {
-            $args['zoom'] = $args['bounds']->get_max_zoom($args['width'], $args['height']);
-            $args['bounds'] = LatLngBounds::from_dimensions($args['width'], $args['height'], $args['bounds']->get_center(), $args['zoom']);
-        }
+
+//        if (!isset($args['bounds'])) {
+//            $this->compute_bounds($args);
+//        } else {
+//            $args['zoom'] = $args['bounds']->get_max_zoom($args['width'], $args['height']);
+//            $args['bounds'] = LatLngBounds::from_dimensions($args['width'], $args['height'], $args['bounds']->get_center(), $args['zoom']);
+//        }
+
+        // The above has been replaced by this line NOT to compute
+        // the bounds from given bounds when action is hash
+        $this->compute_bounds($args);
+//        if (!isset($args['zoom'])) {
+//            $this->compute_bounds($args);
+//        } else {
+//           $zoom = $args['zoom'];
+//           $this->compute_bounds($args);
+//           $args['zoom'] = $zoom;
+//           $args['bounds'] = LatLngBounds::from_dimensions($args['width'], $args['height'], $args['poi']->latLng(), $args['zoom']);
+//        }
+
         $this->add_types($args, $labels);
         $this->add_static($args, $labels);
 
