@@ -111,6 +111,19 @@
                     });
                     e.preventDefault();
                 });
+
+                $('.l').click(function (e) {
+                    var href = $(this).attr('href');
+                    map.setParam('poiId', poiId);
+                    map.setParam('poiIds', [href]);
+                    map.setParam('poiUrls', [href]);
+                    map.loadData('quick', function (data) {
+                        this.handleData(data);
+                        this.redraw();
+                    });
+                    e.preventDefault();
+                    e.stopPropagation();
+                });
             });
 
         </script>
@@ -172,7 +185,7 @@
 
             <div id="header">
                 <div style="margin: 12px 0 0 20px;">
-                    <img src="/application/images/logo.png"/>
+                    <a href="http://<?= DOMAIN ?>"><img src="/application/images/logo.png" /></a>
                 </div>
             </div>
 
@@ -242,6 +255,9 @@
                                                             <? else: ?>
                                                                 <?= $nearby['name'] ?>
                                                             <? endif; ?>
+                                                        </a>
+                                                        <a href="/<?= $nearby['id'] ?>">
+                                                            <img src="/application/images/open_in_new_window_small.png" />
                                                         </a>
                                                         <span style="font-size: 11px; color: #333; margin-left: 3px;"><?= round($nearby['distance'], 1) ?> km</span>
                                                     </div>
@@ -339,29 +355,29 @@
                                             <span>
                                                 <?= $typeMap[$attrs->berthing->type->values[$i]] ?><? if ($i < count($attrs->berthing->type->values) - 2): ?>,<? elseif ($i == count($attrs->berthing->type->values) - 2): ?> or<? endif; ?>
                                             </span>
-                                    <? endfor; ?>
+                                        <? endfor; ?>
                                     </div>
-                        <? endif; ?>
+                                <? endif; ?>
                             </div>
                         </div>
                     <? endif; ?>
 
-                            <? if (isset($attrs->description) && $attrs->description->details !== ''): ?>
+                    <? if (isset($attrs->description) && $attrs->description->details !== ''): ?>
                         <div class="tpl-section">
                             <div class="tpl-section-wrapper html">
-                        <?= html($attrs->description->details) ?>
+                                <?= html($attrs->description->details) ?>
                             </div>
                         </div>
                     <? endif; ?>
 
-<? if (isset($attrs->approach) && $attrs->approach->details !== ''): ?>
+                    <? if (isset($attrs->approach) && $attrs->approach->details !== ''): ?>
                         <div class="tpl-section">
                             <div class="tpl-section-wrapper html">
                                 <h1>Approach</h1>
-                        <?= html($attrs->approach->details) ?>
+                                <?= html($attrs->approach->details) ?>
                             </div>
                         </div>
-<? endif; ?>
+                    <? endif; ?>
 
                 </div>
 
@@ -370,7 +386,7 @@
             </div>
 
             <div id="footer">
-                <div style="width: 230px; margin: 8px auto 0; font-size: 12px; color: #919293;">
+                <div class="footer-content">
                     Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
                 </div>
             </div>

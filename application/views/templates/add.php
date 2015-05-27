@@ -95,7 +95,7 @@
                 </div>
 
                 <div style="margin: 12px 0 0 20px;">
-                    <img src="/application/images/logo.png"/>
+                    <a href="http://<?= DOMAIN ?>"><img src="/application/images/logo.png" /></a>
                 </div>
 
             </div>

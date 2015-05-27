@@ -26,6 +26,10 @@ class Map extends CL_Controller {
                 'filter' => FILTER_VALIDATE_INT,
                 'flags' => FILTER_REQUIRE_ARRAY
             ],
+            'poiUrls' => [
+                'filter' => FILTER_SANITIZE_STRING,
+                'flags' => FILTER_REQUIRE_ARRAY
+            ],
             'types' => [
                 'filter' => FILTER_SANITIZE_STRING,
                 'flags' => FILTER_REQUIRE_ARRAY
@@ -234,6 +238,12 @@ class Map extends CL_Controller {
             'dynamic' => [],
             'static' => []
         ];
+        
+        if (count($args['poiIds']) === 1 && $args['poiIds'][0] === NULL) {
+            $url = ltrim($args['poiUrls'][0], "/");
+            $poi = POIModel::loadByUrl($url);
+            $args['poiIds'] = [$poi->id()];
+        }
 
         $args['poi'] = POIModel::load($args['poiId']);
         $args['pois'] = POIModel::loadByIds($args['poiIds']);

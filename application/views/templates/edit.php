@@ -109,7 +109,7 @@
                 </div>
 
                 <div style="margin: 12px 0 0 20px;">
-                    <img src="/application/images/logo.png"/>
+                    <a href="http://<?= DOMAIN ?>"><img src="/application/images/logo.png" /></a>
                 </div>
 
             </div>
@@ -166,7 +166,7 @@
             </div>
             
             <div id="footer" style="margin-top: 100px;">
-                <div style="width: 230px; margin: 16px auto 0; font-size: 12px; color: #919293;">
+                <div class="footer-content">
                     Pocketsail &copy; 2015, with <img src="/application/images/love.png" style="vertical-align: bottom;"/> from London.
                 </div>
             </div>

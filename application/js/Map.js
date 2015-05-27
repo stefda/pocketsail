@@ -147,6 +147,7 @@ function Map(canvas, args) {
                 poiId: this.params.poiId,
                 poiUrl: this.params.poiUrl,
                 poiIds: this.params.poiIds,
+                poiUrls: this.params.poiUrls,
                 types: this.params.types,
                 bounds: this.params.bounds !== undefined ? this.params.bounds.toGeoJson() : this.init ? this.getBounds().toGeoJson() : undefined,
                 zoom: this.params.zoom !== undefined ? this.params.zoom : this.getZoom(),
