@@ -286,7 +286,7 @@
                         <? endif; ?>
                     </div>
 
-                    <div class="tpl-section" style="position: relative; border-radius: 0 0 2px 2px; z-index: 999;">
+                    <div class="tpl-section" style="position: relative; border-radius: 0 0 2px 2px; z-index: 99;">
                         <div class="tpl-section-wrapper">
 
                             <div style="float: right;">
