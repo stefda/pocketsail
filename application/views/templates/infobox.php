@@ -152,7 +152,7 @@ if (strlen($desc) !== strlen($descTrimmed)) {
             <? endif; ?>
 
             <div class="description">
-                <?= $desc ?>
+                <?= html_info($desc) ?>
             </div>
 
         </div>

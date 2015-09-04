@@ -81,6 +81,7 @@
             <li data-value="cave">Cave</li>
             <li data-value="ruins">Ruins</li>
             <li data-value="museum">Museum</li>
+            <li data-value="nationalpark">Park</li>
         </ul>
     </li>
 </ul>

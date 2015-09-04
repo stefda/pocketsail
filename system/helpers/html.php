@@ -7,3 +7,8 @@ function html($text) {
     $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "<a href=\"\\2\" class=\"l\">\\1</a> <a href=\"\\2\"><img src=\"/application/images/open_in_new_window_small.png\" /></a>", $text);
     return $text;
 }
+
+function html_info($text) {
+    $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "<a href=\"\#\2\" class=\"l\">\\1</a> <a href=\"\\2\">", $text);
+    return $text;
+}

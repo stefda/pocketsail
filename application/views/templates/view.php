@@ -230,7 +230,7 @@
                         <div style="padding-left: 0px;">
 
                             <? foreach ($cats AS $cat): ?>
-                                <? if (isset($nearbys[$cat])): ?>
+                                <? if (isset($nearbys[$cat]) && isset($catIds[$cat])): ?>
                                     <? $group = $nearbys[$cat] ?>
                                     <div style="margin: 10px 0 7px;">
                                         <div>

@@ -7,8 +7,7 @@ class Test extends CL_Controller {
     }
 
     function index() {
-        require_library('geo/*');
-        require_library('geo/*');
+        $this->load->view("test");
     }
 
     function icons() {
