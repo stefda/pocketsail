@@ -9,6 +9,6 @@ function html($text) {
 }
 
 function html_info($text) {
-    $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "<a href=\"\#\2\" class=\"l\">\\1</a> <a href=\"\\2\">", $text);
+    $text = preg_replace("/\[([^|]*)\|([^\]]*)\]/", "\\1", $text);
     return $text;
 }
