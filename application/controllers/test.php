@@ -5,6 +5,65 @@ class Test extends CL_Controller {
     function __construct() {
         parent::__construct();
     }
+    
+    function curl() {
+        echo $_SERVER['REQUEST_METHOD'] . "\n";
+    }
+    
+    function ceil() {
+        
+        var_dump(ceil(85 - 10));
+    }
+
+    function sol() {
+
+        function solution($A) {
+
+            $N = count($A);
+            $M = count($A[0]);
+
+            $P = [0];
+            $Q = [0];
+            $S = [$A[0][0]];
+
+            $max = $A[0][0];
+
+            while (count($P) > 0) {
+
+                $p = array_shift($P);
+                $q = array_shift($Q);
+                $s = array_shift($S);
+
+                if ($p + 1 != $N) {
+                    $P[] = $p + 1;
+                    $Q[] = $q;
+                    $S[] = $s + $A[$p + 1][$q];                    
+                    if (end($S) > $max) {
+                        $max = end($S);
+                    }
+                }
+
+                if ($q + 1 != $M) {
+                    $P[] = $p;
+                    $Q[] = $q + 1;
+                    $S[] = $s + $A[$p][$q + 1];
+                    if (end($S) > $max) {
+                        $max = end($S);
+                    }
+                }
+            }
+            
+            return $max;
+        }
+        
+        $A = [
+            [2, 0, 5, 1],
+            [0, 4, 1, 3],
+            [0, 2, 0, 0]
+        ];
+
+        echo solution($A);
+    }
 
     function index() {
         $this->load->view("test");
@@ -13,7 +72,7 @@ class Test extends CL_Controller {
     function icons() {
         $this->load->view('icons');
     }
-    
+
     function cat() {
         require_model('POITypeModel');
         print_R(POITypeModel::cat_name_map());

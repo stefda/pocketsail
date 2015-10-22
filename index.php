@@ -13,7 +13,7 @@ define('DOMAIN',  'pocketsail');
 define('MAINURL',  'http://' . DOMAIN . '/');
 define('CODEBASE',  '');
 define('SELF',      'index.php');
-define('BASEPATH',  'C:/dev/projects/pocketsail/web/');
+define('BASEPATH',  'C:/Users/David/sandbox/pocketsail/web/');
 define('SYSPATH',   BASEPATH . 'system/');
 define('APPPATH',   BASEPATH . 'application/');
 define('BASEURL',   'http://' . $_SERVER['HTTP_HOST'] . '/' . (defined('CODEBASE') ? CODEBASE : '/'));
